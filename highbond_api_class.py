@@ -44,7 +44,7 @@ class Highbond_API:
         self.talkative = talkative
 
     # Robots Agents
-    async def getAgents(self) -> dict:
+    def getAgents(self) -> dict:
         """
         Lista os agentes do robotics instalados na organização
 
@@ -115,7 +115,7 @@ class Highbond_API:
             print(f'A requisição não foi possível:\n{e}')
 
     # Robots
-    async def getRobots(self) -> dict:
+    def getRobots(self) -> dict:
         """
         Lista os robôs disponíveis no robotics
 
@@ -184,7 +184,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def createRobot(self, robot_name: str, robot_description: str = None, robot_category: Literal['acl', 'highbond', 'workflow'] = 'acl') -> dict:
+    def createRobot(self, robot_name: str, robot_description: str = None, robot_category: Literal['acl', 'highbond', 'workflow'] = 'acl') -> dict:
         """
         Cria um robô na organização
 
@@ -266,7 +266,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def putRobot(self, robot_id, robot_new_name: str, robot_new_description: str, robot_new_category: Literal['acl', 'highbond', 'workflow']) -> dict:
+    def putRobot(self, robot_id, robot_new_name: str, robot_new_description: str, robot_new_category: Literal['acl', 'highbond', 'workflow']) -> dict:
         """
         Atualiza as informações de um robô
 
@@ -349,7 +349,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def deleteRobot(self, robot_id: str) -> dict:
+    def deleteRobot(self, robot_id: str) -> dict:
         """
         Deleta um robô e todas as tarefas associadas a ele
 
@@ -423,7 +423,7 @@ class Highbond_API:
             print(f'A requisição não foi possível:\n{e}')
 
     # Robot Tasks
-    async def getRobotTasks(self, robot_id: str, environment: str) -> dict:
+    def getRobotTasks(self, robot_id: str, environment: str) -> dict:
         """
         Lista as tarefas de um robô ACL.
 
@@ -503,7 +503,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def createRobotTask(self, robot_id, environment: Literal['production', 'development'], 
+    def createRobotTask(self, robot_id, environment: Literal['production', 'development'], 
                         task_name, app_version: int = None, emails_enabled: bool = False, 
                         log_enabled: bool = False, pw_crypto_key: str = None, 
                         share_encrypted: bool = False, analytic_names: list = None) -> dict:
@@ -603,7 +603,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def putRobotTask(self, task_id, environment: Literal['production', 'development'], 
+    def putRobotTask(self, task_id, environment: Literal['production', 'development'], 
                         task_name, app_version: int = None, emails_enabled: bool = False, 
                         log_enabled: bool = False, pw_crypto_key: str = None, 
                         share_encrypted: bool = False, analytic_names: list = None) -> dict:
@@ -703,7 +703,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def deleteRobotTask(self, task_id: str) -> dict:
+    def deleteRobotTask(self, task_id: str) -> dict:
         """
         Deleta uma tarefa de um robô do Highbond
 
@@ -776,7 +776,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def runRobotTask(self, task_id: str, include: list = ['job_values','result_tables']) -> dict:
+    def runRobotTask(self, task_id: str, include: list = ['job_values','result_tables']) -> dict:
         """
         Inicia a execução de uma tarefa de um robô no Highbond
 
@@ -867,7 +867,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def getValues(self, task_id: str, ) -> dict:
+    def getValues(self, task_id: str, ) -> dict:
         """
         Lista os valores em uma tarefa de um robô.
 
@@ -939,7 +939,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def putValues(self, task_id: str, multi_mode: bool, analytic_name: str = None, parameter_id: str = None, 
+    def putValues(self, task_id: str, multi_mode: bool, analytic_name: str = None, parameter_id: str = None, 
                     encrypted: bool = None, value: str = None, 
                     value_type: Literal["character","date","datetime","file","logical","number","table","time"] = None, 
                     values_list: List[list] = None) -> dict:
@@ -1079,7 +1079,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def getSchedule(self, task_id: str) -> dict:
+    def getSchedule(self, task_id: str) -> dict:
         """
         Informa sobre o agendamento de uma tarefa.
 
@@ -1150,7 +1150,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def createSchedule(self, task_id: str, frequency: Literal["once", "hourly", "daily", "weekly", "monthly"], 
+    def createSchedule(self, task_id: str, frequency: Literal["once", "hourly", "daily", "weekly", "monthly"], 
                         interval: int = 1, starts_at: str = None, timezone: str = None, days: List[Union[int,str]]= None) -> dict:
         """
         Cria o agendamento de uma tarefa.
@@ -1315,7 +1315,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def putSchedule(self, task_id: str, frequency: Literal["once", "hourly", "daily", "weekly", "monthly"], 
+    def putSchedule(self, task_id: str, frequency: Literal["once", "hourly", "daily", "weekly", "monthly"], 
                         interval: int = 1, starts_at: str = None, timezone: str = None, days: List[Union[int,str]]= None) -> dict:
         """
         Atualiza o agendamento de uma tarefa.
@@ -1480,7 +1480,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def deleteSchedule(self, task_id: str):
+    def deleteSchedule(self, task_id: str):
         """
         Deleta o agendamento de uma tarefa
 
@@ -1554,7 +1554,7 @@ class Highbond_API:
             print(f'A requisição não foi possível:\n{e}')
 
     # Robot Jobs
-    async def getRobotJobs(self, robot_id: str, environment: str, 
+    def getRobotJobs(self, robot_id: str, environment: str, 
                 include: list = ['robot','task','triggered_by'], 
                 page_size: int = 100, page_number: int = 1) -> dict:
         """
@@ -1655,7 +1655,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def deleteRobotJobs(self, job_id: str):
+    def deleteRobotJobs(self, job_id: str):
         """
         Deleta um registro de execução do robô
 
@@ -1729,7 +1729,7 @@ class Highbond_API:
             print(f'A requisição não foi possível:\n{e}')
 
     # Analytic Scripts
-    async def getRobotApp(self, robot_id: str, robot_app_id: str):
+    def getRobotApp(self, robot_id: str, robot_app_id: str):
         """
         Informa sobre uma versão específica de desenvolvimentode um robô do ACL.
 
@@ -1802,7 +1802,7 @@ class Highbond_API:
             print(f'A requisição não foi possível:\n{e}')
 
     # TODO (Solved): getRobotApps()
-    async def getRobotApps(self, robot_id):
+    def getRobotApps(self, robot_id):
         """
         Informa sobre todas as versões de desenvolvimento de um robô do ACL.
 
@@ -1872,7 +1872,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def createRobotApp(self, robot_id: str, code_page: int, comment: str, is_unicode: bool, input_file: str) -> dict:
+    def createRobotApp(self, robot_id: str, code_page: int, comment: str, is_unicode: bool, input_file: str) -> dict:
         """
         Método que faz upload dos arquivos relacionados de um robô ACL
 
@@ -1962,7 +1962,7 @@ class Highbond_API:
             print(f'A requisição não foi possível\n{e}')
 
     # Robot Script versions (Robô Python)
-    async def getRobotScriptVersion(self, robot_id: str, version_id: str, include: Literal[None, 'analytics'] = 'analytics'):
+    def getRobotScriptVersion(self, robot_id: str, version_id: str, include: Literal[None, 'analytics'] = 'analytics'):
         """
         Informa sobre uma versão específica de desenvolvimentode um robô do ACL.
 
@@ -2038,7 +2038,7 @@ class Highbond_API:
             print(f'A requisição não foi possível:\n{e}')
 
     # ACL Robot Related Files
-    async def getRobotFiles(self, robot_id: str, environment: str) -> dict:
+    def getRobotFiles(self, robot_id: str, environment: str) -> dict:
         """
         Lista os arquivos relacionados a um robô ACL em um ambiente específico.
 
@@ -2119,7 +2119,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def createRobotFile(self, inputFile: str, robot_id: str, environment: Literal['production', 'development']) -> dict:
+    def createRobotFile(self, inputFile: str, robot_id: str, environment: Literal['production', 'development']) -> dict:
         """
         Método que faz upload dos arquivos relacionados de um robô ACL
 
@@ -2212,7 +2212,7 @@ class Highbond_API:
 
     # TODO: getRobotFile() função para receber dados de metadata dos arquivos
 
-    async def deleteRobotFile(self, file_id: str) -> dict:
+    def deleteRobotFile(self, file_id: str) -> dict:
         """
         Deleta um arquivo de um robô ACL
 
@@ -2281,7 +2281,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def downloadFile(self, file_id: str, out_file: str) -> bytes:
+    def downloadFile(self, file_id: str, out_file: str) -> bytes:
         """
         Faz o download de um arquivo relacionado a um robô ACL.
 
@@ -2358,7 +2358,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def getEntities(self, fields_entities: str = 'title,description,created_at,updated_at,parent,children_count,entity_category', page_size: int = 25, page_number: int = 1) -> dict:
+    def getEntities(self, fields_entities: str = 'title,description,created_at,updated_at,parent,children_count,entity_category', page_size: int = 25, page_number: int = 1) -> dict:
         """
         Lista os arquivos relacionados a um robô ACL em um ambiente específico.
 
@@ -2440,7 +2440,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def getStrategyRisks(self, 
+    def getStrategyRisks(self, 
                             fields: str = 'title,description,status,score,residual_score,heat,residual_heat,strategy_custom_attributes,risk_manager_risk_id,created_at,updated_at', 
                             size: int = 10, 
                             page: int = 1) -> dict:
@@ -2527,7 +2527,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def getStrategySegments(self, 
+    def getStrategySegments(self, 
                             size: int = 10, 
                             page: int = 1) -> dict:
         """
@@ -2610,7 +2610,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def getStrategyRiskSegments(self, strategy_risk_id: str, size: int, page: int ) -> dict:
+    def getStrategyRiskSegments(self, strategy_risk_id: str, size: int, page: int ) -> dict:
         """
         Lista os arquivos relacionados a um robô ACL em um ambiente específico.
 
@@ -2689,7 +2689,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def getStrategyRiskSegment(self, 
+    def getStrategyRiskSegment(self, 
                                 strategy_risk_id: str, 
                                 segment_id: str,
                                 segment_fields: str = 'name,score,strategy_factors,created_at,updated_at', 
@@ -2780,7 +2780,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def getStrategyObjectives(self, page_size: int = 10, page_number: int = 1) -> dict:
+    def getStrategyObjectives(self, page_size: int = 10, page_number: int = 1) -> dict:
         """
         Lista os arquivos relacionados a um robô ACL em um ambiente específico.
 
@@ -2857,7 +2857,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def getProjects(
+    def getProjects(
                     self, 
                     fields: str = 'name,state,status,created_at,updated_at,description,background,budget,position,header_alert_enabled,header_alert_text,certification,control_performance,risk_assurance,management_response,max_sample_size,number_of_testing_rounds,opinion,opinion_description,purpose,scope,start_date,target_date,tag_list,project_type,entities,collaborators,risk_assurance_data,collaborator_groups,time_spent,progress,planned_start_date,actual_start_date,planned_end_date,actual_end_date,planned_milestone_date,actual_milestone_date',
                     page_size: int = 25,
@@ -2947,7 +2947,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def createProject(
+    def createProject(
             self,
             name: str,
             start_date: str,
@@ -3097,7 +3097,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')        
 
-    async def getProject(self, project_id: str, fields: str = 'name,state,status,created_at,updated_at,description,background,budget,position,header_alert_enabled,header_alert_text,certification,control_performance,risk_assurance,management_response,max_sample_size,number_of_testing_rounds,opinion,opinion_description,purpose,scope,start_date,target_date,tag_list,project_type,entities,collaborators,risk_assurance_data,collaborator_groups,time_spent,progress,planned_start_date,actual_start_date,planned_end_date,actual_end_date,planned_milestone_date,actual_milestone_date') -> dict:
+    def getProject(self, project_id: str, fields: str = 'name,state,status,created_at,updated_at,description,background,budget,position,header_alert_enabled,header_alert_text,certification,control_performance,risk_assurance,management_response,max_sample_size,number_of_testing_rounds,opinion,opinion_description,purpose,scope,start_date,target_date,tag_list,project_type,entities,collaborators,risk_assurance_data,collaborator_groups,time_spent,progress,planned_start_date,actual_start_date,planned_end_date,actual_end_date,planned_milestone_date,actual_milestone_date') -> dict:
         """
         Enumera as propriedades detalhadas de um projeto específico.
 
@@ -3176,7 +3176,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def updateProject(
+    def updateProject(
             self, 
             project_id: str, 
             name: str,
@@ -3420,7 +3420,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')   
 
-    async def deleteProject(
+    def deleteProject(
             self,
             project_id: str,
             permanent: bool = False) -> dict:
@@ -3512,7 +3512,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def createProjectEntityLink(
+    def createProjectEntityLink(
             self,
             project_id: str,
             entity_id: str) -> dict:
@@ -3606,7 +3606,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def deleteProjectEntityLink(
+    def deleteProjectEntityLink(
             self,
             project_id: str,
             entity_id: str) -> dict:
@@ -3702,7 +3702,7 @@ class Highbond_API:
             print(f'A requisição não foi possível:\n{e}')
 
 
-    async def getObjectives(self, 
+    def getObjectives(self, 
                         project_id: str, 
                         fields = 'title,description,reference,division_department,owner,executive_owner,created_at,updated_at,project,assigned_user,custom_attributes,position,risk_control_matrix_id,walkthrough_summary_id,testing_round_1_id,testing_round_2_id,testing_round_3_id,testing_round_4_id,entities,framework,framework_origin,risk_assurance_data,planned_start_date,actual_start_date,planned_end_date,actual_end_date,planned_milestone_date,actual_milestone_date',
                         page_size = 25,
@@ -3786,7 +3786,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def getRecords(self, table_id: str) -> dict:
+    def getRecords(self, table_id: str) -> dict:
         """
         Recebe uma tabela do módulo de resultados do highbond
 
@@ -3865,7 +3865,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    async def uploadRecords(self, table_id: str, input_data: pd.DataFrame, explicit_field_types: dict = {}, overwrite: bool = False) -> dict:
+    def uploadRecords(self, table_id: str, input_data: pd.DataFrame, explicit_field_types: dict = {}, overwrite: bool = False) -> dict:
         """
         Faz o upload de registros para uma tabela do módulo de resultados do highbond.
 
@@ -3921,7 +3921,7 @@ class Highbond_API:
         # Remove campos de metadados e extras
         input_data = input_data[[field for field in input_data.columns if not re.search(r'(metadata\.|extras\.)', field)]]
 
-        async def map_dtype(
+        def map_dtype(
                 field: str, 
                 explicit_field_types: dict, 
                 field_type: str = object
