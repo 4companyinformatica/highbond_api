@@ -73,6 +73,45 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
             return None
+        
+    def post_command(self, api_url: str, api_headers: dict, api_params: dict = {}, api_schema: dict = {}) -> dict:
+        # AÇÃO E RESPOSTA
+        try:   
+            if self.talkative == True:
+                print('Iniciando a requisição HTTP...')
+            if bool(api_params):
+                if bool(api_schema):
+                    response = rq.post(api_url, headers=api_headers, params=api_params, json=api_schema)
+                else:
+                    response = rq.post(api_url, headers=api_headers, params=api_params)
+            else:
+                if bool(api_schema):
+                    response = rq.post(api_url, headers=api_headers, json=api_schema)
+                else:
+                    response = rq.post(api_url, headers=api_headers)
+
+            if response.status_code == 200:
+                if self.talkative == True:
+                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
+                return response.json()
+            elif response.status_code == 400:
+                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {response.json()}')
+            elif response.status_code == 401:
+                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {response.json()}')
+            elif response.status_code == 403:
+                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {response.json()}')
+            elif response.status_code == 404:
+                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {response.json()}')
+            elif response.status_code == 415:
+                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {response.json()}')
+            elif response.status_code == 422:
+                raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {response.json()}')
+            else:
+                raise Exception(response.json())
+
+        except Exception as e:
+            print(f'A requisição não foi possível:\n{e}')
+            return None
 
 
     # Robots Agents
@@ -193,12 +232,12 @@ class Highbond_API:
         org_id = self.organization_id
         server = self.server
         
-        apiHeaders = {
+        headers = {
             'Accept': 'application/vnd.api+json',
             'Authorization': f'Bearer {token}'
         }
 
-        qParameters = {
+        parameters = {
             'name': robot_name,
             'description': robot_description,
             'category': robot_category
@@ -206,39 +245,9 @@ class Highbond_API:
 
         url = f'{protocol}://{server}/v1/orgs/{org_id}/robots'
 
-        # AÇÃO E RESPOSTA
-        try:
-            
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-            Response = rq.post(url, params=qParameters, headers=apiHeaders)
+        return self.post_command(api_url=url, api_headers=headers, api_params=parameters)
 
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
-            elif Response.status_code == 403:
-                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
-            elif Response.status_code == 404:
-                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
-            elif Response.status_code == 415:
-                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
-            elif Response.status_code == 422:
-                raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}')
-            elif Response.status_code == 200:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            else:
-                raise Exception(Response.json())
-
-        except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')
+        
 
     def putRobot(self, robot_id, robot_new_name: str, robot_new_description: str, robot_new_category: Literal['acl', 'highbond', 'workflow']) -> dict:
         """
@@ -488,12 +497,12 @@ class Highbond_API:
         org_id = self.organization_id
         server = self.server
         
-        apiHeaders = {
+        headers = {
             'Accept': 'application/vnd.api+json',
             'Authorization': f'Bearer {token}'
         }
 
-        dSchema = {
+        schema = {
             'data':{
                 'type': 'robot_tasks',
                 'attributes': {
@@ -511,39 +520,8 @@ class Highbond_API:
 
         url = f'{protocol}://{server}/v1/orgs/{org_id}/robots/{robot_id}/robot_tasks'
 
-        # AÇÃO E RESPOSTA
-        try:
-            
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-            Response = rq.post(url, headers=apiHeaders, json=dSchema)
-
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
-            elif Response.status_code == 403:
-                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
-            elif Response.status_code == 404:
-                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
-            elif Response.status_code == 415:
-                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
-            elif Response.status_code == 422:
-                raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}')
-            elif Response.status_code == 200:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            else:
-                raise Exception(Response.json())
-
-        except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')
+        return self.post_command(api_url=url, api_headers=headers, api_schema=schema)
+    
 
     def putRobotTask(self, task_id, environment: Literal['production', 'development'], 
                         task_name, app_version: int = None, emails_enabled: bool = False, 
@@ -765,49 +743,17 @@ class Highbond_API:
                 strInclude = strInclude + ',' + item
             strInclude = strInclude[1:]
 
-        apiHeaders = {
+        headers = {
             'Accept': 'application/vnd.api+json',
             'Authorization': f'Bearer {token}'
         }
         
-        qParameters = {
+        parameters = {
             'include': strInclude
         }
         url = f'{protocol}://{server}/v1/orgs/{org_id}/robot_tasks/{task_id}/run_now'
 
-        # AÇÃO E RESPOSTA
-        try:
-            
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-            Response = rq.post(url, headers=apiHeaders, params=qParameters)
-
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
-            elif Response.status_code == 403:
-                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
-            elif Response.status_code == 404:
-                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
-            elif Response.status_code == 415:
-                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
-            elif Response.status_code == 422:
-                raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}')
-            elif Response.status_code == 200:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            else:
-                raise Exception(Response.json())
-
-        except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')
+        return self.post_command(api_url=url, api_headers=headers, api_params=parameters)
 
     def getValues(self, task_id: str, ) -> dict:
         """
@@ -1082,7 +1028,7 @@ class Highbond_API:
         org_id = self.organization_id
         server = self.server
         
-        apiHeaders = {
+        headers = {
             'Accept': 'application/vnd.api+json',
             'Authorization': f'Bearer {token}'
         }
@@ -1094,7 +1040,7 @@ class Highbond_API:
         else:
             hashDays = {'days': days}
 
-        dSchema = {
+        schema = {
             "data": {
                 "type": "schedule",
                 "attributes": {
@@ -1165,37 +1111,12 @@ class Highbond_API:
                                 raise Exception('O parâmetro "days" não foi definido corretamente')
                 else:
                     raise Exception('Para esta frequência, o parâmetro "days" não pode ter mais de 1 item')
-                
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-            Response = rq.post(url, headers=apiHeaders, json=dSchema)
-
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
-            elif Response.status_code == 403:
-                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
-            elif Response.status_code == 404:
-                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
-            elif Response.status_code == 415:
-                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
-            elif Response.status_code == 422:
-                raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}')
-            elif Response.status_code == 200:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            else:
-                raise Exception(Response.json())
 
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
+            return None
+
+        return self.post_command(api_url=url, api_headers=headers, api_schema=schema)
 
     def putSchedule(self, task_id: str, frequency: Literal["once", "hourly", "daily", "weekly", "monthly"], 
                         interval: int = 1, starts_at: str = None, timezone: str = None, days: List[Union[int,str]]= None) -> dict:
@@ -1703,12 +1624,12 @@ class Highbond_API:
         org_id = self.organization_id
         server = self.server
         
-        apiHeaders = {
+        headers = {
             'Accept': 'application/vnd.api+json',
             'Authorization': f'Bearer {token}'
         }
 
-        dSchema = {
+        schema = {
             'code_page': code_page,
             'comment': comment,
             'is_unicode': is_unicode,
@@ -1717,39 +1638,7 @@ class Highbond_API:
 
         url = f'{protocol}://{server}/v1/orgs/{org_id}/robots/{robot_id}/robot_apps'
 
-        try:
-
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP')
-
-            Response = rq.post(url, headers=apiHeaders, files=dSchema)
-
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
-            elif Response.status_code == 403:
-                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
-            elif Response.status_code == 404:
-                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
-            elif Response.status_code == 415:
-                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
-            elif Response.status_code == 422:
-                raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}')
-            elif Response.status_code == 200:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            else:
-                raise Exception(Response.json())
-
-        except Exception as e:
-            print(f'A requisição não foi possível\n{e}')
+        return self.post_command(api_url=url, api_headers=headers, api_schema=schema)
 
     # Robot Script versions (Robô Python)
     def getRobotScriptVersion(self, robot_id: str, version_id: str, include: Literal[None, 'analytics'] = 'analytics'):
@@ -1886,16 +1775,16 @@ class Highbond_API:
         org_id = self.organization_id
         server = self.server
         
-        apiHeaders = {
+        headers = {
             'Accept': 'application/vnd.api+json',
             'Authorization': f'Bearer {token}'
         }
 
-        qParameters = {
+        parameters = {
             'env': environment
         }
 
-        dSchema = {
+        schema = {
             'file': open(inputFile, 'rb')
         }
 
@@ -2545,15 +2434,15 @@ class Highbond_API:
         org_id = self.organization_id
         server = self.server
         
-        apiHeaders = {
+        headers = {
             'Content-Type': 'application/vnd.api+json',
             'Authorization': f'Bearer {token}'
         }
 
-        qParameters = {
+        parameters = {
             'fields[projects]': fields
         }
-        dSchema = {
+        schema = {
             "data": {
                 "type": "projects",
                 "attributes": {
@@ -2587,43 +2476,11 @@ class Highbond_API:
 
         if len(tag_list) > 0:
             for tag in tag_list:
-                dSchema['data']['attributes']['tag_list'].append(tag)
+                schema['data']['attributes']['tag_list'].append(tag)
 
         url = f'{protocol}://{server}/v1/orgs/{org_id}/projects'
 
-        # AÇÃO E RESPOSTA
-        try:
-            
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-            Response = rq.post(url, params=qParameters, headers=apiHeaders, json=dSchema)
-
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API -> {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
-            elif Response.status_code == 403:
-                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
-            elif Response.status_code == 404:
-                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
-            elif Response.status_code == 415:
-                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API (Verifique se o cabeçalho está correto) -> {Response.json()}')
-            elif Response.status_code == 422:
-                raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}')
-            elif Response.status_code == 200:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            else:
-                raise Exception(Response.json())
-
-        except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')        
+        return self.post_command(api_url=url, api_headers=headers, api_params=parameters, api_schema=schema)
 
     def getProject(self, project_id: str, fields: str = 'name,state,status,created_at,updated_at,description,background,budget,position,header_alert_enabled,header_alert_text,certification,control_performance,risk_assurance,management_response,max_sample_size,number_of_testing_rounds,opinion,opinion_description,purpose,scope,start_date,target_date,tag_list,project_type,entities,collaborators,risk_assurance_data,collaborator_groups,time_spent,progress,planned_start_date,actual_start_date,planned_end_date,actual_end_date,planned_milestone_date,actual_milestone_date') -> dict:
         """
@@ -3047,12 +2904,12 @@ class Highbond_API:
         org_id = self.organization_id
         server = self.server
         
-        apiHeaders = {
+        headers = {
             'Accept': 'application/vnd.api+json',
             'Authorization': f'Bearer {token}'
         }
 
-        dSchema = {
+        schema = {
             'data': {
                 'id': entity_id,
                 'type': 'entities'
@@ -3061,48 +2918,7 @@ class Highbond_API:
 
         url = f'{protocol}://{server}/v1/orgs/{org_id}/projects/{project_id}/entities'
 
-        # AÇÃO E RESPOSTA
-        try:
-            
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-            Response = rq.post(url, headers=apiHeaders, json=dSchema)
-
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
-            elif Response.status_code == 403:
-                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
-            elif Response.status_code == 404:
-                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
-            elif Response.status_code == 415:
-                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
-            elif Response.status_code == 422:
-                raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}')
-            elif Response.status_code == 200:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            elif Response.status_code == 201:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 201\nMensagem: Criado\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            else:
-                raise Exception(Response.json())
-
-        except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')
+        return self.post_command(api_url=url, api_headers=headers, api_schema=schema)
 
     def deleteProjectEntityLink(
             self,
@@ -3401,7 +3217,7 @@ class Highbond_API:
                 input_data[col] = input_data[col].apply(lambda x: str(x))
 
 
-        dSchema = {
+        schema = {
             'data': {
                 'columns': columns,
                 'records': input_data.to_dict(orient='records')
@@ -3418,7 +3234,7 @@ class Highbond_API:
             
             if self.talkative == True:
                 print('Iniciando a requisição HTTP...')
-            Response = rq.post(url, headers=apiHeaders, json=dSchema)
+            Response = rq.post(url, headers=apiHeaders, json=schema)
 
             if Response.status_code == 400:
                 raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
