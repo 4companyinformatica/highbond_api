@@ -3526,3 +3526,59 @@ class Highbond_API:
 
         except Exception as e:
             raise ValueError(f'A requisição não foi possível:\n{e}')
+        
+    def getObjectiveRisks(self, parent_resource_id: str, fields: list = ['title', 'risk_id', 'mitigations'], page_size=100, page_number=1) -> dict:
+        # CONFIGURAÇÃO DO MÉTODO
+        protocol = 'https'
+        token = self.token
+        org_id = self.organization_id
+        server = self.server
+        
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {token}'
+        }
+  
+        url = f"{protocol}://{server}/v1/orgs/{org_id}/objectives/{parent_resource_id}/risks"
+
+        headers = {
+            'Content-Type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {token}'
+        }
+
+        params = {
+            "page[size]": page_size,
+            "page[number]": base64.encodebytes(str(page_number).encode()).decode(),
+            "fields[risks]": ",".join(fields),
+            "include": "objective"
+        }
+
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
+    
+
+    def getObjectives(self, parent_resource_id,
+                      fields: list = ['title','description','reference','division_department','owner','executive_owner',
+                        'created_at','updated_at','project','assigned_user','custom_attributes','position','risk_control_matrix_id','walkthrough_summary_id','testing_round_1_id','testing_round_2_id',
+                        'testing_round_3_id','testing_round_4_id','entities','framework','framework_origin','risk_assurance_data','planned_start_date','actual_start_date',
+                        'planned_end_date','actual_end_date','planned_milestone_date','actual_milestone_date'],
+                        page_size=100, page_number=1):
+        # CONFIGURAÇÃO DO MÉTODO
+        protocol = 'https'
+        token = self.token
+        org_id = self.organization_id
+        server = self.server
+  
+        url = f"{protocol}://{server}/v1/orgs/{org_id}/frameworks/{parent_resource_id}/objectives"
+
+        headers = {
+            'Content-Type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {token}'
+        }
+
+        params = {
+            "page[size]": page_size,
+            "page[number]": page_number,
+            "fields[objectives]": ",".join(fields)
+        }
+
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
