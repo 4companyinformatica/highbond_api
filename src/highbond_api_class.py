@@ -3629,3 +3629,48 @@ class Highbond_API:
         }
         
         return self.get_command(api_url=url, api_headers=headers, api_params=params)
+    
+
+    def getAControl(self, resource_id, fields: list = ['title', 'mitigations'], page_size=100, page_number=1) -> dict:
+        # CONFIGURAÇÃO DO MÉTODO
+        protocol = 'https'
+        token = self.token
+        org_id = self.organization_id
+        server = self.server
+  
+        url = f"https://{server}/v1/orgs/{org_id}/controls/{resource_id}"
+
+        headers = {
+            'Content-Type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {token}'
+        }
+
+        params = {
+            "page[size]": page_size,
+            "page[number]": base64.encodebytes(str(page_number).encode()).decode(),
+            "fields[controls]": ",".join(fields),
+        }
+
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
+    
+    def getFrameworks(self, fields: list = ['name','created_at','updated_at','folder_name','description','project_type'], page_size: int = 100, page_number: int = 1):
+        # CONFIGURAÇÃO DO MÉTODO
+        protocol = 'https'
+        token = self.token
+        org_id = self.organization_id
+        server = self.server
+        protocol = "https"
+        url = f"{protocol}://{server}/v1/orgs/{org_id}/frameworks"
+    
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {token}'
+        }
+    
+        params = {
+            "fields[frameworks]": ",".join(fields),
+            "page[size]": page_size,
+            "page[number]": base64.encodebytes(str(page_number).encode()).decode()
+        }
+    
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
