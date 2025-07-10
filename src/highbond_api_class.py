@@ -3496,6 +3496,29 @@ class Highbond_API:
         return self.get_command(api_url=url, api_headers=headers, api_params=params)
     
 
+    def getARisk(self, resource_id, fields: list = ['title', 'mitigations'], page_size=100, page_number=1) -> dict:
+        # CONFIGURAÇÃO DO MÉTODO
+        protocol = 'https'
+        token = self.token
+        org_id = self.organization_id
+        server = self.server
+  
+        url = f"https://{server}/v1/orgs/{org_id}/risks/{resource_id}"
+
+        headers = {
+            'Content-Type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {token}'
+        }
+
+        params = {
+            "page[size]": page_size,
+            "page[number]": base64.encodebytes(str(page_number).encode()).decode(),
+            "fields[risks]": ",".join(fields),
+        }
+
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
+    
+
     def getObjectives(self, parent_resource_id,
                       fields: list = ['title','description','reference','division_department','owner','executive_owner',
                         'created_at','updated_at','project','assigned_user','custom_attributes','position','risk_control_matrix_id','walkthrough_summary_id','testing_round_1_id','testing_round_2_id',
@@ -3521,4 +3544,28 @@ class Highbond_API:
             "fields[objectives]": ",".join(fields)
         }
 
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
+    
+    def getControls(self, parent_resource_id, fields: list = ['title', 'control_id', 'mitigations'], page_size=100, page_number=1):
+        # CONFIGURAÇÃO DO MÉTODO
+        protocol = 'https'
+        token = self.token
+        org_id = self.organization_id
+        server = self.server
+
+        url = f'https://{server}/v1/orgs/{org_id}/objectives/{parent_resource_id}/controls'
+        
+        headers = {
+            'Content-Type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {token}'
+        }
+        
+        params = {
+            "page[size]": page_size,
+            "page[number]": base64.encodebytes(str(page_number).encode()).decode(),
+            "fields[controls]": ",".join(fields),
+            "include":"objective"
+            
+        }
+        
         return self.get_command(api_url=url, api_headers=headers, api_params=params)
