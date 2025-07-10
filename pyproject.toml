@@ -1,0 +1,26 @@
+[project]
+name = "Highbond_Api_Class"
+version = "0.1.0"
+description = "Classe encapsuladora dos endpoints da API do Highbond"
+authors = [
+  {name="Diego Rosário Sousa", email="diego.sousa@quality.com.br"},
+  {name="Matheus Marques", email="matheus.barros@4companyinformatica.com.br"},
+  {name="Lucas Reis", email="lucas.reis@4companyinformatica.com.br"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.0.0",
+    "pandas>=2.0.0",
+    "python-dotenv>=1.0.0"
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
