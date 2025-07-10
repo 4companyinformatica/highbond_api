@@ -6,7 +6,6 @@ import pandas as pd
 import re
 from typing import Literal, List, Union
 from IPython.display import display, Image
-from IPython import get_ipython
 
 
 class Highbond_API:
