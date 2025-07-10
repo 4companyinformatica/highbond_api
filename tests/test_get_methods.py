@@ -21,6 +21,11 @@ load_dotenv(".env")
 
 def test_getAgents():
     response = d1.getAgents()
-    print(response)
+
     assert bool(response)
-    
+
+def test_getOrganization():
+    response = d1.getOrganization()
+    print(response)
+
+    assert bool(response)

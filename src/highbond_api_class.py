@@ -5,6 +5,8 @@ import base64
 import pandas as pd
 import re
 from typing import Literal, List, Union
+from IPython.display import display, Image
+from IPython import get_ipython
 
 
 class Highbond_API:
@@ -43,6 +45,25 @@ class Highbond_API:
         self.server = server
         self.talkative = talkative
 
+        curr_org = self.getOrganization()
+
+        def is_jupyter_nb():
+            try:
+                test = __file__
+                return False
+            except:
+                return True
+
+        if bool(curr_org):
+
+            if self.talkative:
+                print(f"Classe instanciada para a organização {self.organization_id}\n"\
+                      f"\tNome: {curr_org['data']['attributes']['name']}\n"\
+                      f"\tRegião: {curr_org['data']['attributes']['region']}\n"\
+                      f"\tFuso horário: {curr_org['data']['attributes']['timezone']}\n")
+                if is_jupyter_nb():
+                    display(Image(curr_org['data']['attributes']['small_logo']))
+
     def get_command(self, api_url: str, api_headers: dict, api_params: dict = {}) -> dict :
         try:
             if self.talkative == True:
@@ -74,7 +95,46 @@ class Highbond_API:
             print(f'A requisição não foi possível:\n{e}')
             return None
 
+    def getOrganization(self) -> dict:
+        """
+        Lista os agentes do robotics instalados na organização
 
+        #### Referência:
+        https://docs-apis.highbond.com/#operation/getOrganization
+
+        #### Retorna:
+        Um dicionário contendo informações sobre os agentes do robôs.
+
+        #### Exceções:
+        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+        - Sobe exceção se houver uma falha desconhecida.
+
+        #### Exemplo de uso:
+        ```python
+        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        result = instance.getAgents()
+        ```
+
+        #### Observações:
+        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+        - A resposta é um dicionário contendo as informações sobre os agentes do robôs.
+        """
+
+        # CONFIGURAÇÃO DO MÉTODO
+        protocol = 'https'
+        token = self.token
+        org_id = self.organization_id
+        server = self.server
+        
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {token}'
+        }
+        
+        url = f"{protocol}://{server}/v1/orgs/{org_id}/"
+
+        return self.get_command(api_url=url, api_headers=headers)
+    
     # Robots Agents
     def getAgents(self) -> dict:
         """
