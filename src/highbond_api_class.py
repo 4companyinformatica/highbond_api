@@ -3466,3 +3466,31 @@ class Highbond_API:
 
         except Exception as e:
             raise ValueError(f'A requisição não foi possível:\n{e}')
+        
+    def getObjectiveRisks(self, parent_resource_id: str, fields: list = ['title', 'risk_id', 'mitigations'], page_size=100, page_number=1) -> dict:
+        # CONFIGURAÇÃO DO MÉTODO
+        protocol = 'https'
+        token = self.token
+        org_id = self.organization_id
+        server = self.server
+        
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {token}'
+        }
+  
+        url = f"{protocol}://{server}/v1/orgs/{org_id}/objectives/{parent_resource_id}/risks"
+
+        headers = {
+            'Content-Type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {token}'
+        }
+
+        params = {
+            "page[size]": page_size,
+            "page[number]": base64.encodebytes(str(page_number).encode()).decode(),
+            "fields[risks]": ",".join(fields),
+            "include": "objective"
+        }
+
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
