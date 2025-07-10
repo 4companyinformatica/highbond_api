@@ -74,26 +74,48 @@ class Highbond_API:
             print(f'A requisição não foi possível:\n{e}')
             return None
         
-    def post_command(self, api_url: str, api_headers: dict, api_params: dict = {}, api_schema: dict = {}) -> dict:
+    def post_command(self, api_url: str, api_headers: dict, api_params: dict = {}, api_schema: dict = {}, api_files: dict = {}) -> dict:
         # AÇÃO E RESPOSTA
         try:   
             if self.talkative == True:
                 print('Iniciando a requisição HTTP...')
             if bool(api_params):
                 if bool(api_schema):
-                    response = rq.post(api_url, headers=api_headers, params=api_params, json=api_schema)
+                    if bool(api_files):
+                        response = rq.post(api_url, headers=api_headers, params=api_params, json=api_schema, files=api_files)
+                    else:
+                        response = rq.post(api_url, headers=api_headers, params=api_params, json=api_schema)
                 else:
-                    response = rq.post(api_url, headers=api_headers, params=api_params)
+                    if bool(api_files):
+                        response = rq.post(api_url, headers=api_headers, params=api_params, files=api_files)
+                    else:
+                        response = rq.post(api_url, headers=api_headers, params=api_params)
             else:
                 if bool(api_schema):
-                    response = rq.post(api_url, headers=api_headers, json=api_schema)
+                    if bool(api_files):
+                        response = rq.post(api_url, headers=api_headers, json=api_schema, files=api_files)
+                    else:
+                        response = rq.post(api_url, headers=api_headers, json=api_schema)
                 else:
-                    response = rq.post(api_url, headers=api_headers)
+                    if bool(api_files):
+                        response = rq.post(api_url, headers=api_headers, files=api_files)
+                    else:
+                        response = rq.post(api_url, headers=api_headers)
 
             if response.status_code == 200:
                 if self.talkative == True:
                     print('Código: 200\nMensagem: Requisição executada com sucesso\n')
                 return response.json()
+            elif response.status_code == 201:
+                if self.talkative == True:
+                    print('Código: 201\nMensagem: Criado\n')
+                return response.json()
+            elif response.status_code == 202:
+                if self.talkative == True:
+                    print('Código: 202\nMensagem: Aceito\n')
+                return f"Resposta da API: {response.text}"
+                # Matheus: Sugiro substituir o return de cima pelo de baixo
+                # return response.json()
             elif response.status_code == 400:
                 raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {response.json()}')
             elif response.status_code == 401:
@@ -1790,42 +1812,14 @@ class Highbond_API:
 
         url = f'{protocol}://{server}/v1/orgs/{org_id}/robots/{robot_id}/robot_files'
 
-        
         try:
             if not ((environment == 'production') or (environment == 'development')):
                 raise Exception('O ambiente não foi definido corretamente.')
-
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP')
-
-            Response = rq.post(url, params=qParameters, headers=apiHeaders, files=dSchema)
-
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
-            elif Response.status_code == 403:
-                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
-            elif Response.status_code == 404:
-                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
-            elif Response.status_code == 415:
-                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
-            elif Response.status_code == 422:
-                raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}')
-            elif Response.status_code == 200:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            else:
-                raise Exception(Response.json())
-
         except Exception as e:
             print(f'A requisição não foi possível\n{e}')
+            return None
+        else:
+            return self.post_command(api_url=url, api_headers=headers, api_params=parameters, files=schema)
 
     # TODO: getRobotFile() função para receber dados de metadata dos arquivos
 
@@ -3171,7 +3165,7 @@ class Highbond_API:
         server = self.server
         
 
-        apiHeaders = {
+        headers = {
             'Accept': 'application/vnd.api+json',
             'Authorization': f'Bearer {token}'
         }
@@ -3229,56 +3223,4 @@ class Highbond_API:
 
         url = f'{protocol}://{server}/v1/orgs/{org_id}/tables/{table_id}/upload'
 
-        # AÇÃO E RESPOSTA
-        try:
-            
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-            Response = rq.post(url, headers=apiHeaders, json=schema)
-
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
-            elif Response.status_code == 403:
-                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
-            elif Response.status_code == 404:
-                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
-            elif Response.status_code == 413:
-                raise Exception(f'Código: 413\nMensagem: Muitos dados enviados de uma só vez -> {Response.json()}')
-            elif Response.status_code == 415:
-                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
-            elif Response.status_code == 422:
-                raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}') 
-            elif Response.status_code == 200:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            elif Response.status_code == 201:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 201\nMensagem: Criado\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            elif Response.status_code == 202:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 202\nMensagem: Aceito\n')
-                    # SAÍDA COM SUCESSO
-                    return f"Resposta da API: {Response.text}"
-                else:
-                    return f"Resposta da API: {Response.text}"
-            else:
-                raise Exception(Response.json())
-
-        except Exception as e:
-            raise ValueError(f'A requisição não foi possível:\n{e}')
+        return self.post_command(api_url=url, api_headers=headers, api_schema=schema)
