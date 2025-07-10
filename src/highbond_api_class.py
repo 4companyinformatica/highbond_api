@@ -3283,59 +3283,7 @@ class Highbond_API:
 
         url = f'{protocol}://{server}/v1/orgs/{org_id}/tables/{table_id}/upload'
 
-        # AÇÃO E RESPOSTA
-        try:
-            
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-            Response = rq.post(url, headers=apiHeaders, json=dSchema)
-
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
-            elif Response.status_code == 403:
-                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
-            elif Response.status_code == 404:
-                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
-            elif Response.status_code == 413:
-                raise Exception(f'Código: 413\nMensagem: Muitos dados enviados de uma só vez -> {Response.json()}')
-            elif Response.status_code == 415:
-                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
-            elif Response.status_code == 422:
-                raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}') 
-            elif Response.status_code == 200:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            elif Response.status_code == 201:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 201\nMensagem: Criado\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            elif Response.status_code == 202:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 202\nMensagem: Aceito\n')
-                    # SAÍDA COM SUCESSO
-                    return f"Resposta da API: {Response.text}"
-                else:
-                    return f"Resposta da API: {Response.text}"
-            else:
-                raise Exception(Response.json())
-
-        except Exception as e:
-            raise ValueError(f'A requisição não foi possível:\n{e}')
+        return self.post_command(api_url=url, api_headers=headers, api_schema=schema)
         
     def getObjectiveRisks(self, parent_resource_id: str, fields: list = ['title', 'risk_id', 'mitigations'], page_size=100, page_number=1) -> dict:
         # CONFIGURAÇÃO DO MÉTODO
