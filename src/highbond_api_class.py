@@ -9,10 +9,14 @@ from IPython.display import display, Image
 
 class Highbond_API:
 
-    def __init__(self, token: str,
-                    organization_id: str, 
-                    server: Literal['apis-us.highbond.com', 'apis-ca.highbond.com', 'apis-eu.highbond.com', 'apis-ap.highbond.com', 'apis-au.highbond.com', 'apis-af.highbond.com', 'apis-sa.highbond.com', 'apis.highbond-gov.com', 'apis.highbond-gov2.com'] = 'apis-us.highbond.com', 
-                    talkative: bool = True):
+    def __init__(
+            self,
+            token: str,
+            organization_id: str,
+            protocol: str = 'https',
+            server: Literal['apis-us.highbond.com', 'apis-ca.highbond.com', 'apis-eu.highbond.com', 'apis-ap.highbond.com', 'apis-au.highbond.com', 'apis-af.highbond.com', 'apis-sa.highbond.com', 'apis.highbond-gov.com', 'apis.highbond-gov2.com'] = 'apis-us.highbond.com', 
+            talkative: bool = True
+        ):
         """
         ________________________________________________________________________
         Cria uma instância da classe hbapi para interação simplificada com a API Highbond.
@@ -40,6 +44,7 @@ class Highbond_API:
         # CONFIGURAÇÕES DA CLASSE
         self.token = token
         self.organization_id = organization_id
+        self.protocol = protocol
         self.server = server
         self.talkative = talkative
 
@@ -170,7 +175,7 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getAgents()
         ```
 
@@ -178,19 +183,12 @@ class Highbond_API:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo as informações sobre os agentes do robôs.
         """
-
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
         
-        url = f"{protocol}://{server}/v1/orgs/{org_id}/"
+        url = f"{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/"
 
         return self.get_command(api_url=url, api_headers=headers)
     
@@ -211,27 +209,20 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getAgents()
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo as informações sobre os agentes do robôs.
-
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/agents'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/agents'
 
         return self.get_command(api_url=url, api_headers=headers)
 
@@ -252,7 +243,7 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getRobots()
         ```
 
@@ -260,18 +251,13 @@ class Highbond_API:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
 
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
         
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robots'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots'
 
         return self.get_command(api_url=url, api_headers=headers)
 
@@ -296,23 +282,16 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.createRobot('nome_robô', 'descricao_robo', 'acl')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         headers = {
             'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         parameters = {
@@ -321,7 +300,7 @@ class Highbond_API:
             'category': robot_category
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robots'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots'
 
         return self.post_command(api_url=url, api_headers=headers, api_params=parameters)
         
@@ -347,23 +326,16 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.putRobot('novo_nome', 'nova_descricao', 'acl')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         apiHeaders = {
             'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         qParameters = {
@@ -373,7 +345,7 @@ class Highbond_API:
             'category': robot_new_category
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robots/{robot_id}'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}'
 
         # AÇÃO E RESPOSTA
         try:            
@@ -384,7 +356,7 @@ class Highbond_API:
             if Response.status_code == 400:
                 raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
             elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
+                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.token -> {Response.json()}')
             elif Response.status_code == 403:
                 raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
             elif Response.status_code == 404:
@@ -427,27 +399,20 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.deleteRobot('12345')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
-
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-
         apiHeaders = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robots/{robot_id}'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}'
 
         # AÇÃO E RESPOSTA
         try:
@@ -459,7 +424,7 @@ class Highbond_API:
             if Response.status_code == 400:
                 raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
             elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
+                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.token -> {Response.json()}')
             elif Response.status_code == 403:
                 raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
             elif Response.status_code == 404:
@@ -503,7 +468,7 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='sua_organizacao')
+        instance = hbapi(self.token='seu_self.token', organization_id='sua_organizacao')
         result = instance.getRobotTasks(robot_id='123', environment='production')
         ```
 
@@ -511,22 +476,16 @@ class Highbond_API:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo informações sobre as tarefas do robô.
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         parameters = {
             'env': environment
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robots/{robot_id}/robot_tasks'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}/robot_tasks'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
@@ -560,22 +519,16 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi('seu_token', 'sua_organização')
+        instance = hbapi('seu_self.token', 'sua_organização')
         instance.createRobotTask('12345', 'production', 'tarefa 1')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         headers = {
             'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         schema = {
@@ -594,7 +547,7 @@ class Highbond_API:
             }
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robots/{robot_id}/robot_tasks'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}/robot_tasks'
 
         return self.post_command(api_url=url, api_headers=headers, api_schema=schema)
     
@@ -628,22 +581,16 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi('seu_token', 'sua_organização')
+        instance = hbapi('seu_self.token', 'sua_organização')
         instance.putRobotTask('12345', 'production', 'tarefa 1')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         apiHeaders = {
             'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         dSchema = {
@@ -662,7 +609,7 @@ class Highbond_API:
             }
         }
         
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robot_tasks/{task_id}'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_tasks/{task_id}'
 
         # AÇÃO E RESPOSTA
         try:
@@ -674,7 +621,7 @@ class Highbond_API:
             if Response.status_code == 400:
                 raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
             elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
+                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.token -> {Response.json()}')
             elif Response.status_code == 403:
                 raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
             elif Response.status_code == 404:
@@ -717,25 +664,19 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi('seu_token', 'sua_organização')
+        instance = hbapi('seu_self.token', 'sua_organização')
         instance.deleteRobotTask('12345')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         apiHeaders = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
         
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robot_tasks/{task_id}'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_tasks/{task_id}'
 
         # AÇÃO E RESPOSTA
         try:
@@ -747,7 +688,7 @@ class Highbond_API:
             if Response.status_code == 400:
                 raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
             elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
+                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.token -> {Response.json()}')
             elif Response.status_code == 403:
                 raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
             elif Response.status_code == 404:
@@ -791,19 +732,13 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi('seu_token', 'sua_organização')
+        instance = hbapi('seu_self.token', 'sua_organização')
         instance.runRobotTask('12345', ['job_values','result_tables'])
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         includeCheckList = ['job_values','result_tables']
 
         if not isinstance(include, list):
@@ -820,13 +755,13 @@ class Highbond_API:
 
         headers = {
             'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
         
         parameters = {
             'include': strInclude
         }
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robot_tasks/{task_id}/run_now'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_tasks/{task_id}/run_now'
 
         return self.post_command(api_url=url, api_headers=headers, api_params=parameters)
 
@@ -849,7 +784,7 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='sua_organizacao')
+        instance = hbapi(self.token='seu_self.token', organization_id='sua_organizacao')
         result = instance.getValues(task_id='123')
         ```
 
@@ -857,18 +792,12 @@ class Highbond_API:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo informações sobre os jobs do robô.
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robot_tasks/{task_id}/values'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_tasks/{task_id}/values'
 
         return self.get_command(api_url=url, api_headers=headers)
 
@@ -901,13 +830,13 @@ class Highbond_API:
 
         #### Exemplo de uso se multi_mod = False:
         ```python
-        instance = hbapi('seu_token', 'sua_organização')
+        instance = hbapi('seu_self.token', 'sua_organização')
         instance.putValues('1234565', multi_mod=False, 'Nome da Análise', 'Nome do ParÂmetro', False, 'Novo Valor', 'character')
         ```
 
         #### Exemplo de uso se multi_mod = True
         ```python
-            instance = hbapi('token', 'organizacao')
+            instance = hbapi('self.token', 'organizacao')
             instance.putValues('tarefa', multi_mod=True, values_list=[
                 ['Nome da Análise 1', 'Nome do Parâmetro 1', True, 'Novo Valor 1', 'character'], 
                 ['Nome da Análise 2', 'Nome do Parâmetro 2', True, 'Novo Valor 2', 'character']
@@ -919,18 +848,12 @@ class Highbond_API:
         - Caso haja calores com senha entre os parâmetros da tarefa, putValues deve sempre rodar em multi_mod=True
         pois, o parâmetro de senha deve ser passado junto dos outros.
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         apiHeaders = {
             'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
         
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robot_tasks/{task_id}/values'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_tasks/{task_id}/values'
 
         # AÇÃO E RESPOSTA
         try:
@@ -988,7 +911,7 @@ class Highbond_API:
             if Response.status_code == 400:
                 raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
             elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
+                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.token -> {Response.json()}')
             elif Response.status_code == 403:
                 raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
             elif Response.status_code == 404:
@@ -1031,25 +954,19 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='sua_organizacao')
+        instance = hbapi(self.token='seu_self.token', organization_id='sua_organizacao')
         result = instance.getRobotJobs(task_id='123')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robot_tasks/{task_id}/schedule'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_tasks/{task_id}/schedule'
 
         return self.get_command(api_url=url, api_headers=headers)
 
@@ -1090,22 +1007,16 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='sua_organizacao')
+        instance = hbapi(self.token='seu_self.token', organization_id='sua_organizacao')
         instance.createSchedule('67336','daily', 2, starts_at='2024-02-17T22:00:00Z',timezone='America/Sao_Paulo')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         headers = {
             'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
         
         frequencyNullCheckList = ['once', 'hourly', 'daily']
@@ -1128,7 +1039,7 @@ class Highbond_API:
             }
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robot_tasks/{task_id}/schedule'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_tasks/{task_id}/schedule'
 
         # AÇÃO E RESPOSTA
         try:
@@ -1230,22 +1141,16 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='sua_organizacao')
+        instance = hbapi(self.token='seu_self.token', organization_id='sua_organizacao')
         instance.putSchedule('67336','daily', 2, starts_at='2024-02-17T22:00:00Z',timezone='America/Sao_Paulo')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         apiHeaders = {
             'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
         
         frequencyNullCheckList = ['once', 'hourly', 'daily']
@@ -1268,7 +1173,7 @@ class Highbond_API:
             }
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robot_tasks/{task_id}/schedule'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_tasks/{task_id}/schedule'
 
         # AÇÃO E RESPOSTA
         try:
@@ -1334,7 +1239,7 @@ class Highbond_API:
             if Response.status_code == 400:
                 raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
             elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
+                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.token -> {Response.json()}')
             elif Response.status_code == 403:
                 raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
             elif Response.status_code == 404:
@@ -1377,25 +1282,19 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi('seu_token', 'sua_organização')
+        instance = hbapi('seu_self.token', 'sua_organização')
         instance.deleteRobotTask('12345')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         apiHeaders = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
         
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robot_tasks/{task_id}/schedule'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_tasks/{task_id}/schedule'
 
         # AÇÃO E RESPOSTA
         try:
@@ -1407,7 +1306,7 @@ class Highbond_API:
             if Response.status_code == 400:
                 raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
             elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
+                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.token -> {Response.json()}')
             elif Response.status_code == 403:
                 raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
             elif Response.status_code == 404:
@@ -1458,7 +1357,7 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='sua_organizacao')
+        instance = hbapi(self.token='seu_self.token', organization_id='sua_organizacao')
         result = instance.getRobotJobs(robot_id='123', environment='production')
         ```
 
@@ -1466,12 +1365,6 @@ class Highbond_API:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo informações sobre os jobs do robô.
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-
         includeCheckList = ['robot', 'task', 'triggered_by']
 
         if not isinstance(include, list):
@@ -1488,7 +1381,7 @@ class Highbond_API:
 
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         parameters = {
@@ -1497,7 +1390,7 @@ class Highbond_API:
             'page[size]': str(page_size),
             'page[number]': str(page_number)
         }
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robots/{robot_id}/jobs'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}/jobs'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
@@ -1520,25 +1413,19 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi('seu_token', 'sua_organização')
+        instance = hbapi('seu_self.token', 'sua_organização')
         instance.deleteRobotJobs('12345')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         apiHeaders = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
         
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robots/jobs/{job_id}'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/jobs/{job_id}'
 
         # AÇÃO E RESPOSTA
         try:
@@ -1550,7 +1437,7 @@ class Highbond_API:
             if Response.status_code == 400:
                 raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
             elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
+                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.token -> {Response.json()}')
             elif Response.status_code == 403:
                 raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
             elif Response.status_code == 404:
@@ -1595,25 +1482,19 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getRobotApp(robot_id='123', robot_app_id='456')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robots/{robot_id}/robot_apps/{robot_app_id}'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}/robot_apps/{robot_app_id}'
 
         return self.get_command(api_url=url, api_headers=headers)
 
@@ -1636,24 +1517,20 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getRobotApp(robot_id='123', robot_app_id='456')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         """
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
         
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robots/{robot_id}/robot_apps'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}/robot_apps'
 
         return self.get_command(api_url=url, api_headers=headers)
 
@@ -1681,7 +1558,7 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi('seu_token', 'sua_organização')
+        instance = hbapi('seu_self.token', 'sua_organização')
         result = instance.createRobotApp(
             robot_id='123', code_page=21, comment='Versão de teste ro robô', 
             is_unicode=False, input_file='caminho/do/arquivo.acl'
@@ -1690,17 +1567,10 @@ class Highbond_API:
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-
         """
-        
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         headers = {
             'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         schema = {
@@ -1710,7 +1580,7 @@ class Highbond_API:
             'file': open(input_file, 'rb')
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robots/{robot_id}/robot_apps'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}/robot_apps'
 
         return self.post_command(api_url=url, api_headers=headers, api_schema=schema)
 
@@ -1735,28 +1605,22 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getRobotScriptVersion(robot_id='123', version_id='456')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
         parameters = {
             'include': include
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robots/{robot_id}/versions/{version_id}'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}/versions/{version_id}'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
@@ -1782,31 +1646,24 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getRobotFiles(robot_id='123', environment='production')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
-
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         parameters = {
             'env': environment
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robots/{robot_id}/robot_files'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}/robot_files'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
@@ -1841,17 +1698,10 @@ class Highbond_API:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - O caminho do arquivo a ser enviado é especificado em 'inputFile'.
         - A resposta é um dicionário contendo informações sobre o arquivo recém-criado.
-
         """
-        
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         headers = {
             'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         parameters = {
@@ -1862,7 +1712,7 @@ class Highbond_API:
             'file': open(inputFile, 'rb')
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robots/{robot_id}/robot_files'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}/robot_files'
 
         try:
             if not ((environment == 'production') or (environment == 'development')):
@@ -1892,7 +1742,7 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='sua_organizacao')
+        instance = hbapi(self.token='seu_self.token', organization_id='sua_organizacao')
         result = instance.deleteRobotFile(file_id='123')
         ```
 
@@ -1900,17 +1750,12 @@ class Highbond_API:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo informações sobre o status da deleção.
         """
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-
         apiHeaders = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robot_files/{file_id}'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_files/{file_id}'
 
         try:
             if self.talkative == True:
@@ -1921,7 +1766,7 @@ class Highbond_API:
             if Response.status_code == 400:
                 raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
             elif Response.status_code == 401:
-                raise Exception('\nCódigo: 401\nMensagem: Falha na autenticação com token')
+                raise Exception('\nCódigo: 401\nMensagem: Falha na autenticação com self.token')
             elif Response.status_code == 403:
                 raise Exception('\nCódigo: 403\nMensagem: Conexão não permitida pelo servidor')
             elif Response.status_code == 404:
@@ -1963,7 +1808,7 @@ class Highbond_API:
 
         Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='sua_organizacao')
+        instance = hbapi(self.token='seu_self.token', organization_id='sua_organizacao')
         file_content = instance.downloadFile(file_id='123', out_file='caminho/do/arquivo/baixado.txt')
         ```
 
@@ -1971,17 +1816,12 @@ class Highbond_API:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de log.
         - O conteúdo do arquivo baixado é salvo no caminho especificado em 'out_file'.
         """
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-
         apiHeaders = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/robot_files/{file_id}/download'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_files/{file_id}/download'
 
         try:
             if self.talkative == True:
@@ -1992,7 +1832,7 @@ class Highbond_API:
             if Response.status_code == 400:
                 raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
             elif Response.status_code == 401:
-                raise Exception('\nCódigo: 401\nMensagem: Falha na autenticação com token')
+                raise Exception('\nCódigo: 401\nMensagem: Falha na autenticação com self.token')
             elif Response.status_code == 403:
                 raise Exception('\nCódigo: 403\nMensagem: Conexão não permitida pelo servidor')
             elif Response.status_code == 404:
@@ -2041,24 +1881,19 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getEntities()
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
-
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token  = self.token
-        org_id = self.organization_id
-        server = self.server
+        self.token  = self.token
 
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         parameters = {
@@ -2067,7 +1902,7 @@ class Highbond_API:
             'page[number]': base64.encodebytes(str(page_number).encode()).decode()
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/entities'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/entities'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
@@ -2096,7 +1931,7 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getStrategyRisks(
             fields='title,description,status,score,residual_score,heat,residual_heat,strategy_custom_attributes,risk_manager_risk_id,created_at,updated_at', 
             size=10, 
@@ -2107,17 +1942,12 @@ class Highbond_API:
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
-
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token  = self.token
-        org_id = self.organization_id
-        server = self.server
+        self.token  = self.token
         
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         parameters = {
@@ -2126,7 +1956,7 @@ class Highbond_API:
             'page[number]': base64.encodebytes(str(page).encode()).decode()
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/strategy_risks'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/strategy_risks'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
@@ -2153,7 +1983,7 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getStrategySegments(
             size=10, 
             page=1
@@ -2165,15 +1995,11 @@ class Highbond_API:
         - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
 
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token  = self.token
-        org_id = self.organization_id
-        server = self.server
+        self.token  = self.token
         
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         parameters = {
@@ -2181,7 +2007,7 @@ class Highbond_API:
             'page[number]': base64.encodebytes(str(page).encode()).decode()
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/strategy_segments'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/strategy_segments'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
@@ -2207,24 +2033,17 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getStrategyRiskSegments(strategy_risk_id='45323', size=10, page=1)
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
-
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token  = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
         
         parameters = {
@@ -2232,7 +2051,7 @@ class Highbond_API:
             'page[number]': base64.encodebytes(str(page).encode()).decode()
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/strategy_risks/{strategy_risk_id}/strategy_segments'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/strategy_risks/{strategy_risk_id}/strategy_segments'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
@@ -2265,24 +2084,17 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getStrategyRiskSegment(strategy_risk_id='45323', segment_id='48751', segment_fields='name,score,strategy_factors')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
-
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token  = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
         
         if factors_fields == '':
@@ -2296,7 +2108,7 @@ class Highbond_API:
             'fields[strategy_factors]': factors_fields
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/strategy_risks/{strategy_risk_id}/strategy_segments/{segment_id}'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/strategy_risks/{strategy_risk_id}/strategy_segments/{segment_id}'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
@@ -2320,24 +2132,17 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getStrategyRiskSegment(strategy_risk_id='45323', segment_id='48751', segment_fields='name,score,strategy_factors')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
-
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token  = self.token
-        org_id = self.organization_id
-        server = self.server
-
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         parameters = {
@@ -2345,7 +2150,7 @@ class Highbond_API:
             'page[number]': base64.encodebytes(str(page_number).encode()).decode()
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/strategy_objectives'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/strategy_objectives'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
@@ -2377,24 +2182,17 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getProjects(fields='title, description', page_size=25, page_number=1)
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
-
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token  = self.token
-        org_id = self.organization_id
-        server = self.server
-
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         parameters = {
@@ -2405,7 +2203,7 @@ class Highbond_API:
             'filter[status]': filter_status
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/projects'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/projects'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
@@ -2465,28 +2263,22 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.createRobot('nome_robô', 'descricao_robo', 'acl')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         headers = {
             'Content-Type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         parameters = {
             'fields[projects]': fields
         }
+
         schema = {
             "data": {
                 "type": "projects",
@@ -2523,7 +2315,7 @@ class Highbond_API:
             for tag in tag_list:
                 schema['data']['attributes']['tag_list'].append(tag)
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/projects'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/projects'
 
         return self.post_command(api_url=url, api_headers=headers, api_params=parameters, api_schema=schema)
 
@@ -2548,31 +2340,24 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getProject(project_id = 123456, fields='title, description')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
-
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token  = self.token
-        org_id = self.organization_id
-        server = self.server
-
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         parameters = {
             'fields[projects]': fields,
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/projects/{project_id}'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/projects/{project_id}'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
@@ -2652,22 +2437,17 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.patch('12345', 'nome do projeto', '2023-05-11', '2024-05-11', description='descrição alterada')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-
         """
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
 
         apiHeaders = {
             'Content-Type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         qParameters = {
@@ -2784,7 +2564,7 @@ class Highbond_API:
             dSchema['data']['relationships']['project_type']['data']['id'] = project_type_id
             dSchema['data']['relationships']['project_type']['data']['type'] = "project_types"
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/projects/{project_id}'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/projects/{project_id}'
 
         # AÇÃO E RESPOSTA
         try:
@@ -2796,7 +2576,7 @@ class Highbond_API:
             if Response.status_code == 400:
                 raise Exception(f'Código: 400\nMensagem: Falha na requisição API -> {Response.json()}')
             elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
+                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.token -> {Response.json()}')
             elif Response.status_code == 403:
                 raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
             elif Response.status_code == 404:
@@ -2844,7 +2624,7 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.deleteProject(project_id = '123456', permanent=True)
         ```
 
@@ -2852,13 +2632,6 @@ class Highbond_API:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
         """
-
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token  = self.token
-        org_id = self.organization_id
-        server = self.server
-
         if permanent:
             permanent_value = 'delete'
         else:
@@ -2866,13 +2639,13 @@ class Highbond_API:
 
         apiHeaders = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         qParameters = {
             'permament': permanent_value
         }
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/projects/{project_id}'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/projects/{project_id}'
 
         # AÇÃO E RESPOSTA
         try:
@@ -2883,7 +2656,7 @@ class Highbond_API:
             if response.status_code == 400:
                 raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {response.json()}')
             elif response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {response.json()}')
+                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.token -> {response.json()}')
             elif response.status_code == 403:
                 raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {response.json()}')
             elif response.status_code == 404:
@@ -2935,23 +2708,16 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.createProjectEntityLink(project_id='12345', entity_id='1234')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         headers = {
             'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         schema = {
@@ -2961,7 +2727,7 @@ class Highbond_API:
             }
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/projects/{project_id}/entities'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/projects/{project_id}/entities'
 
         return self.post_command(api_url=url, api_headers=headers, api_schema=schema)
 
@@ -2988,25 +2754,19 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.deleteProjectEntityLink(project_id='12345', entity_id='1234')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token  = self.token
-        org_id = self.organization_id
-        server = self.server
-
         apiHeaders = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/projects/{project_id}/entities/{entity_id}'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/projects/{project_id}/entities/{entity_id}'
 
         # AÇÃO E RESPOSTA
         try:
@@ -3018,7 +2778,7 @@ class Highbond_API:
             if Response.status_code == 400:
                 raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
             elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {Response.json()}')
+                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.token -> {Response.json()}')
             elif Response.status_code == 403:
                 raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
             elif Response.status_code == 404:
@@ -3080,24 +2840,17 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getRecords(fields='title, description', page_size=25, page_number=1)
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
-
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token  = self.token
-        org_id = self.organization_id
-        server = self.server
-
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         parameters = {
@@ -3108,7 +2861,7 @@ class Highbond_API:
         if type(table_id) == int or type(table_id) == float:
             table_id = str(table_id)
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/tables/{table_id}/records'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/tables/{table_id}/records'
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
     def uploadRecords(self, table_id: str, input_data: pd.DataFrame, explicit_field_types: dict = {}, overwrite: bool = False) -> dict:
@@ -3134,7 +2887,7 @@ class Highbond_API:
         #### Exemplo de uso:
         ```python
 
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
 
         dfCustom = pd.DataFrame(
             {
@@ -3150,18 +2903,10 @@ class Highbond_API:
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - Esse método depende da biblioteca externa 'Pandas'
-
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
-
         headers = {
             'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         # Remove campos de metadados e extras
@@ -3215,7 +2960,7 @@ class Highbond_API:
             }
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/tables/{table_id}/upload'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/tables/{table_id}/upload'
 
         return self.post_command(api_url=url, api_headers=headers, api_schema=schema)
         
@@ -3223,22 +2968,17 @@ class Highbond_API:
                         fields: list = ['title','description','risk_id','owner','position','impact','likelihood','custom_attributes',
                                           'custom_factors','created_at','updated_at','objective','mitigations','owner_user','entities','framework_origin','risk_assurance_data'],
                         include: Literal['', 'objective'] = '', page_size=100, page_number=1) -> dict:
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
         
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
   
-        url = f"{protocol}://{server}/v1/orgs/{org_id}/objectives/{parent_resource_id}/risks"
+        url = f"{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/objectives/{parent_resource_id}/risks"
 
         headers = {
             'Content-Type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         params = {
@@ -3254,17 +2994,12 @@ class Highbond_API:
                 fields: list = ['title','description','risk_id','owner','position','impact','likelihood','custom_attributes',
                                 'custom_factors','created_at','updated_at','objective','mitigations','owner_user','entities','framework_origin','risk_assurance_data'],
                 include: Literal['', 'objective'] = '') -> dict:
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
   
-        url = f"{protocol}://{server}/v1/orgs/{org_id}/risks/{resource_id}"
+        url = f"{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/risks/{resource_id}"
 
         headers = {
             'Content-Type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         params = {
@@ -3295,22 +3030,16 @@ class Highbond_API:
                                     'planned_milestone_date','actual_milestone_date'
                                     ]
     ) -> dict:
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-
         headers = {
             'Content-Type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         params = {
             "fields[objectives]": ",".join(fields)
         }
 
-        url = f"{protocol}://{server}/v1/orgs/{org_id}/objectives/{objective_id}"
+        url = f"{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/objectives/{objective_id}"
 
         return self.get_command(api_url=url, api_headers=headers, api_params=params)
         
@@ -3342,7 +3071,7 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getObjectives(fields='title, description', page_size=25, page_number=1)
         ```
 
@@ -3350,18 +3079,11 @@ class Highbond_API:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
         """
-        
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-  
-        url = f"{protocol}://{server}/v1/orgs/{org_id}/{parent_resource_type}/{parent_resource_id}/objectives"
+        url = f"{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/{parent_resource_type}/{parent_resource_id}/objectives"
 
         headers = {
             'Content-Type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         params = {
@@ -3381,17 +3103,11 @@ class Highbond_API:
         """
         Lista todos os controles de um objetivo.
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/objectives/{parent_resource_id}/controls'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/objectives/{parent_resource_id}/controls'
         
         headers = {
             'Content-Type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
         
         params = {
@@ -3409,17 +3125,11 @@ class Highbond_API:
                                     'custom_attributes','objective','walkthrough','control_test_plan',
                                     'control_tests','mitigations','owner_user','entities','framework_origin'],
                     include: Literal['', 'objective'] = '') -> dict:
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-  
-        url = f"https://{server}/v1/orgs/{org_id}/controls/{resource_id}"
+        url = f"https://{self.server}/v1/orgs/{self.organization_id}/controls/{resource_id}"
 
         headers = {
             'Content-Type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         params = {
@@ -3430,16 +3140,11 @@ class Highbond_API:
         return self.get_command(api_url=url, api_headers=headers, api_params=params)
     
     def getFrameworks(self, fields: list = ['name','created_at','updated_at','folder_name','description','project_type'], page_size: int = 100, page_number: int = 1) -> dict:
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        url = f"{protocol}://{server}/v1/orgs/{org_id}/frameworks"
+        url = f"{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/frameworks"
     
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
     
         params = {
@@ -3487,17 +3192,10 @@ class Highbond_API:
         ```
 
         #### Observações:
-
         """
-        
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
         
         params = {
@@ -3512,7 +3210,7 @@ class Highbond_API:
             "include": {",".join(include) if include else include}
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/projects_todos/{id}'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/projects_todos/{id}'
         
         return self.get_command(api_url=url, api_headers=headers, api_params=params)
         
@@ -3537,23 +3235,18 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instancia = Highbond_API(token='seu_token', organization_id='id_da_organização', server='id_do_servidor', talkative=False)
+        instancia = Highbond_API(self.token='seu_self.token', organization_id='id_da_organização', self.server='id_do_servidor', talkative=False)
         resp = instancia.getRequestStatuses(project_type_id='project_type_id')
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         """
-        protocol = 'https'
-        token = self.token
-        org_id = self.organization_id
-        server = self.server
-        
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/project_types/{project_type_id}/request_item_statuses'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/project_types/{project_type_id}/request_item_statuses'
         
         headers = {
             'Content-Type':'application/vnd.api+json',
-            'Authorization':f'Bearer {token}'
+            'Authorization':f'Bearer {self.token}'
         }
         
         params = {
@@ -3594,24 +3287,17 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getOrgIssues(fields='title, description', page_size=25, page_number=1)
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
-
         """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token  = self.token
-        org_id = self.organization_id
-        server = self.server
-
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         parameters = {
@@ -3626,7 +3312,7 @@ class Highbond_API:
             'page[number]': base64.encodebytes(str(page_number).encode()).decode()
         }
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/issues'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/issues'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
     
@@ -3657,23 +3343,17 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
-        result = instance.getActives(fields=['title, description'], org_id = '1111', issue_id = '2222', page_number=1, page_size=25)
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
+        result = instance.getActives(fields=['title, description'], self.organization_id = '1111', issue_id = '2222', page_number=1, page_size=25)
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
         """
-        
-        protocol = 'https'
-        token  = self.token
-        org_id = self.organization_id
-        server = self.server
-
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         parameters = {
@@ -3684,7 +3364,7 @@ class Highbond_API:
         if fields:
             parameters['actions'] = ",".join(fields)
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/issues/{issue_id}/actions'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/issues/{issue_id}/actions'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
         
@@ -3714,23 +3394,17 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
-        result = instance.getActives(fields=['title, description'], org_id = '1111', issue_id = '2222', page_number=1, page_size=25)
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
+        result = instance.getActives(fields=['title, description'], self.organization_id = '1111', issue_id = '2222', page_number=1, page_size=25)
         ```
 
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
         """
-        
-        protocol = 'https'
-        token  = self.token
-        org_id = self.organization_id
-        server = self.server
-
         headers = {
             'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
+            'Authorization': f'Bearer {self.token}'
         }
 
         parameters = {
@@ -3740,7 +3414,7 @@ class Highbond_API:
         if fields:
             parameters['actions'] = ",".join(fields)
 
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/actions/{action_id}'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/actions/{action_id}'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
     
@@ -3801,7 +3475,7 @@ class Highbond_API:
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getSignOffs()
         ```
 
@@ -3809,9 +3483,6 @@ class Highbond_API:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
         """
-        
-        protocol = 'https'
-
         headers = {
             'Content-type': 'application/vnd.api+json',
             'Authorization': f'Bearer {self.token}'
@@ -3834,7 +3505,7 @@ class Highbond_API:
         'filter[next_reviewer.id]': next_reviewer_id,
         }
 
-        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/signoffs'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/signoffs'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
     
@@ -3854,8 +3525,6 @@ class Highbond_API:
                                                     "testing_round_1_id","testing_round_2_id","testing_round_3_id","testing_round_4_id","entities","framework",
                                                     "framework_origin","risk_assurance_data","planned_start_date","actual_start_date","planned_end_date","actual_end_date",
                                                     "planned_milestone_date","actual_milestone_date"]] = None) -> str:
-        protocol = 'https'
-
         headers = {
             'Content-type': 'application/vnd.api+json',
             'Authorization': f'Bearer {self.token}'
@@ -3890,7 +3559,7 @@ class Highbond_API:
             'page[number]': base64.b64encode(str(page_num).encode()).decode(),
         }
 
-        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/control_tests'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/control_tests'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
     
@@ -3902,8 +3571,6 @@ class Highbond_API:
                             'detail_reviewer_signoff','general_reviewer_signoff','supplemental_reviewer','specialty_reviewer'],
             include: List[Literal["control", "control.objective"]] = None,
         ) -> str:
-        protocol = 'https'
-
         headers = {
             'Content-type': 'application/vnd.api+json',
             'Authorization': f'Bearer {self.token}'
@@ -3914,7 +3581,7 @@ class Highbond_API:
             'include': ','.join(include) if include else include,
         }
 
-        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/control_tests/{resource_id}'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/control_tests/{resource_id}'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
     
@@ -3943,13 +3610,13 @@ class Highbond_API:
         - `dict`: Dicionário contendo os arquivos de planejamento recuperados com base nos parâmetros fornecidos.
 
         #### Exceções:
-        - Sobe exceção se o ambiente não estiver corretamente definido (ex: `token`, `organization_id`, `server`).
+        - Sobe exceção se o ambiente não estiver corretamente definido (ex: `self.token`, `organization_id`, `self.server`).
         - Sobe exceção se a requisição falhar com código HTTP diferente de `200`.
         - Sobe exceção genérica para falhas inesperadas na execução da chamada API.
 
         #### Exemplo de uso:
         ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getPlanningFiles(parent_resource_type='projects', parent_resource_id='12345')
         ```
 
@@ -3957,9 +3624,6 @@ class Highbond_API:
         - A resposta pode conter dados vinculados a projetos ou frameworks, conforme especificado.
         - Verifique se os campos informados no parâmetro `fields` estão disponíveis para o recurso selecionado.
         """
-
-        protocol = 'https'
-
         headers = {
             'Content-type': 'application/vnd.api+json',
             'Authorization': f'Bearer {self.token}'
@@ -3971,7 +3635,7 @@ class Highbond_API:
         'page[number]': base64.b64encode(str(page_number).encode()).decode()
         }
 
-        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/{parent_resource_type}/{parent_resource_id}/planning_files'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/{parent_resource_type}/{parent_resource_id}/planning_files'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
     
@@ -4072,13 +3736,13 @@ class Highbond_API:
         - `dict`: Dicionário com os walkthroughs encontrados conforme os filtros aplicados.
 
         #### Exceções:
-        - Sobe exceção se o ambiente não estiver configurado corretamente (`token`, `organization_id`, `server`).
+        - Sobe exceção se o ambiente não estiver configurado corretamente (`self.token`, `organization_id`, `self.server`).
         - Sobe exceção se a requisição retornar código HTTP diferente de `200`.
         - Sobe exceção para falhas inesperadas ou erros internos da API.
 
         #### Exemplo de uso:
         ```python
-        api = hbapi(token="seu_token", organization_id="org_id")
+        api = hbapi(token="seu_token", organization_id="self.organization_id")
         walkthroughs = api.getOrganizationWalkthroughs(
             project_id="123",
             control_status="Key Control",
@@ -4095,9 +3759,6 @@ class Highbond_API:
         - O uso do parâmetro `include` pode impactar o tempo de resposta da API, dependendo da profundidade das relações requisitadas.
         - Certifique-se de que os valores utilizados nos filtros correspondem exatamente aos valores esperados pela base de dados da API (case-sensitive, enum etc.).
         """
-
-        protocol = 'https'
-
         headers = {
             'Content-type': 'application/vnd.api+json',
             'Authorization': f'Bearer {self.token}'
@@ -4132,7 +3793,7 @@ class Highbond_API:
             'page[number]': base64.b64encode(str(page_number).encode()).decode(),
         }
 
-        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/walkthroughs'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/walkthroughs'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
     
@@ -4164,13 +3825,13 @@ class Highbond_API:
         - `dict`: Dicionário dados de um walkthrough específico.
 
         #### Exceções:
-        - Sobe exceção se o ambiente não estiver configurado corretamente (`token`, `organization_id`, `server`).
+        - Sobe exceção se o ambiente não estiver configurado corretamente (`self.token`, `organization_id`, `self.server`).
         - Sobe exceção se a requisição retornar código HTTP diferente de `200`.
         - Sobe exceção para falhas inesperadas ou erros internos da API.
 
         #### Exemplo de uso:
         ```python
-        api = hbapi(token="seu_token", organization_id="org_id")
+        api = hbapi(token="seu_token", organization_id="self.organization_id")
         walkthroughs = api.getWalkthrough(
             walkthrough_id="1234",
         )
@@ -4180,9 +3841,6 @@ class Highbond_API:
         - Os paramêtros do tipo lista (ex: `fields`, `include`) são convertidos para string separada por vírgula conforme esperado pela API.
         - O uso do parâmetro `include` pode impactar o tempo de resposta da API, dependendo da profundidade das relações requisitadas.
         """
-        
-        protocol = 'https'
-
         headers = {
             'Content-type': 'application/vnd.api+json',
             'Authorization': f'Bearer {self.token}'
@@ -4193,55 +3851,48 @@ class Highbond_API:
             'include': ','.join(include) if include else include,
         }
 
-        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/walkthroughs/{walkthrough_id}'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/walkthroughs/{walkthrough_id}'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
     
     def getTables(self, analysis_id: int) -> dict:
-        protocol = 'https'
 
         headers = {
             'Content-type': 'application/vnd.api+json',
             'Authorization': f'Bearer {self.token}'
         }
         
-        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/analyses/{analysis_id}/tables'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/analyses/{analysis_id}/tables'
 
         return self.get_command(api_url=url, api_headers=headers)
     
     def getCollections(self) -> dict:
-        protocol = 'https'
-
         headers = {
             'Content-type': 'application/vnd.api+json',
             'Authorization': f'Bearer {self.token}'
         }
 
-        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/collections'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/collections'
 
         return self.get_command(api_url=url, api_headers=headers)
     
     def getAnalyses(self, collection_id: str) -> dict:
-        protocol = 'https'
-
         headers = {
             'Content-type': 'application/vnd.api+json',
             'Authorization': f'Bearer {self.token}'
         }
 
-        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/collections/{collection_id}/analyses'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/collections/{collection_id}/analyses'
 
         return self.get_command(api_url=url, api_headers=headers)
     
     def getUser(self, uid: str) -> dict:
-        protocol = 'https'
-
         headers = {
             'Content-type': 'application/vnd.api+json',
             'Authorization': f'Bearer {self.token}'
         }
 
-        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/users/{uid}'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/users/{uid}'
 
         return self.get_command(api_url=url, api_headers=headers)
     
@@ -4262,8 +3913,6 @@ class Highbond_API:
             page_size: int = 100,
             page_number: int = 1
         ) -> dict:
-        protocol = 'https'
-
         headers = {
             'Content-type': 'application/vnd.api+json',
             'Authorization': f'Bearer {self.token}'
@@ -4284,7 +3933,7 @@ class Highbond_API:
             'page[number]': base64.b64encode(str(page_number).encode()).decode()
         }
 
-        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/controls'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/controls'
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
@@ -4321,16 +3970,13 @@ class Highbond_API:
         #### Exemplo de uso:
 
         #### Observações:
-
         """
-        protocol = 'https'
-
         headers = {
             'Content-type': 'application/vnd.api+json',
             'Authorization': f'Bearer {self.token}'
         }
         
-        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/request_items/{id}'
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/request_items/{id}'
             
         parameters = {
             'fields[projects]': ','.join(fields),
