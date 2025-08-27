@@ -1333,7 +1333,7 @@ class Highbond_API:
     # Robot Jobs
     def getRobotJobs(self, robot_id: str, environment: str, 
                 include: list = ['robot','task','triggered_by'], 
-                page_size: int = 100, page_number: int = 1) -> dict:
+                page_size: int = 100, page_num: int = 1) -> dict:
         """
         Lista os jobs (execuções) de um robô ACL.
 
@@ -1345,7 +1345,7 @@ class Highbond_API:
         - environment (str): O ambiente onde os jobs estão armazenados. Pode ser 'production' para o ambiente de produção ou 'development' para o ambiente de desenvolvimento.
         - include (list): Controla se os dados 'robot', 'task' e 'triggered_by' aparecem no JSON de saída. Todos os campos marcados na consulta pela classe são incluídos. Padrão é ['robot','task','triggered_by'].
         - page_size (int): Controla a quantidade de registros que aparecerão em cada consulta. Padrão é 100.
-        - page_number (int): Controla o número da página. A API divide em páginas quando o número de registros ultrapassa page_size. Padrão é 1.
+        - page_num (int): Controla o número da página. A API divide em páginas quando o número de registros ultrapassa page_size. Padrão é 1.
 
         #### Retorna:
         Um dicionário contendo informações sobre os jobs do robô.
@@ -1388,7 +1388,7 @@ class Highbond_API:
             'env': environment,
             'include': strInclude,
             'page[size]': str(page_size),
-            'page[number]': str(page_number)
+            'page[number]': str(page_num)
         }
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}/jobs'
 
@@ -1859,7 +1859,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-    def getEntities(self, fields_entities: str = 'title,description,created_at,updated_at,parent,children_count,entity_category', page_size: int = 25, page_number: int = 1) -> dict:
+    def getEntities(self, fields_entities: str = 'title,description,created_at,updated_at,parent,children_count,entity_category', page_size: int = 100, page_num: int = 1) -> dict:
         """
         Lista os arquivos relacionados a um robô ACL em um ambiente específico.
 
@@ -1869,7 +1869,7 @@ class Highbond_API:
         #### Parâmetros:
         - fields_entities: parâmetro que define quais campos serão retornados na API (padrão é tudo)
         - page_size: parâmetro que define a quantidade de registros que retornará a cada consulta
-        - page_number: parâmetro que seleciona a página de resposta (se a quantidade total de registros ultrapassar page_size)
+        - page_num: parâmetro que seleciona a página de resposta (se a quantidade total de registros ultrapassar page_size)
 
         #### Retorna:
         Um dicionário contendo informações sobre as entidades da organização
@@ -1899,7 +1899,7 @@ class Highbond_API:
         parameters = {
             'fields[entities]': fields_entities,
             'page_size': page_size,
-            'page[number]': base64.encodebytes(str(page_number).encode()).decode()
+            'page[number]': base64.encodebytes(str(page_num).encode()).decode()
         }
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/entities'
@@ -1908,7 +1908,7 @@ class Highbond_API:
 
     def getStrategyRisks(self, 
                             fields: str = 'title,description,status,score,residual_score,heat,residual_heat,strategy_custom_attributes,risk_manager_risk_id,created_at,updated_at', 
-                            size: int = 10, 
+                            page_size: int = 100, 
                             page: int = 1) -> dict:
         """
         Lista os arquivos relacionados a um robô ACL em um ambiente específico.
@@ -1918,7 +1918,7 @@ class Highbond_API:
 
         #### Parâmetros:
         - fields: Parâmetro com os campos escondidos dos riscos estratégicos
-        - size: A quantidade de itens que vão aparecer na consulta de riscos
+        - page_size: A quantidade de itens que vão aparecer na consulta de riscos
         - page: Caso existam mais riscos do que o valor do parâmetro do "size", o número da página aumenta em 1
 
         #### Retorna:
@@ -1934,7 +1934,7 @@ class Highbond_API:
         instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getStrategyRisks(
             fields='title,description,status,score,residual_score,heat,residual_heat,strategy_custom_attributes,risk_manager_risk_id,created_at,updated_at', 
-            size=10, 
+            page_size=10, 
             page=1
             )
         ```
@@ -1952,7 +1952,7 @@ class Highbond_API:
 
         parameters = {
             'fields[strategy_risks]': fields,
-            'page[size]' : size,
+            'page[size]' : page_size,
             'page[number]': base64.encodebytes(str(page).encode()).decode()
         }
 
@@ -1961,7 +1961,7 @@ class Highbond_API:
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
     def getStrategySegments(self, 
-                            size: int = 10, 
+                            page_size: int = 100, 
                             page: int = 1) -> dict:
         """
         Lista os arquivos relacionados a um robô ACL em um ambiente específico.
@@ -1970,7 +1970,7 @@ class Highbond_API:
         https://docs-apis.highbond.com/#operation/getStrategySegments
 
         #### Parâmetros:
-        - size: A quantidade de itens que vão aparecer na consulta de segmentos
+        - page_size: A quantidade de itens que vão aparecer na consulta de segmentos
         - page: Caso existam mais riscos do que o valor do parâmetro do "size", o número da página aumenta em 1
 
         #### Retorna:
@@ -1985,7 +1985,7 @@ class Highbond_API:
         ```python
         instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
         result = instance.getStrategySegments(
-            size=10, 
+            page_size=10, 
             page=1
             )
         ```
@@ -2003,7 +2003,7 @@ class Highbond_API:
         }
 
         parameters = {
-            'page[size]' : size,
+            'page[size]' : page_size,
             'page[number]': base64.encodebytes(str(page).encode()).decode()
         }
 
@@ -2011,7 +2011,7 @@ class Highbond_API:
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
-    def getStrategyRiskSegments(self, strategy_risk_id: str, size: int = 100, page: int = 1) -> dict:
+    def getStrategyRiskSegments(self, strategy_risk_id: str, page_size: int = 100, page: int = 1) -> dict:
         """
         Retrieves the full list of the risks's operating segments from Strategy.
 
@@ -2020,7 +2020,7 @@ class Highbond_API:
 
         #### Parâmetros:
         - strategy_risk_id: id do risco estratégico a ser consultado
-        - size: quantidade de registros nesta consulta
+        - page_size: quantidade de registros nesta consulta
         - page: página consultada
 
         #### Retorna:
@@ -2034,7 +2034,7 @@ class Highbond_API:
         #### Exemplo de uso:
         ```python
         instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
-        result = instance.getStrategyRiskSegments(strategy_risk_id='45323', size=10, page=1)
+        result = instance.getStrategyRiskSegments(strategy_risk_id='45323', page_size=10, page=1)
         ```
 
         #### Observações:
@@ -2047,7 +2047,7 @@ class Highbond_API:
         }
         
         parameters = {
-            'page[size]': size,
+            'page[size]': page_size,
             'page[number]': base64.encodebytes(str(page).encode()).decode()
         }
 
@@ -2112,7 +2112,7 @@ class Highbond_API:
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
-    def getStrategyObjectives(self, page_size: int = 10, page_number: int = 1) -> dict:
+    def getStrategyObjectives(self, page_size: int = 100, page_num: int = 1) -> dict:
         """
         Lista os arquivos relacionados a um robô ACL em um ambiente específico.
 
@@ -2147,7 +2147,7 @@ class Highbond_API:
 
         parameters = {
             'page[size]': page_size,
-            'page[number]': base64.encodebytes(str(page_number).encode()).decode()
+            'page[number]': base64.encodebytes(str(page_num).encode()).decode()
         }
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/strategy_objectives'
@@ -2157,8 +2157,8 @@ class Highbond_API:
     def getProjects(
                     self, 
                     fields: str = 'name,state,status,created_at,updated_at,description,background,budget,position,header_alert_enabled,header_alert_text,certification,control_performance,risk_assurance,management_response,max_sample_size,number_of_testing_rounds,opinion,opinion_description,purpose,scope,start_date,target_date,tag_list,project_type,entities,collaborators,risk_assurance_data,collaborator_groups,time_spent,progress,planned_start_date,actual_start_date,planned_end_date,actual_end_date,planned_milestone_date,actual_milestone_date',
-                    page_size: int = 25,
-                    page_number: int = 1,
+                    page_size: int = 100,
+                    page_num: int = 1,
                     filter_name: str = None,
                     filter_status: str = None) -> dict:
         """
@@ -2170,7 +2170,7 @@ class Highbond_API:
         #### Parâmetros:
         - fields: Define os campos que serão trazidos na requisição. O padrão é tudo
         - page_size: Define a quantidade de registros trazidos, o mínimo é 25 e o máximo 100
-        - page_number: Define a página que será trazida (caso a quantidade de registrso ultrapasse page_size)
+        - page_num: Define a página que será trazida (caso a quantidade de registrso ultrapasse page_size)
 
         #### Retorna:
         Um dicionário contendo informações sobre os Projetos de uma organização do Highbond
@@ -2183,7 +2183,7 @@ class Highbond_API:
         #### Exemplo de uso:
         ```python
         instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
-        result = instance.getProjects(fields='title, description', page_size=25, page_number=1)
+        result = instance.getProjects(fields='title, description', page_size=25, page_num=1)
         ```
 
         #### Observações:
@@ -2198,7 +2198,7 @@ class Highbond_API:
         parameters = {
             'fields[projects]': fields,
             'page[size]': page_size,
-            'page[number]': base64.encodebytes(str(page_number).encode()).decode(),
+            'page[number]': base64.encodebytes(str(page_num).encode()).decode(),
             'filter[name]': filter_name,
             'filter[status]': filter_status
         }
@@ -2841,7 +2841,7 @@ class Highbond_API:
         #### Exemplo de uso:
         ```python
         instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
-        result = instance.getRecords(fields='title, description', page_size=25, page_number=1)
+        result = instance.getRecords(fields='title, description', page_size=25, page_num=1)
         ```
 
         #### Observações:
@@ -2967,7 +2967,7 @@ class Highbond_API:
     def getObjectiveRisks(self, parent_resource_id: str,
                         fields: list = ['title','description','risk_id','owner','position','impact','likelihood','custom_attributes',
                                           'custom_factors','created_at','updated_at','objective','mitigations','owner_user','entities','framework_origin','risk_assurance_data'],
-                        include: Literal['', 'objective'] = '', page_size=100, page_number=1) -> dict:
+                        include: Literal['', 'objective'] = '', page_size=100, page_num=1) -> dict:
         
         headers = {
             'Content-type': 'application/vnd.api+json',
@@ -2983,7 +2983,7 @@ class Highbond_API:
 
         params = {
             "page[size]": page_size,
-            'page[number]': base64.b64encode(str(page_number).encode()).decode(),
+            'page[number]': base64.b64encode(str(page_num).encode()).decode(),
             "fields[risks]": ",".join(fields),
             "include": include
         }
@@ -3051,7 +3051,7 @@ class Highbond_API:
                         'testing_round_3_id','testing_round_4_id','entities','framework','framework_origin','risk_assurance_data','planned_start_date','actual_start_date',
                         'planned_end_date','actual_end_date','planned_milestone_date','actual_milestone_date'],
                     page_size=100,
-                    page_number=1) -> dict: 
+                    page_num=1) -> dict: 
         """
         Lista os objetivos de um projeto ACL.
 
@@ -3072,7 +3072,7 @@ class Highbond_API:
         #### Exemplo de uso:
         ```python
         instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
-        result = instance.getObjectives(fields='title, description', page_size=25, page_number=1)
+        result = instance.getObjectives(fields='title, description', page_size=25, page_num=1)
         ```
 
         #### Observações:
@@ -3088,7 +3088,7 @@ class Highbond_API:
 
         params = {
             "page[size]": page_size,
-            'page[number]': base64.b64encode(str(page_number).encode()).decode(),
+            'page[number]': base64.b64encode(str(page_num).encode()).decode(),
             "fields[objectives]": ",".join(fields)
         }
 
@@ -3099,7 +3099,7 @@ class Highbond_API:
                                     'prevent_detect','method','status','position','created_at','updated_at',
                                     'custom_attributes','objective','walkthrough','control_test_plan',
                                     'control_tests','mitigations','owner_user','entities','framework_origin'],
-                    include: Literal['', 'objective'] = '', page_size: int = 100, page_number: int = 1) -> dict:
+                    include: Literal['', 'objective'] = '', page_size: int = 100, page_num: int = 1) -> dict:
         """
         Lista todos os controles de um objetivo.
         """
@@ -3112,7 +3112,7 @@ class Highbond_API:
         
         params = {
             "page[size]": str(page_size),
-            'page[number]': base64.b64encode(str(page_number).encode()).decode(),
+            'page[number]': base64.b64encode(str(page_num).encode()).decode(),
             "fields[controls]": ",".join(fields),
             "include": include
         }
@@ -3139,7 +3139,7 @@ class Highbond_API:
 
         return self.get_command(api_url=url, api_headers=headers, api_params=params)
     
-    def getFrameworks(self, fields: list = ['name','created_at','updated_at','folder_name','description','project_type'], page_size: int = 100, page_number: int = 1) -> dict:
+    def getFrameworks(self, fields: list = ['name','created_at','updated_at','folder_name','description','project_type'], page_size: int = 100, page_num: int = 1) -> dict:
         url = f"{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/frameworks"
     
         headers = {
@@ -3150,7 +3150,7 @@ class Highbond_API:
         params = {
             "fields[frameworks]": ",".join(fields),
             "page[size]": page_size,
-            'page[number]': base64.b64encode(str(page_number).encode()).decode()
+            'page[number]': base64.b64encode(str(page_num).encode()).decode()
         }
     
         return self.get_command(api_url=url, api_headers=headers, api_params=params)
@@ -3257,7 +3257,7 @@ class Highbond_API:
     
     def getOrgIssues(self, 
                     fields: List[Literal["title", "description", "creator_name", "created_at", "updated_at", "position", "owner", "recommendation", "deficiency_type", "severity", "published", "identified_at", "reference", "reference_prefix", "risk", "scope", "escalation", "cause", "effect", "cost_impact", "executive_summary", "executive_owner", "project_owner", "closed", "remediation_status", "remediation_plan", "remediation_date", "actual_remediation_date", "retest_deadline_date", "actual_retest_date", "retesting_results_overview", "custom_attributes", "project", "entities", "target", "owner_user", "executive_owner_user", "project_owner_user", "creator_user"]] = None,
-                    page_number: int = 1,
+                    page_num: int = 1,
                     page_size: int = 100,
                     filter_project_id: str = None,
                     filter_project_state: Literal["active", "archive"] = "active",
@@ -3275,7 +3275,7 @@ class Highbond_API:
         #### Parâmetros:
         - fields: Define os campos que serão trazidos na requisição. O padrão é tudo
         - page_size: Define a quantidade de registros trazidos, o mínimo é 25 e o máximo 100
-        - page_number: Define a página que será trazida (caso a quantidade de registrso ultrapasse page_size)
+        - page_num: Define a página que será trazida (caso a quantidade de registrso ultrapasse page_size)
 
         #### Retorna:
         Um dicionário contendo informações sobre os Problemas de uma organização do Highbond
@@ -3288,7 +3288,7 @@ class Highbond_API:
         #### Exemplo de uso:
         ```python
         instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
-        result = instance.getOrgIssues(fields='title, description', page_size=25, page_number=1)
+        result = instance.getOrgIssues(fields='title, description', page_size=25, page_num=1)
         ```
 
         #### Observações:
@@ -3309,7 +3309,7 @@ class Highbond_API:
             'sort': sort,
             'fields[issues]': ','.join(fields) if fields else '',
             'page[size]': page_size,
-            'page[number]': base64.encodebytes(str(page_number).encode()).decode()
+            'page[number]': base64.encodebytes(str(page_num).encode()).decode()
         }
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/issues'
@@ -3319,7 +3319,7 @@ class Highbond_API:
     def getActions(self,
                    issue_id: str,
                    fields: List[Literal["title","created_at","updated_at","owner_name","owner_email","send_recurring_reminder","include_issue_details","include_remediation_details","description","due_date","priority","closed","completed_date","status","submitted_on","slug","custom_attributes","issue","assigned_by","cc_users"]] = None,
-                   page_number: int = 1,
+                   page_num: int = 1,
                    page_size: int = 100) -> dict:
         """
         Lista as ações de um problema da organização.
@@ -3330,7 +3330,7 @@ class Highbond_API:
         #### Parâmetros:
         - fields: Define os campos que serão trazidos na requisição. O padrão é tudo
         - issue_id: Identificador único do problema.
-        - page_number: Define a página atual.
+        - page_num: Define a página atual.
         - page_size: Define a quantidade de registros retornados.
 
         #### Retorna:
@@ -3344,7 +3344,7 @@ class Highbond_API:
         #### Exemplo de uso:
         ```python
         instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
-        result = instance.getActives(fields=['title, description'], self.organization_id = '1111', issue_id = '2222', page_number=1, page_size=25)
+        result = instance.getActives(fields=['title, description'], self.organization_id = '1111', issue_id = '2222', page_num=1, page_size=25)
         ```
 
         #### Observações:
@@ -3358,7 +3358,7 @@ class Highbond_API:
 
         parameters = {
             'page[size]': page_size,
-            'page[number]': base64.encodebytes(str(page_number).encode()).decode(),
+            'page[number]': base64.encodebytes(str(page_num).encode()).decode(),
         }
 
         if fields:
@@ -3381,7 +3381,7 @@ class Highbond_API:
         #### Parâmetros:
         - fields: Define os campos que serão trazidos na requisição. O padrão é tudo
         - action_id: Identificador único da ação.
-        - page_number: Define a página atual.
+        - page_num: Define a página atual.
         - page_size: Define a quantidade de registros retornados.
 
         #### Retorna:
@@ -3395,7 +3395,7 @@ class Highbond_API:
         #### Exemplo de uso:
         ```python
         instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
-        result = instance.getActives(fields=['title, description'], self.organization_id = '1111', issue_id = '2222', page_number=1, page_size=25)
+        result = instance.getActives(fields=['title, description'], self.organization_id = '1111', issue_id = '2222', page_num=1, page_size=25)
         ```
 
         #### Observações:
@@ -3435,7 +3435,7 @@ class Highbond_API:
             specialty_reviewer_id = None,
             next_reviewer_id = None,
             page_size: int = 100,
-            page_number: int = 1
+            page_num: int = 1
             ) -> dict:
         """
         Consulta aprovações (sign-offs) vinculadas a projetos da organização.
@@ -3463,7 +3463,7 @@ class Highbond_API:
         
         ##### Paginação:
         - **page_size** (`int`): Número máximo de registros por página. Padrão: 100.
-        - **page_number** (`int`): Número da página a ser retornada. Padrão: 1.
+        - **page_num** (`int`): Número da página a ser retornada. Padrão: 1.
 
         #### Retorno:
         - `dict`: Dicionário contendo os dados paginados dos sign-offs encontrados com base nos filtros fornecidos.
@@ -3492,7 +3492,7 @@ class Highbond_API:
         'fields[signoffs]': ','.join(fields),
         'include': ','.join(include) if include else include,
         'page[size]': str(page_size),
-        'page[number]': base64.b64encode(str(page_number).encode()).decode(),
+        'page[number]': base64.b64encode(str(page_num).encode()).decode(),
         'filter[project.id]': project_id,
         'filter[project.state]': project_state,
         'filter[target.id]': target_id,
@@ -3516,7 +3516,7 @@ class Highbond_API:
                     control_title: str = None, control_id_interno: str = None, control_query: str = None, control_status: str = None, control_owner: str = None, control_frequency: str = None,
                     control_type: str = None, objective_title: str = None, objective_reference: str = None, test_round_1_user_id: str = None, test_round_2_user_id: str = None,
                     test_round_3_user_id: str = None, test_round_4_user_id: str = None, include: List[Literal["control", "control.objective"]] = None,
-                    page_size: int = 1, page_num: int = 100, 
+                    page_size: int = 100, page_num: int = 100, 
                     fields_controls: List[Literal["title","description","control_id","owner","frequency","control_type","prevent_detect","method","status",
                                                   "position","created_at","updated_at","custom_attributes","objective","walkthrough","control_test_plan",
                                                   "control_tests","mitigations","owner_user","entities","framework_origin"]] = None,
@@ -3590,7 +3590,7 @@ class Highbond_API:
                         parent_resource_id: str,
                         fields: list = ['name','reference_id','description','position','created_at','updated_at','custom_attributes','project','framework','planned_start_date','actual_start_date','planned_end_date','actual_end_date','planned_milestone_date','actual_milestone_date'],
                         page_size=100,
-                        page_number=1) -> dict:
+                        page_num=1) -> dict:
         """
         Consulta arquivos de planejamento (planning_files) associados a projetos ou frameworks na organização.
 
@@ -3604,7 +3604,7 @@ class Highbond_API:
         
         ##### Paginação:
         - **page_size** (`int`): Quantidade máxima de registros por página. Padrão: 100.
-        - **page_number** (`int`): Número da página a ser retornada. Padrão: 1 (codificado em Base64 para compatibilidade com a API).
+        - **page_num** (`int`): Número da página a ser retornada. Padrão: 1 (codificado em Base64 para compatibilidade com a API).
 
         #### Retorno:
         - `dict`: Dicionário contendo os arquivos de planejamento recuperados com base nos parâmetros fornecidos.
@@ -3632,7 +3632,7 @@ class Highbond_API:
         parameters = {
         'fields[planning_files]': ','.join(fields),
         'page[size]': str(page_size),
-        'page[number]': base64.b64encode(str(page_number).encode()).decode()
+        'page[number]': base64.b64encode(str(page_num).encode()).decode()
         }
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/{parent_resource_type}/{parent_resource_id}/planning_files'
@@ -3666,7 +3666,7 @@ class Highbond_API:
                         fields_controls: list = ["title","description","control_id","owner","frequency","control_type","prevent_detect","method","status","position", "created_at","updated_at","custom_attributes","objective","walkthrough","control_test_plan","control_tests","mitigations","owner_user","entities","framework_origin"],
                         fields_objectives: List[Literal["title","description","reference","division_department","owner","executive_owner","created_at","updated_at","project","assigned_user","custom_attributes","position","risk_control_matrix_id","walkthrough_summary_id","testing_round_1_id","testing_round_2_id","testing_round_3_id","testing_round_4_id","entities","framework","framework_origin","risk_assurance_data","planned_start_date","actual_start_date","planned_end_date","actual_end_date","planned_milestone_date","actual_milestone_date"]] = ["title","description","reference","division_department","owner","executive_owner","created_at","updated_at"],
                         page_size: int = 100,
-                        page_number: int = 1) -> dict:
+                        page_num: int = 1) -> dict:
         """
         Consulta Walkthroughs da organização com base em filtros avançados por projeto, controle, objetivo, responsáveis e status.
 
@@ -3730,7 +3730,7 @@ class Highbond_API:
 
         ##### Paginação:
         - **page_size** (`int`): Número de itens por página (padrão: 100, máx: 100).  
-        - **page_number** (`int`): Número da página (codificado em Base64 internamente).  
+        - **page_num** (`int`): Número da página (codificado em Base64 internamente).  
 
         #### Retorno:
         - `dict`: Dicionário com os walkthroughs encontrados conforme os filtros aplicados.
@@ -3790,7 +3790,7 @@ class Highbond_API:
             'fields[controls]': ','.join(fields_controls) if fields_controls else fields_controls,
             'fields[objectives]': ','.join(fields_objectives) if fields_controls else fields_controls,
             'page[size]': str(page_size),
-            'page[number]': base64.b64encode(str(page_number).encode()).decode(),
+            'page[number]': base64.b64encode(str(page_num).encode()).decode(),
         }
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/walkthroughs'
@@ -3911,7 +3911,7 @@ class Highbond_API:
             filter_control_id: str = None,
             filter_id: str = None,
             page_size: int = 100,
-            page_number: int = 1
+            page_num: int = 1
         ) -> dict:
         headers = {
             'Content-type': 'application/vnd.api+json',
@@ -3930,7 +3930,7 @@ class Highbond_API:
             'filter[control_id]': filter_control_id,
             'filter[id]': filter_id,
             'page[size]': str(page_size),
-            'page[number]': base64.b64encode(str(page_number).encode()).decode()
+            'page[number]': base64.b64encode(str(page_num).encode()).decode()
         }
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/controls'
@@ -3942,7 +3942,7 @@ class Highbond_API:
                     id: str = '',
                     fields: list = ["created_at","updated_at","description","owner","owner_email","received","request_item_status","requestor","due_date","send_recurrent_notifications","email_subject","email_message","position","project_type","owner","project","owner_user","requestor_user","cc_users","cc_contacts","contact_reference_name","contact_reference_email","contact_reference_table_id","contact_reference_record_id","target"],
                     page_size: int = 100,
-                    page_number: int = 1,
+                    page_num: int = 1,
                     sort: Literal["id", "created_at", "updated_at", "description", "owner", "owner_email", "received", "requestor", "due_date", "send_recurrent_notifications", "email_subject", "email_message", "position", "-id" "-created_at" "-updated_at" "-description" "-owner" "-owner_email" "-received" "-requestor" "-due_date" "-send_recurrent_notifications" "-email_subject" "-email_message" "-position"] = "id",
                     filter_project_name : str = None,
                     filter_project_id : str = None,
@@ -3981,7 +3981,7 @@ class Highbond_API:
         parameters = {
             'fields[projects]': ','.join(fields),
             'page[size]': page_size,
-            'page[number]': base64.encodebytes(str(page_number).encode()).decode(),
+            'page[number]': base64.encodebytes(str(page_num).encode()).decode(),
             'sort': sort,
             'filter[project.name]': filter_project_name,
             'filter[project.id]': filter_project_id,
