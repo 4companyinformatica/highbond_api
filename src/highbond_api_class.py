@@ -99,7 +99,6 @@ class Highbond_API:
             return None
         
     def post_command(self, api_url: str, api_headers: dict, api_params: dict = {}, api_schema: dict = {}, api_files: dict = {}) -> dict:
-        # AÇÃO E RESPOSTA
         try:   
             if self.talkative == True:
                 print('Iniciando a requisição HTTP...')
@@ -125,6 +124,48 @@ class Highbond_API:
                         response = rq.post(api_url, headers=api_headers, files=api_files)
                     else:
                         response = rq.post(api_url, headers=api_headers)
+
+            if response.status_code == 200:
+                if self.talkative == True:
+                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
+                return response.json()
+            elif response.status_code == 201:
+                if self.talkative == True:
+                    print('Código: 201\nMensagem: Criado\n')
+                return response.json()
+            elif response.status_code == 202:
+                if self.talkative == True:
+                    print('Código: 202\nMensagem: Aceito\n')
+                return f"Resposta da API: {response.text}"
+                # Matheus: Sugiro substituir o return de cima pelo de baixo
+                # return response.json()
+            elif response.status_code == 400:
+                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {response.json()}')
+            elif response.status_code == 401:
+                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {response.json()}')
+            elif response.status_code == 403:
+                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {response.json()}')
+            elif response.status_code == 404:
+                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {response.json()}')
+            elif response.status_code == 415:
+                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {response.json()}')
+            elif response.status_code == 422:
+                raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {response.json()}')
+            else:
+                raise Exception(response.json())
+
+        except Exception as e:
+            print(f'A requisição não foi possível:\n{e}')
+            return None
+        
+    def put_command(self, api_url: str, api_headers: dict, api_params: dict = {}) -> dict:
+        try:   
+            if self.talkative == True:
+                print('Iniciando a requisição HTTP...')
+            if bool(api_params):
+                response = rq.put(api_url, headers=api_headers, params=api_params)
+            else:
+                response = rq.put(api_url, headers=api_headers)
 
             if response.status_code == 200:
                 if self.talkative == True:
@@ -227,159 +268,6 @@ class Highbond_API:
         return self.get_command(api_url=url, api_headers=headers)
 
     # Robots
-    def getRobots(self) -> dict:
-        """
-        Lista os robôs disponíveis no robotics
-
-        #### Referência:
-        https://docs-apis.highbond.com/#operation/getRobots
-
-        #### Retorna:
-        Um dicionário contendo informações sobre os robôs.
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
-        result = instance.getRobots()
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-
-        """
-        
-        headers = {
-            'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots'
-
-        return self.get_command(api_url=url, api_headers=headers)
-
-    def createRobot(self, robot_name: str, robot_description: str = None, robot_category: Literal['acl', 'highbond', 'workflow'] = 'acl') -> dict:
-        """
-        Cria um robô na organização
-
-        #### Referência:
-        https://docs-apis.highbond.com/#operation/createRobot
-
-        #### Parâmetros:
-        - robot_name (str): O nome do robô ACL que será criado.
-        - robot_description (str): A descrição do robô.
-        - robot_category (str): O topo de robô que será criado, padrão é 'acl'
-
-        #### Retorna:
-        Um dict com informações sobre o robô criado.
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
-        result = instance.createRobot('nome_robô', 'descricao_robo', 'acl')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        """
-        headers = {
-            'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-
-        parameters = {
-            'name': robot_name,
-            'description': robot_description,
-            'category': robot_category
-        }
-
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots'
-
-        return self.post_command(api_url=url, api_headers=headers, api_params=parameters)
-        
-    def putRobot(self, robot_id, robot_new_name: str, robot_new_description: str, robot_new_category: Literal['acl', 'highbond', 'workflow']) -> dict:
-        """
-        Atualiza as informações de um robô
-
-        #### Referência:
-        https://docs-apis.highbond.com/#operation/putRobot
-
-        #### Parâmetros:
-        - robot_id (str): O ID do robô cujos dados serão alterados.
-        - robot_new_name (str): O novo nome do robô (manter o mesmo caso não queira trocar).
-        - robot_new_description (str): A nova descrição do robô (manter o mesmo caso não queira trocar)
-        - robot_new_category (str): A nova categoria do robô (manter a mesma caso não queira trocar)
-
-        #### Retorna:
-        Um dicionário contendo informações sobre as alterações feitas no robô.
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
-        result = instance.putRobot('novo_nome', 'nova_descricao', 'acl')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        """
-        apiHeaders = {
-            'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-
-        qParameters = {
-            'id': robot_id,
-            'name': robot_new_name,
-            'description': robot_new_description,
-            'category': robot_new_category
-        }
-
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}'
-
-        # AÇÃO E RESPOSTA
-        try:            
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-            Response = rq.put(url, params=qParameters, headers=apiHeaders)
-
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.token -> {Response.json()}')
-            elif Response.status_code == 403:
-                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
-            elif Response.status_code == 404:
-                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
-            elif Response.status_code == 415:
-                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
-            elif Response.status_code == 422:
-                raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}')
-            elif Response.status_code == 200:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            else:
-                raise Exception(Response.json())
-
-        except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')
-
     def deleteRobot(self, robot_id: str) -> dict:
         """
         Deleta um robô e todas as tarefas associadas a ele
@@ -3992,3 +3880,132 @@ class Highbond_API:
         }
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+    
+
+class Robots(Highbond_API):
+    def __init__(self, token: str, organization_id: str, protocol: str, server: str, talkative: bool = True):
+        # herda inicialização da classe base
+        super().__init__(token=token, organization_id=organization_id, protocol=protocol, server=server, talkative=talkative)
+
+    # === GET ===
+    def getRobots(self) -> dict:
+        """
+        Lista os robôs disponíveis no robotics
+
+        #### Referência:
+        https://docs-apis.highbond.com/#operation/getRobots
+
+        #### Retorna:
+        Um dicionário contendo informações sobre os robôs.
+
+        #### Exceções:
+        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+        - Sobe exceção se houver uma falha desconhecida.
+
+        #### Exemplo de uso:
+        ```python
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
+        result = instance.getRobots()
+        ```
+
+        #### Observações:
+        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+        """
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {self.token}'
+        }
+
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots'
+
+        return self.get_command(api_url=url, api_headers=headers)
+    
+    # === POST ===
+    def createRobot(self, robot_name: str, robot_description: str = None, robot_category: Literal['acl', 'highbond', 'workflow'] = 'acl') -> dict:
+        """
+        Cria um robô na organização
+
+        #### Referência:
+        https://docs-apis.highbond.com/#operation/createRobot
+
+        #### Parâmetros:
+        - robot_name (str): O nome do robô ACL que será criado.
+        - robot_description (str): A descrição do robô.
+        - robot_category (str): O topo de robô que será criado, padrão é 'acl'
+
+        #### Retorna:
+        Um dict com informações sobre o robô criado.
+
+        #### Exceções:
+        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+        - Sobe exceção se houver uma falha desconhecida.
+
+        #### Exemplo de uso:
+        ```python
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
+        result = instance.createRobot('nome_robô', 'descricao_robo', 'acl')
+        ```
+
+        #### Observações:
+        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+        """
+        headers = {
+            'Accept': 'application/vnd.api+json',
+            'Authorization': f'Bearer {self.token}'
+        }
+
+        parameters = {
+            'name': robot_name,
+            'description': robot_description,
+            'category': robot_category
+        }
+
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots'
+
+        return self.post_command(api_url=url, api_headers=headers, api_params=parameters)
+    
+    # === PUT ===
+    def putRobot(self, robot_id, robot_new_name: str, robot_new_description: str, robot_new_category: Literal['acl', 'highbond', 'workflow']) -> dict:
+        """
+        Atualiza as informações de um robô
+
+        #### Referência:
+        https://docs-apis.highbond.com/#operation/putRobot
+
+        #### Parâmetros:
+        - robot_id (str): O ID do robô cujos dados serão alterados.
+        - robot_new_name (str): O novo nome do robô (manter o mesmo caso não queira trocar).
+        - robot_new_description (str): A nova descrição do robô (manter o mesmo caso não queira trocar)
+        - robot_new_category (str): A nova categoria do robô (manter a mesma caso não queira trocar)
+
+        #### Retorna:
+        Um dicionário contendo informações sobre as alterações feitas no robô.
+
+        #### Exceções:
+        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+        - Sobe exceção se houver uma falha desconhecida.
+
+        #### Exemplo de uso:
+        ```python
+        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
+        result = instance.putRobot('novo_nome', 'nova_descricao', 'acl')
+        ```
+
+        #### Observações:
+        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+        """
+        apiHeaders = {
+            'Accept': 'application/vnd.api+json',
+            'Authorization': f'Bearer {self.token}'
+        }
+
+        qParameters = {
+            'id': robot_id,
+            'name': robot_new_name,
+            'description': robot_new_description,
+            'category': robot_new_category
+        }
+
+        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}'
+
+        return self.put_command(api_url=url, api_headers=apiHeaders, api_params=qParameters)
