@@ -7,7 +7,6 @@ import re
 from typing import Literal, List, Union
 from IPython.display import display, Image
 
-
 class Highbond_API:
 
     def __init__(self, token: str,
@@ -78,15 +77,15 @@ class Highbond_API:
                     print('Código: 200\nMensagem: Requisição executada com sucesso\n')
                 return response.json()
             elif response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {response.json()}')
+                raise Exception(f'Código: 400\nMensagem: Falha na requisição API -> {response.text}')
             elif response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {response.json()}')
+                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com token -> {response.text}')
             elif response.status_code == 403:
-                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {response.json()}')
+                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {response.text}')
             elif response.status_code == 404:
-                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {response.json()}')
+                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {response.text}')
             elif response.status_code == 415:
-                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {response.json()}')
+                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {response.text}')
             else:
                 raise Exception('Falha desconhecida.')
 
@@ -236,8 +235,6 @@ class Highbond_API:
 
         return self.get_command(api_url=url, api_headers=headers)
 
-        
-
     # Robots
     def getRobots(self) -> dict:
         """
@@ -327,9 +324,7 @@ class Highbond_API:
         url = f'{protocol}://{server}/v1/orgs/{org_id}/robots'
 
         return self.post_command(api_url=url, api_headers=headers, api_params=parameters)
-
         
-
     def putRobot(self, robot_id, robot_new_name: str, robot_new_description: str, robot_new_category: Literal['acl', 'highbond', 'workflow']) -> dict:
         """
         Atualiza as informações de um robô
@@ -603,7 +598,6 @@ class Highbond_API:
 
         return self.post_command(api_url=url, api_headers=headers, api_schema=schema)
     
-
     def putRobotTask(self, task_id, environment: Literal['production', 'development'], 
                         task_name, app_version: int = None, emails_enabled: bool = False, 
                         log_enabled: bool = False, pw_crypto_key: str = None, 
@@ -836,7 +830,7 @@ class Highbond_API:
 
         return self.post_command(api_url=url, api_headers=headers, api_params=parameters)
 
-    def getValues(self, task_id: str, ) -> dict:
+    def getValues(self, task_id: str) -> dict:
         """
         Lista os valores em uma tarefa de um robô.
 
@@ -1623,7 +1617,6 @@ class Highbond_API:
 
         return self.get_command(api_url=url, api_headers=headers)
 
-    # TODO (Solved): getRobotApps()
     def getRobotApps(self, robot_id):
         """
         Informa sobre todas as versões de desenvolvimento de um robô do ACL.
@@ -1880,8 +1873,6 @@ class Highbond_API:
         else:
             return self.post_command(api_url=url, api_headers=headers, api_params=parameters, files=schema)
 
-    # TODO: getRobotFile() função para receber dados de metadata dos arquivos
-
     def deleteRobotFile(self, file_id: str) -> dict:
         """
         Deleta um arquivo de um robô ACL
@@ -2033,7 +2024,7 @@ class Highbond_API:
         Lista os arquivos relacionados a um robô ACL em um ambiente específico.
 
         #### Referência:
-        https://docs-apis.highbond.com/#operation/getStrategyRiskSegment
+        https://docs-apis.highbond.com/#operation/getEntities
 
         #### Parâmetros:
         - fields_entities: parâmetro que define quais campos serão retornados na API (padrão é tudo)
@@ -2194,9 +2185,9 @@ class Highbond_API:
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
-    def getStrategyRiskSegments(self, strategy_risk_id: str, size: int, page: int ) -> dict:
+    def getStrategyRiskSegments(self, strategy_risk_id: str, size: int = 100, page: int = 1) -> dict:
         """
-        Lista os arquivos relacionados a um robô ACL em um ambiente específico.
+        Retrieves the full list of the risks's operating segments from Strategy.
 
         #### Referência:
         https://docs-apis.highbond.com/#operation/getStrategyRiskSegments
@@ -2245,6 +2236,7 @@ class Highbond_API:
 
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
+    
     def getStrategyRiskSegment(self, 
                                 strategy_risk_id: str, 
                                 segment_id: str,
@@ -2252,7 +2244,7 @@ class Highbond_API:
                                 factors_fields: str = 'id,treatment_value,treatment_weight,treatment_factors,severity_value'
                                 ) -> dict:
         """
-        Lista os arquivos relacionados a um robô ACL em um ambiente específico.
+        Get information about an operating segment for the risk.
 
         #### Referência:
         https://docs-apis.highbond.com/#operation/getStrategyRiskSegment
@@ -3068,64 +3060,7 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
 
-
-    def getObjectives(self, 
-                        project_id: str, 
-                        fields = 'title,description,reference,division_department,owner,executive_owner,created_at,updated_at,project,assigned_user,custom_attributes,position,risk_control_matrix_id,walkthrough_summary_id,testing_round_1_id,testing_round_2_id,testing_round_3_id,testing_round_4_id,entities,framework,framework_origin,risk_assurance_data,planned_start_date,actual_start_date,planned_end_date,actual_end_date,planned_milestone_date,actual_milestone_date',
-                        page_size = 25,
-                        page_number = 1) -> dict:
-        """
-        Lista os objetivos de um projeto ACL.
-
-        #### Referência:
-        https://docs-apis.highbond.com/#operation/getObjectives
-
-        #### Parâmetros:
-        - page_size: parâmetro que define a quantidade de registros retornados
-
-        #### Retorna:
-        Um dicionário contendo informações sobre o segmento do risco estratégico consultado consultado
-
-        #### Exceções:
-        - Sobe exceção se o ambiente não estiver definido corretamente.
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(token='seu_token', organization_id='id_da_organização')
-        result = instance.getObjectives(fields='title, description', page_size=25, page_number=1)
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
-
-        """
-        # CONFIGURAÇÃO DO MÉTODO
-        protocol = 'https'
-        token  = self.token
-        org_id = self.organization_id
-        server = self.server
-        parent_resource_type = 'projects'
-        parent_resource_id = project_id
-
-        headers = {
-            'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {token}'
-        }
-
-        parameters = {
-            'fields[objectives]': fields,
-            'page[size]': page_size,
-            'page[number]': base64.encodebytes(str(page_number).encode()).decode()
-        }
-
-        url = f'{protocol}://{server}/v1/orgs/{org_id}/{parent_resource_type}/{parent_resource_id}/objectives'
-
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
-
-    def getRecords(self, table_id: str) -> dict:
+    def getRecords(self, table_id: int, status: str = None, assignee: str = None) -> dict:
         """
         Recebe uma tabela do módulo de resultados do highbond
 
@@ -3146,7 +3081,7 @@ class Highbond_API:
         #### Exemplo de uso:
         ```python
         instance = hbapi(token='seu_token', organization_id='id_da_organização')
-        result = instance.getObjectives(fields='title, description', page_size=25, page_number=1)
+        result = instance.getRecords(fields='title, description', page_size=25, page_number=1)
         ```
 
         #### Observações:
@@ -3166,14 +3101,14 @@ class Highbond_API:
         }
 
         parameters = {
-            # TODO: Implementar no futuro
+            'filter[metadata.status][]': status,
+            'filter[metadata.assignee]': assignee
         }
 
         if type(table_id) == int or type(table_id) == float:
             table_id = str(table_id)
 
         url = f'{protocol}://{server}/v1/orgs/{org_id}/tables/{table_id}/records'
-
         return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
 
     def uploadRecords(self, table_id: str, input_data: pd.DataFrame, explicit_field_types: dict = {}, overwrite: bool = False) -> dict:
@@ -3284,7 +3219,10 @@ class Highbond_API:
 
         return self.post_command(api_url=url, api_headers=headers, api_schema=schema)
         
-    def getObjectiveRisks(self, parent_resource_id: str, fields: list = ['title', 'risk_id', 'mitigations'], page_size=100, page_number=1) -> dict:
+    def getObjectiveRisks(self, parent_resource_id: str,
+                        fields: list = ['title','description','risk_id','owner','position','impact','likelihood','custom_attributes',
+                                          'custom_factors','created_at','updated_at','objective','mitigations','owner_user','entities','framework_origin','risk_assurance_data'],
+                        include: Literal['', 'objective'] = '', page_size=100, page_number=1) -> dict:
         # CONFIGURAÇÃO DO MÉTODO
         protocol = 'https'
         token = self.token
@@ -3305,22 +3243,24 @@ class Highbond_API:
 
         params = {
             "page[size]": page_size,
-            "page[number]": base64.encodebytes(str(page_number).encode()).decode(),
+            'page[number]': base64.b64encode(str(page_number).encode()).decode(),
             "fields[risks]": ",".join(fields),
-            "include": "objective"
+            "include": include
         }
 
         return self.get_command(api_url=url, api_headers=headers, api_params=params)
     
-
-    def getARisk(self, resource_id, fields: list = ['title', 'mitigations'], page_size=100, page_number=1) -> dict:
+    def getARisk(self, resource_id,
+                fields: list = ['title','description','risk_id','owner','position','impact','likelihood','custom_attributes',
+                                'custom_factors','created_at','updated_at','objective','mitigations','owner_user','entities','framework_origin','risk_assurance_data'],
+                include: Literal['', 'objective'] = '') -> dict:
         # CONFIGURAÇÃO DO MÉTODO
         protocol = 'https'
         token = self.token
         org_id = self.organization_id
         server = self.server
   
-        url = f"https://{server}/v1/orgs/{org_id}/risks/{resource_id}"
+        url = f"{protocol}://{server}/v1/orgs/{org_id}/risks/{resource_id}"
 
         headers = {
             'Content-Type': 'application/vnd.api+json',
@@ -3328,27 +3268,96 @@ class Highbond_API:
         }
 
         params = {
-            "page[size]": page_size,
-            "page[number]": base64.encodebytes(str(page_number).encode()).decode(),
             "fields[risks]": ",".join(fields),
+            "include": include
         }
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=params)
-    
+        return self.get_command(api_url=url, api_headers=headers, api_params=params) 
 
-    def getObjectives(self, parent_resource_id,
-                      fields: list = ['title','description','reference','division_department','owner','executive_owner',
+    def getObjective(
+            self,
+            objective_id: str,
+            fields: List[Literal['title','description','reference','division_department',
+                                 'owner','executive_owner','created_at','updated_at',
+                                 'project','assigned_user','custom_attributes','position',
+                                 'risk_control_matrix_id','walkthrough_summary_id',
+                                 'testing_round_1_id','testing_round_2_id','testing_round_3_id','testing_round_4_id',
+                                 'entities','framework','framework_origin','risk_assurance_data',
+                                 'planned_start_date','actual_start_date','planned_end_date','actual_end_date',
+                                 'planned_milestone_date','actual_milestone_date']] = [
+                                    'title','description','reference','division_department',
+                                    'owner','executive_owner','created_at','updated_at',
+                                    'project','assigned_user','custom_attributes','position',
+                                    'risk_control_matrix_id','walkthrough_summary_id',
+                                    'testing_round_1_id','testing_round_2_id','testing_round_3_id','testing_round_4_id',
+                                    'entities','framework','framework_origin','risk_assurance_data',
+                                    'planned_start_date','actual_start_date','planned_end_date','actual_end_date',
+                                    'planned_milestone_date','actual_milestone_date'
+                                    ]
+    ) -> dict:
+        # CONFIGURAÇÃO DO MÉTODO
+        protocol = 'https'
+        token = self.token
+        org_id = self.organization_id
+        server = self.server
+
+        headers = {
+            'Content-Type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {token}'
+        }
+
+        params = {
+            "fields[objectives]": ",".join(fields)
+        }
+
+        url = f"{protocol}://{server}/v1/orgs/{org_id}/objectives/{objective_id}"
+
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
+        
+    def getObjectives(self, 
+                    parent_resource_type: Literal['frameworks', 'projects'], 
+                    parent_resource_id: str,
+                    fields: list = ['title','description','reference','division_department','owner','executive_owner',
                         'created_at','updated_at','project','assigned_user','custom_attributes','position','risk_control_matrix_id','walkthrough_summary_id','testing_round_1_id','testing_round_2_id',
                         'testing_round_3_id','testing_round_4_id','entities','framework','framework_origin','risk_assurance_data','planned_start_date','actual_start_date',
                         'planned_end_date','actual_end_date','planned_milestone_date','actual_milestone_date'],
-                        page_size=100, page_number=1):
+                    page_size=100,
+                    page_number=1) -> dict: 
+        """
+        Lista os objetivos de um projeto ACL.
+
+        #### Referência:
+        https://docs-apis.highbond.com/#operation/getObjectives
+
+        #### Parâmetros:
+        - page_size: parâmetro que define a quantidade de registros retornados
+
+        #### Retorna:
+        Um dicionário contendo informações sobre o segmento do risco estratégico consultado consultado
+
+        #### Exceções:
+        - Sobe exceção se o ambiente não estiver definido corretamente.
+        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+        - Sobe exceção se houver uma falha desconhecida.
+
+        #### Exemplo de uso:
+        ```python
+        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        result = instance.getObjectives(fields='title, description', page_size=25, page_number=1)
+        ```
+
+        #### Observações:
+        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+        - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
+        """
+        
         # CONFIGURAÇÃO DO MÉTODO
         protocol = 'https'
         token = self.token
         org_id = self.organization_id
         server = self.server
   
-        url = f"{protocol}://{server}/v1/orgs/{org_id}/frameworks/{parent_resource_id}/objectives"
+        url = f"{protocol}://{server}/v1/orgs/{org_id}/{parent_resource_type}/{parent_resource_id}/objectives"
 
         headers = {
             'Content-Type': 'application/vnd.api+json',
@@ -3357,20 +3366,28 @@ class Highbond_API:
 
         params = {
             "page[size]": page_size,
-            "page[number]": page_number,
+            'page[number]': base64.b64encode(str(page_number).encode()).decode(),
             "fields[objectives]": ",".join(fields)
         }
 
         return self.get_command(api_url=url, api_headers=headers, api_params=params)
     
-    def getControls(self, parent_resource_id, fields: list = ['title', 'control_id', 'mitigations'], page_size=100, page_number=1):
+    def getControls(self, parent_resource_id: str,
+                    fields: list = ['title','description','control_id','owner','frequency','control_type',
+                                    'prevent_detect','method','status','position','created_at','updated_at',
+                                    'custom_attributes','objective','walkthrough','control_test_plan',
+                                    'control_tests','mitigations','owner_user','entities','framework_origin'],
+                    include: Literal['', 'objective'] = '', page_size: int = 100, page_number: int = 1) -> dict:
+        """
+        Lista todos os controles de um objetivo.
+        """
         # CONFIGURAÇÃO DO MÉTODO
         protocol = 'https'
         token = self.token
         org_id = self.organization_id
         server = self.server
 
-        url = f'https://{server}/v1/orgs/{org_id}/objectives/{parent_resource_id}/controls'
+        url = f'{protocol}://{server}/v1/orgs/{org_id}/objectives/{parent_resource_id}/controls'
         
         headers = {
             'Content-Type': 'application/vnd.api+json',
@@ -3378,17 +3395,20 @@ class Highbond_API:
         }
         
         params = {
-            "page[size]": page_size,
-            "page[number]": base64.encodebytes(str(page_number).encode()).decode(),
+            "page[size]": str(page_size),
+            'page[number]': base64.b64encode(str(page_number).encode()).decode(),
             "fields[controls]": ",".join(fields),
-            "include":"objective"
-            
+            "include": include
         }
         
-        return self.get_command(api_url=url, api_headers=headers, api_params=params)
-    
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)  
 
-    def getAControl(self, resource_id, fields: list = ['title', 'mitigations'], page_size=100, page_number=1) -> dict:
+    def getAControl(self, resource_id,
+                    fields: list = ['title','description','control_id','owner','frequency','control_type',
+                                    'prevent_detect','method','status','position','created_at','updated_at',
+                                    'custom_attributes','objective','walkthrough','control_test_plan',
+                                    'control_tests','mitigations','owner_user','entities','framework_origin'],
+                    include: Literal['', 'objective'] = '') -> dict:
         # CONFIGURAÇÃO DO MÉTODO
         protocol = 'https'
         token = self.token
@@ -3403,20 +3423,18 @@ class Highbond_API:
         }
 
         params = {
-            "page[size]": page_size,
-            "page[number]": base64.encodebytes(str(page_number).encode()).decode(),
             "fields[controls]": ",".join(fields),
+            "include": include
         }
 
         return self.get_command(api_url=url, api_headers=headers, api_params=params)
     
-    def getFrameworks(self, fields: list = ['name','created_at','updated_at','folder_name','description','project_type'], page_size: int = 100, page_number: int = 1):
+    def getFrameworks(self, fields: list = ['name','created_at','updated_at','folder_name','description','project_type'], page_size: int = 100, page_number: int = 1) -> dict:
         # CONFIGURAÇÃO DO MÉTODO
         protocol = 'https'
         token = self.token
         org_id = self.organization_id
         server = self.server
-        protocol = "https"
         url = f"{protocol}://{server}/v1/orgs/{org_id}/frameworks"
     
         headers = {
@@ -3427,7 +3445,904 @@ class Highbond_API:
         params = {
             "fields[frameworks]": ",".join(fields),
             "page[size]": page_size,
-            "page[number]": base64.encodebytes(str(page_number).encode()).decode()
+            'page[number]': base64.b64encode(str(page_number).encode()).decode()
         }
     
         return self.get_command(api_url=url, api_headers=headers, api_params=params)
+    
+    def getToDos(self,
+            id: str = '',
+            fields: list = ['description','project','due_date','status',
+                            'created_at','updated_at','assigned_to','creator','target'],
+            project_id: str = None,
+            project_state: str = None,
+            target_id: str = None,
+            target_type: Literal["projects", "controls", "control_tests", "control_test_plans",
+                                 "issues", "narratives", "objectives", "walkthrough_summaries",
+                                 "project_files", "project_plannings", "project_results", "risks",
+                                 "risk_control_matrices", "testing_rounds", "walkthroughs"] = None,
+            sort: Literal['id','status','created_at','-id','-status','-created_at'] = 'id',
+            include: Literal['assigned_to','target','creator'] = None,
+            page_num: int = 1,
+            page_size: int = 100
+            ) -> dict:
+        """
+        Consulta todos os to_dos da organização ou um em específico.
+
+        #### Referência:
+        https://docs-apis.highbond.com/#operation/getOrgProjectsTodos\n
+        https://docs-apis.highbond.com/#operation/getTodo
+
+        #### Parâmetros:
+
+        #### Retorna:
+
+        #### Exceções:
+        - Sobe exceção se o id da organização não for encontrado.
+        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+        - Sobe exceção se houver uma falha desconhecida.
+
+        #### Exemplo de uso:
+        ```python
+        ```
+
+        #### Observações:
+
+        """
+        
+        protocol = 'https'
+        token = self.token
+        org_id = self.organization_id
+        server = self.server
+        
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {token}'
+        }
+        
+        params = {
+            "fields[projects_todos]": ",".join(fields),
+            "filter[project.id]": project_id,
+            "filter[project.state]": project_state,
+            "filter[target.id]": target_id,
+            "filter[target.type]": target_type,
+            "sort": sort,
+            "page[size]": page_size,
+            "page[number]": base64.b64encode(str(page_num).encode()).decode(),
+            "include": {",".join(include) if include else include}
+        }
+
+        url = f'{protocol}://{server}/v1/orgs/{org_id}/projects_todos/{id}'
+        
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
+        
+    def getRequestStatuses(self, project_type_id, fields: list = ['status','action','default']) -> dict:
+        """
+        Consulta todos os status de itens de requisição associados a um tipo de projeto.
+        
+        #### Referência:
+        https://docs-apis.highbond.com/public.html#operation/getRequestItemStatuses
+
+        #### Parâmetros:
+        - project_type_id: (str) define o project_type_id que será trazido através do id
+        - fields: define os campos que serão trazidos
+
+        #### Retorna:
+        Um dicionário contendo informações dos status de itens de requisição associados a um tipo de projeto
+
+        #### Exceções:
+        - Sobe exceção se o id não for encontrado.
+        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+        - Sobe exceção se houver uma falha desconhecida.
+
+        #### Exemplo de uso:
+        ```python
+        instancia = Highbond_API(token='seu_token', organization_id='id_da_organização', server='id_do_servidor', talkative=False)
+        resp = instancia.getRequestStatuses(project_type_id='project_type_id')
+        ```
+
+        #### Observações:
+        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+        """
+        protocol = 'https'
+        token = self.token
+        org_id = self.organization_id
+        server = self.server
+        
+        url = f'{protocol}://{server}/v1/orgs/{org_id}/project_types/{project_type_id}/request_item_statuses'
+        
+        headers = {
+            'Content-Type':'application/vnd.api+json',
+            'Authorization':f'Bearer {token}'
+        }
+        
+        params = {
+            "field[request_item_statuses]":','.join(fields)
+        }
+
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
+    
+    def getOrgIssues(self, 
+                    fields: List[Literal["title", "description", "creator_name", "created_at", "updated_at", "position", "owner", "recommendation", "deficiency_type", "severity", "published", "identified_at", "reference", "reference_prefix", "risk", "scope", "escalation", "cause", "effect", "cost_impact", "executive_summary", "executive_owner", "project_owner", "closed", "remediation_status", "remediation_plan", "remediation_date", "actual_remediation_date", "retest_deadline_date", "actual_retest_date", "retesting_results_overview", "custom_attributes", "project", "entities", "target", "owner_user", "executive_owner_user", "project_owner_user", "creator_user"]] = None,
+                    page_number: int = 1,
+                    page_size: int = 100,
+                    filter_project_id: str = None,
+                    filter_project_state: Literal["active", "archive"] = "active",
+                    filter_target_type: Literal["objectives","projects","project_files","issues","objectives","narratives","walkthroughs","walkthrough_summaries","testing_rounds","controls","risks","risk_control_matrices","control_tests","control_test_plans","project_results","project_plannings","accounts","test_plans"] = None,
+                    filter_target_id: int = None,
+                    filter_closed: bool = None,
+                    sort: str = None
+                    ) -> dict:
+        """
+        Lista os Problemas de uma organização.
+
+        #### Referência:
+        https://docs-apis.highbond.com/#operation/getOrgIssues
+
+        #### Parâmetros:
+        - fields: Define os campos que serão trazidos na requisição. O padrão é tudo
+        - page_size: Define a quantidade de registros trazidos, o mínimo é 25 e o máximo 100
+        - page_number: Define a página que será trazida (caso a quantidade de registrso ultrapasse page_size)
+
+        #### Retorna:
+        Um dicionário contendo informações sobre os Problemas de uma organização do Highbond
+
+        #### Exceções:
+        - Sobe exceção se o ambiente não estiver definido corretamente.
+        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+        - Sobe exceção se houver uma falha desconhecida.
+
+        #### Exemplo de uso:
+        ```python
+        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        result = instance.getOrgIssues(fields='title, description', page_size=25, page_number=1)
+        ```
+
+        #### Observações:
+        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+        - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
+
+        """
+        # CONFIGURAÇÃO DO MÉTODO
+        protocol = 'https'
+        token  = self.token
+        org_id = self.organization_id
+        server = self.server
+
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {token}'
+        }
+
+        parameters = {
+            'filter[project.id]': filter_project_id,
+            'filter[project.state]': filter_project_state,
+            'filter[target.type]': filter_target_type,
+            'filter[target.id]': filter_target_id,
+            'filter[closed]': filter_closed,
+            'sort': sort,
+            'fields[issues]': ','.join(fields) if fields else '',
+            'page[size]': page_size,
+            'page[number]': base64.encodebytes(str(page_number).encode()).decode()
+        }
+
+        url = f'{protocol}://{server}/v1/orgs/{org_id}/issues'
+
+        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+    
+    def getActions(self,
+                   issue_id: str,
+                   fields: List[Literal["title","created_at","updated_at","owner_name","owner_email","send_recurring_reminder","include_issue_details","include_remediation_details","description","due_date","priority","closed","completed_date","status","submitted_on","slug","custom_attributes","issue","assigned_by","cc_users"]] = None,
+                   page_number: int = 1,
+                   page_size: int = 100) -> dict:
+        """
+        Lista as ações de um problema da organização.
+
+        #### Referência:
+        https://docs-apis.highbond.com/#operation/getActions
+
+        #### Parâmetros:
+        - fields: Define os campos que serão trazidos na requisição. O padrão é tudo
+        - issue_id: Identificador único do problema.
+        - page_number: Define a página atual.
+        - page_size: Define a quantidade de registros retornados.
+
+        #### Retorna:
+        Um dicionário contendo informações sobre as ações do risco consultado
+
+        #### Exceções:
+        - Sobe exceção se o ambiente não estiver definido corretamente.
+        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+        - Sobe exceção se houver uma falha desconhecida.
+
+        #### Exemplo de uso:
+        ```python
+        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        result = instance.getActives(fields=['title, description'], org_id = '1111', issue_id = '2222', page_number=1, page_size=25)
+        ```
+
+        #### Observações:
+        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+        - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
+        """
+        
+        protocol = 'https'
+        token  = self.token
+        org_id = self.organization_id
+        server = self.server
+
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {token}'
+        }
+
+        parameters = {
+            'page[size]': page_size,
+            'page[number]': base64.encodebytes(str(page_number).encode()).decode(),
+        }
+
+        if fields:
+            parameters['actions'] = ",".join(fields)
+
+        url = f'{protocol}://{server}/v1/orgs/{org_id}/issues/{issue_id}/actions'
+
+        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        
+    def getAction(self,
+                action_id: str,
+                fields: List[Literal["title","created_at","updated_at","owner_name","owner_email","send_recurring_reminder","include_issue_details","include_remediation_details","description","due_date","priority","closed","completed_date","status","submitted_on","slug","custom_attributes","issue","assigned_by","cc_users"]] = None
+                ) -> dict:
+        """
+        Consulta uma ação específica de um problema da organização.
+
+        #### Referência:
+        https://docs-apis.highbond.com/#operation/getAction
+
+        #### Parâmetros:
+        - fields: Define os campos que serão trazidos na requisição. O padrão é tudo
+        - action_id: Identificador único da ação.
+        - page_number: Define a página atual.
+        - page_size: Define a quantidade de registros retornados.
+
+        #### Retorna:
+        Um dicionário contendo informações sobre as ações do risco consultado
+
+        #### Exceções:
+        - Sobe exceção se o ambiente não estiver definido corretamente.
+        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+        - Sobe exceção se houver uma falha desconhecida.
+
+        #### Exemplo de uso:
+        ```python
+        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        result = instance.getActives(fields=['title, description'], org_id = '1111', issue_id = '2222', page_number=1, page_size=25)
+        ```
+
+        #### Observações:
+        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+        - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
+        """
+        
+        protocol = 'https'
+        token  = self.token
+        org_id = self.organization_id
+        server = self.server
+
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {token}'
+        }
+
+        parameters = {
+
+        }
+
+        if fields:
+            parameters['actions'] = ",".join(fields)
+
+        url = f'{protocol}://{server}/v1/orgs/{org_id}/actions/{action_id}'
+
+        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+    
+    def getSignOffs(self,
+            fields: list = ['created_at','updated_at','prepared_at','detail_reviewed_at','general_reviewed_at','supplemental_reviewed_at','specialty_reviewed_at',
+                            'project','target','preparer','detail_reviewer','general_reviewer','supplemental_reviewer','specialty_reviewer','next_reviewer'],
+            include: List[Literal["preparer","detail_reviewer","general_reviewer","supplemental_reviewer","specialty_reviewer","next_reviewer","target","project"]] = None,
+            project_id: str = None,
+            project_state: str = None,
+            target_type: Literal[
+                            "objectives","projects","project_files","issues","narratives","walkthroughs","walkthrough_summaries","testing_rounds","controls","risks","risk_control_matrices","control_tests","control_test_plans","project_results","project_plannings","accounts","test_plans"
+                        ] = None,
+            target_id: str = None,
+            preparer_id = None,
+            detail_reviewer_id = None,
+            general_reviewer_id = None,
+            supplemental_reviewer_id = None,
+            specialty_reviewer_id = None,
+            next_reviewer_id = None,
+            page_size: int = 100,
+            page_number: int = 1
+            ) -> dict:
+        """
+        Consulta aprovações (sign-offs) vinculadas a projetos da organização.
+
+        #### Referência:
+        https://docs-apis.highbond.com/#tag/Sign-offs
+
+        #### Parâmetros:
+        Todos os parâmetros são opcionais.
+
+        - **fields** (`list`): Lista de campos a serem retornados na resposta. Por padrão, traz todos os campos principais.
+        - **include** (`List[Literal]`): Lista de entidades relacionadas a serem incluídas na resposta (ex: reviewer, project, etc).
+        
+        ##### Filtros:
+        - **project_id** (`str`): Filtra os sign-offs por ID do projeto.
+        - **project_state** (`str`): Filtra os sign-offs com base no estado do projeto.
+        - **target_type** (`Literal`): Tipo do artefato alvo (ex: narratives, test_plans, issues, etc).
+        - **target_id** (`str`): Identificador único do artefato alvo.
+        - **preparer_id** (`str`): Filtra os sign-offs preparados por um usuário específico.
+        - **detail_reviewer_id** (`str`): Filtra pelos sign-offs revisados no nível de detalhe.
+        - **general_reviewer_id** (`str`): Filtra pelos sign-offs revisados no nível geral.
+        - **supplemental_reviewer_id** (`str`): Filtra pelos sign-offs com revisão suplementar.
+        - **specialty_reviewer_id** (`str`): Filtra pelos sign-offs com revisão especializada.
+        - **next_reviewer_id** (`str`): Filtra pelos sign-offs aguardando próxima revisão.
+        
+        ##### Paginação:
+        - **page_size** (`int`): Número máximo de registros por página. Padrão: 100.
+        - **page_number** (`int`): Número da página a ser retornada. Padrão: 1.
+
+        #### Retorno:
+        - `dict`: Dicionário contendo os dados paginados dos sign-offs encontrados com base nos filtros fornecidos.
+
+        #### Exceções:
+        - Sobe exceção se o ambiente não estiver definido corretamente.
+        - Sobe exceção se a requisição API falhar com códigos de status diferentes de `200`.
+        - Sobe exceção se houver uma falha desconhecida.
+
+        #### Exemplo de uso:
+        ```python
+        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        result = instance.getSignOffs()
+        ```
+
+        #### Observações:
+        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+        - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
+        """
+        
+        protocol = 'https'
+
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {self.token}'
+        }
+
+        parameters = {
+        'fields[signoffs]': ','.join(fields),
+        'include': ','.join(include) if include else include,
+        'page[size]': str(page_size),
+        'page[number]': base64.b64encode(str(page_number).encode()).decode(),
+        'filter[project.id]': project_id,
+        'filter[project.state]': project_state,
+        'filter[target.id]': target_id,
+        'filter[target.type]': target_type,
+        'filter[preparer.id]': preparer_id,
+        'filter[detail_reviewer.id]': detail_reviewer_id,
+        'filter[general_reviewer.id]': general_reviewer_id,
+        'filter[supplemental_reviewer.id]': supplemental_reviewer_id,
+        'filter[specialty_reviewer.id]': specialty_reviewer_id,
+        'filter[next_reviewer.id]': next_reviewer_id,
+        }
+
+        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/signoffs'
+
+        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+    
+    def getControlTests(self, fields: list = ['testing_round_number','not_applicable','sample_size','testing_results','testing_conclusion','testing_conclusion_status',
+                                              'created_at','updated_at','custom_attributes','control','assigned_user','actual_milestone_date','planned_milestone_date'],
+                    sort: Literal["id", '-id', "walkthrough_results", "-walkthrough_results", "control_design", "-control_design","created_at", "-created_at", "updated_at",  "-updated_at"] = "id",
+                    project_id: str = None, project_name: str = None, project_state: str = None, project_status: str = None, control_id: list = None, control_design: str = None,
+                    control_title: str = None, control_id_interno: str = None, control_query: str = None, control_status: str = None, control_owner: str = None, control_frequency: str = None,
+                    control_type: str = None, objective_title: str = None, objective_reference: str = None, test_round_1_user_id: str = None, test_round_2_user_id: str = None,
+                    test_round_3_user_id: str = None, test_round_4_user_id: str = None, include: List[Literal["control", "control.objective"]] = None,
+                    page_size: int = 1, page_num: int = 100, 
+                    fields_controls: List[Literal["title","description","control_id","owner","frequency","control_type","prevent_detect","method","status",
+                                                  "position","created_at","updated_at","custom_attributes","objective","walkthrough","control_test_plan",
+                                                  "control_tests","mitigations","owner_user","entities","framework_origin"]] = None,
+                    fields_objectives: List[Literal["title","description","reference","division_department","owner","executive_owner","created_at","updated_at",
+                                                    "project","assigned_user","custom_attributes","position","risk_control_matrix_id","walkthrough_summary_id",
+                                                    "testing_round_1_id","testing_round_2_id","testing_round_3_id","testing_round_4_id","entities","framework",
+                                                    "framework_origin","risk_assurance_data","planned_start_date","actual_start_date","planned_end_date","actual_end_date",
+                                                    "planned_milestone_date","actual_milestone_date"]] = None) -> str:
+        protocol = 'https'
+
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {self.token}'
+        }
+
+        parameters = {
+            'fields[control_tests]': ','.join(fields),
+            'sort': sort,
+            'filter[project.id]': project_id,
+            'filter[project.name]': project_name,
+            'filter[project.state]': project_state,
+            'filter[project.status]': project_status,
+            'filter[control.id]': ','.join(control_id) if control_id else control_id,
+            'filter[control_design]': control_design,
+            'filter[control.title]': control_title,
+            'filter[control.control_id]': ','.join(control_id_interno) if control_id_interno else control_id_interno,
+            'filter[control.query]': control_query,
+            'filter[control.status]': control_status,
+            'filter[control.owner]': control_owner,
+            'filter[control.frequency]': control_frequency,
+            'filter[control.control_type]': control_type,
+            'filter[objective.title]': objective_title,
+            'filter[objective.reference]': objective_reference,
+            'filter[control.control_tests.1.assigned_user.id]': test_round_1_user_id,
+            'filter[control.control_tests.2.assigned_user.id]': test_round_2_user_id,
+            'filter[control.control_tests.3.assigned_user.id]': test_round_3_user_id,
+            'filter[control.control_tests.4.assigned_user.id]': test_round_4_user_id,
+            'include': ','.join(include) if include else include,
+            'fields[controls]': ','.join(fields_controls) if fields_controls else fields_controls,
+            'fields[objectives]': ','.join(fields_objectives) if fields_objectives else fields_objectives,
+            'page[size]': str(page_size),
+            'page[number]': base64.b64encode(str(page_num).encode()).decode(),
+        }
+
+        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/control_tests'
+
+        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+    
+    def getAControlTest(
+            self,
+            resource_id: str,
+            fields: list = ['assignee_name','testing_round_number','not_applicable','sample_size','testing_results','testing_conclusion','testing_conclusion_status',
+                            'created_at','updated_at','control','assigned_user','actual_milestone_date','planned_milestone_date','preparer_signoff',
+                            'detail_reviewer_signoff','general_reviewer_signoff','supplemental_reviewer','specialty_reviewer'],
+            include: List[Literal["control", "control.objective"]] = None,
+        ) -> str:
+        protocol = 'https'
+
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {self.token}'
+        }
+
+        parameters = {
+            'fields[control_tests]': ','.join(fields),
+            'include': ','.join(include) if include else include,
+        }
+
+        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/control_tests/{resource_id}'
+
+        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+    
+    def getPlanningFiles(self,
+                        parent_resource_type: Literal["projects", "frameworks"],
+                        parent_resource_id: str,
+                        fields: list = ['name','reference_id','description','position','created_at','updated_at','custom_attributes','project','framework','planned_start_date','actual_start_date','planned_end_date','actual_end_date','planned_milestone_date','actual_milestone_date'],
+                        page_size=100,
+                        page_number=1) -> dict:
+        """
+        Consulta arquivos de planejamento (planning_files) associados a projetos ou frameworks na organização.
+
+        #### Referência:
+        https://docs-apis.highbond.com/#tag/Planning-files
+
+        #### Parâmetros:
+        - **parent_resource_type** (`Literal["projects", "frameworks"]`): Tipo do recurso pai (projeto ou framework) ao qual os arquivos de planejamento estão vinculados.
+        - **parent_resource_id** (`str`): Identificador único do recurso pai.
+        - **fields** (`list`): Lista de campos a serem retornados na resposta. Padrão inclui campos essenciais como `name`, `reference_id`, `custom_attributes`, datas planejadas e reais.
+        
+        ##### Paginação:
+        - **page_size** (`int`): Quantidade máxima de registros por página. Padrão: 100.
+        - **page_number** (`int`): Número da página a ser retornada. Padrão: 1 (codificado em Base64 para compatibilidade com a API).
+
+        #### Retorno:
+        - `dict`: Dicionário contendo os arquivos de planejamento recuperados com base nos parâmetros fornecidos.
+
+        #### Exceções:
+        - Sobe exceção se o ambiente não estiver corretamente definido (ex: `token`, `organization_id`, `server`).
+        - Sobe exceção se a requisição falhar com código HTTP diferente de `200`.
+        - Sobe exceção genérica para falhas inesperadas na execução da chamada API.
+
+        #### Exemplo de uso:
+        ```python
+        instance = hbapi(token='seu_token', organization_id='id_da_organização')
+        result = instance.getPlanningFiles(parent_resource_type='projects', parent_resource_id='12345')
+        ```
+
+        #### Observações:
+        - A resposta pode conter dados vinculados a projetos ou frameworks, conforme especificado.
+        - Verifique se os campos informados no parâmetro `fields` estão disponíveis para o recurso selecionado.
+        """
+
+        protocol = 'https'
+
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {self.token}'
+        }
+
+        parameters = {
+        'fields[planning_files]': ','.join(fields),
+        'page[size]': str(page_size),
+        'page[number]': base64.b64encode(str(page_number).encode()).decode()
+        }
+
+        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/{parent_resource_type}/{parent_resource_id}/planning_files'
+
+        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+    
+    def getOrganizationWalkthroughs(self,
+                        fields: list = ['walkthrough_results', 'control_design', 'created_at', 'updated_at', 'custom_attributes',
+                                        'control', 'planned_milestone_date', 'actual_milestone_date'],
+                        sort: Literal["id", "walkthrough_results","control_design", "created_at", "updated_at"] = "id",
+                        project_id: str = None,
+                        project_name: str = None,
+                        project_state: str = "active",
+                        project_status: str = None,
+                        control_id: list = None,
+                        control_design: Literal["true", "false", ""] = None,
+                        control_title: str = None,
+                        control_id_interno: list = None,
+                        control_query: str = None,
+                        control_status: str = None,
+                        control_owner: str = None,
+                        control_frequency: str = None,
+                        control_type: str = None,
+                        objective_title: str = None,
+                        objective_reference: str = None,
+                        test_round_1_user_id: str = None,
+                        test_round_2_user_id: str = None,
+                        test_round_3_user_id: str = None,
+                        test_round_4_user_id: str = None,
+                        include: list = ["control","control.objective"],
+                        fields_controls: list = ["title","description","control_id","owner","frequency","control_type","prevent_detect","method","status","position", "created_at","updated_at","custom_attributes","objective","walkthrough","control_test_plan","control_tests","mitigations","owner_user","entities","framework_origin"],
+                        fields_objectives: List[Literal["title","description","reference","division_department","owner","executive_owner","created_at","updated_at","project","assigned_user","custom_attributes","position","risk_control_matrix_id","walkthrough_summary_id","testing_round_1_id","testing_round_2_id","testing_round_3_id","testing_round_4_id","entities","framework","framework_origin","risk_assurance_data","planned_start_date","actual_start_date","planned_end_date","actual_end_date","planned_milestone_date","actual_milestone_date"]] = ["title","description","reference","division_department","owner","executive_owner","created_at","updated_at"],
+                        page_size: int = 100,
+                        page_number: int = 1) -> dict:
+        """
+        Consulta Walkthroughs da organização com base em filtros avançados por projeto, controle, objetivo, responsáveis e status.
+
+        #### Referência:
+        https://docs-apis.highbond.com/#operation/getOrganizationWalkthroughs
+
+        #### Parâmetros:
+
+        - **fields** (`list`): Lista de campos a serem retornados.  
+        *Exemplo:* `['walkthrough_results','control_design','created_at']`
+
+        - **sort** (`str`): Campo de ordenação (ascendente ou descendente com `-`).  
+        *Opções:* `"id"`, `"walkthrough_results"`, `"control_design"`, `"created_at"`, `"updated_at"`  
+        *Exemplo:* `"id"` ou `"-created_at"`
+
+        ##### Filtros de projeto:
+        - **project_id** (`str`): Filtra por ID do projeto.  
+        *Exemplo:* `"123"`
+        - **project_name** (`str`): Filtra por nome do projeto.  
+        *Exemplo:* `"Projeto X"`
+        - **project_state** (`str`): Filtra por estado do projeto.  
+        *Exemplo:* `"active"`
+        - **project_status** (`str`): Filtra por status do projeto.  
+        *Exemplo:* `"active"`
+
+        ##### Filtros de controle:
+        - **control_id** (`list`): Filtra por IDs do controle.  
+        *Exemplo:* `["1", "2", "3"]`
+        - **control_design** (`str`): Filtra por walkthroughs com controle adequadamente desenhado.  
+        *Valores:* `"true"`, `"false"`
+        - **control_title** (`str`): Filtra pelo título do controle.  
+        - **control_id_interno** (`list`): Filtra por IDs internos (`control.control_id`).  
+        *Exemplo:* `["001", "002"]`
+        - **control_query** (`str`): Busca textual no título ou descrição do controle.  
+        - **control_status** (`str`): Filtra pelo status do controle.  
+        *Exemplo:* `"Key Control"`
+        - **control_owner** (`str`): Filtra pelo proprietário do controle.  
+        *Exemplo:* `"usuario@empresa.com"`
+        - **control_frequency** (`str`): Filtra pela frequência do controle.  
+        *Exemplo:* `"Monthly"`
+        - **control_type** (`str`): Filtra pelo tipo do controle.  
+        *Exemplo:* `"Application/System Control"`
+
+        ##### Filtros de objetivo:
+        - **objective_title** (`str`): Filtra pelo título do objetivo.  
+        - **objective_reference** (`str`): Filtra pela referência do objetivo.  
+
+        ##### Filtros de responsáveis por testes:
+        - **test_round_1_user_id** (`str`): Filtra por usuário atribuído ao 1º round.  
+        - **test_round_2_user_id** (`str`): Filtra por usuário atribuído ao 2º round.  
+        - **test_round_3_user_id** (`str`): Filtra por usuário atribuído ao 3º round.  
+        - **test_round_4_user_id** (`str`): Filtra por usuário atribuído ao 4º round.  
+
+        ##### Inclusão de entidades relacionadas:
+        - **include** (`str`): Define entidades relacionadas para inclusão.  
+        *Exemplo:* `"control,control.objective"`
+        - **fields_controls** (`str`): Campos a retornar da entidade `controls`.  
+        *Exemplo:* `"title,control_id,owner,status"`
+        - **fields_objectives** (`str`): Campos a retornar da entidade `objectives`.  
+        *Exemplo:* `"title,reference,owner"`
+
+        ##### Paginação:
+        - **page_size** (`int`): Número de itens por página (padrão: 100, máx: 100).  
+        - **page_number** (`int`): Número da página (codificado em Base64 internamente).  
+
+        #### Retorno:
+        - `dict`: Dicionário com os walkthroughs encontrados conforme os filtros aplicados.
+
+        #### Exceções:
+        - Sobe exceção se o ambiente não estiver configurado corretamente (`token`, `organization_id`, `server`).
+        - Sobe exceção se a requisição retornar código HTTP diferente de `200`.
+        - Sobe exceção para falhas inesperadas ou erros internos da API.
+
+        #### Exemplo de uso:
+        ```python
+        api = hbapi(token="seu_token", organization_id="org_id")
+        walkthroughs = api.getOrganizationWalkthroughs(
+            project_id="123",
+            control_status="Key Control",
+            sort="-created_at",
+            page_size=50
+        )
+        ```
+        
+         #### Observações:
+        - Os filtros do tipo lista (ex: `control_id`, `control_id_interno`) são convertidos para string separada por vírgula conforme esperado pela API.
+        - O número da página é automaticamente codificado em Base64 para atender ao padrão exigido pela API (`page[number]`).
+        - O campo `sort` aceita apenas um valor por vez e deve ser utilizado com cautela para garantir performance.
+        - Os campos `fields[controls]` e `fields[objectives]` devem conter apenas atributos válidos das respectivas entidades.
+        - O uso do parâmetro `include` pode impactar o tempo de resposta da API, dependendo da profundidade das relações requisitadas.
+        - Certifique-se de que os valores utilizados nos filtros correspondem exatamente aos valores esperados pela base de dados da API (case-sensitive, enum etc.).
+        """
+
+        protocol = 'https'
+
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {self.token}'
+        }
+
+        parameters = {
+            'fields[walkthroughs]': ','.join(fields) if fields else fields,
+            'sort': sort,
+            'filter[project.id]': project_id,
+            'filter[project.name]': project_name,
+            'filter[project.state]': project_state,
+            'filter[project.status]': project_status,
+            'filter[control.id]': ','.join(control_id) if control_id else control_id,
+            'filter[control_design]': control_design,
+            'filter[control.title]': control_title,
+            'filter[control.control_id]': ','.join(control_id_interno) if control_id_interno else control_id_interno,
+            'filter[control.query]': control_query,
+            'filter[control.status]': control_status,
+            'filter[control.owner]': control_owner,
+            'filter[control.frequency]': control_frequency,
+            'filter[control.control_type]': control_type,
+            'filter[objective.title]': objective_title,
+            'filter[objective.reference]': objective_reference,
+            'filter[control.control_tests.1.assigned_user.id]': test_round_1_user_id,
+            'filter[control.control_tests.2.assigned_user.id]': test_round_2_user_id,
+            'filter[control.control_tests.3.assigned_user.id]': test_round_3_user_id,
+            'filter[control.control_tests.4.assigned_user.id]': test_round_4_user_id,
+            'include': ','.join(include) if include else include,
+            'fields[controls]': ','.join(fields_controls) if fields_controls else fields_controls,
+            'fields[objectives]': ','.join(fields_objectives) if fields_controls else fields_controls,
+            'page[size]': str(page_size),
+            'page[number]': base64.b64encode(str(page_number).encode()).decode(),
+        }
+
+        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/walkthroughs'
+
+        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+    
+    def getWalkthrough(self,
+                        walkthrough_id: str,
+                        fields: List[Literal['walkthrough_results', 'control_design', 'created_at', 'updated_at', 'custom_attributes',
+                                        'control', 'planned_milestone_date', 'actual_milestone_date']] 
+                                        = 
+                                        ['walkthrough_results', 'control_design', 'created_at', 'updated_at', 'custom_attributes',
+                                        'control', 'planned_milestone_date', 'actual_milestone_date'],
+                        include: List[Literal["control","control.objective", None]] = ["control","control.objective"]
+        ) -> dict:
+        """
+        Consulta Walkthroughs da organização com base em filtros avançados por projeto, controle, objetivo, responsáveis e status.
+
+        #### Referência:
+        https://docs-apis.highbond.com/#operation/getWalkthrough
+
+        #### Parâmetros:
+
+        - **fields** (`list`): Lista de campos a serem retornados.  
+        *Exemplo:* `['walkthrough_results','control_design','created_at']` 
+
+        ##### Inclusão de entidades relacionadas:
+        - **include** (`str`): Define entidades relacionadas para inclusão.  
+        *Exemplo:* `"control,control.objective"`
+
+        #### Retorno:
+        - `dict`: Dicionário dados de um walkthrough específico.
+
+        #### Exceções:
+        - Sobe exceção se o ambiente não estiver configurado corretamente (`token`, `organization_id`, `server`).
+        - Sobe exceção se a requisição retornar código HTTP diferente de `200`.
+        - Sobe exceção para falhas inesperadas ou erros internos da API.
+
+        #### Exemplo de uso:
+        ```python
+        api = hbapi(token="seu_token", organization_id="org_id")
+        walkthroughs = api.getWalkthrough(
+            walkthrough_id="1234",
+        )
+        ```
+        
+         #### Observações:
+        - Os paramêtros do tipo lista (ex: `fields`, `include`) são convertidos para string separada por vírgula conforme esperado pela API.
+        - O uso do parâmetro `include` pode impactar o tempo de resposta da API, dependendo da profundidade das relações requisitadas.
+        """
+        
+        protocol = 'https'
+
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {self.token}'
+        }
+
+        parameters = {
+            'fields[walkthroughs]': ','.join(fields) if fields else fields,
+            'include': ','.join(include) if include else include,
+        }
+
+        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/walkthroughs/{walkthrough_id}'
+
+        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+    
+    def getTables(self, analysis_id: int) -> dict:
+        protocol = 'https'
+
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {self.token}'
+        }
+        
+        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/analyses/{analysis_id}/tables'
+
+        return self.get_command(api_url=url, api_headers=headers)
+    
+    def getCollections(self) -> dict:
+        protocol = 'https'
+
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {self.token}'
+        }
+
+        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/collections'
+
+        return self.get_command(api_url=url, api_headers=headers)
+    
+    def getAnalyses(self, collection_id: str) -> dict:
+        protocol = 'https'
+
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {self.token}'
+        }
+
+        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/collections/{collection_id}/analyses'
+
+        return self.get_command(api_url=url, api_headers=headers)
+    
+    def getUser(self, uid: str) -> dict:
+        protocol = 'https'
+
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {self.token}'
+        }
+
+        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/users/{uid}'
+
+        return self.get_command(api_url=url, api_headers=headers)
+    
+    def getOrganizationControls(
+            self,
+            fields_controls: list = ["title","description","control_id","owner","frequency","control_type","prevent_detect","method","status","position","created_at","updated_at","custom_attributes","objective","walkthrough","control_test_plan","control_tests","mitigations","owner_user","entities","framework_origin"],
+            fields_objectives: list = ["title","description","reference","division_department","owner","executive_owner","created_at","updated_at","project","assigned_user","owner_user","executive_owner_user","custom_attributes","position","risk_control_matrix_id","walkthrough_summary_id","testing_round_1_id","testing_round_2_id","testing_round_3_id","testing_round_4_id","entities","framework","framework_origin","risk_assurance_data","planned_start_date","actual_start_date","planned_end_date","actual_end_date","planned_milestone_date","actual_milestone_date"],
+            fields_walkthroughs: list = ["walkthrough","control_verified","original_updated_at","preparer_signoff","detail_reviewer_signoff","general_reviewer_signoff","supplemental_reviewer","specialty_reviewer","control_performance_enabled","control_performance_readonly","signed_off","readonly","locked","enabled","planned_milestone_date","actual_milestone_date"],
+            fields_control_tests: list = ["assignee_name","testing_round_number","not_applicable","sample_size","testing_results","testing_conclusion","testing_conclusion_status","created_at","updated_at","control","assigned_user","actual_milestone_date","planned_milestone_date","preparer_signoff","detail_reviewer_signoff","general_reviewer_signoff","supplemental_reviewer","specialty_reviewer"],
+            sort: str = None,
+            filter_frequency: str = None,
+            filter_owner: str = None,
+            filter_walkthrough_control_design: str = None,
+            filter_control_type: str = None,
+            filter_status: str = None,
+            filter_control_id: str = None,
+            filter_id: str = None,
+            page_size: int = 100,
+            page_number: int = 1
+        ) -> dict:
+        protocol = 'https'
+
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {self.token}'
+        }
+
+        parameters = {
+            'fields[controls]': ','.join(fields_controls) if fields_controls else fields_controls,
+            'fields[objectives]': ','.join(fields_objectives) if fields_objectives else fields_objectives,
+            'fields[walkthroughs]': ','.join(fields_walkthroughs) if fields_walkthroughs else fields_walkthroughs,
+            'fields[control_tests]': ','.join(fields_control_tests) if fields_control_tests else fields_control_tests,
+            'sort': sort,
+            'filter[walkthrough.control_design]': filter_walkthrough_control_design,
+            'filter[control_type]': filter_control_type,
+            'filter[status]': filter_status,
+            'filter[control_id]': filter_control_id,
+            'filter[id]': filter_id,
+            'page[size]': str(page_size),
+            'page[number]': base64.b64encode(str(page_number).encode()).decode()
+        }
+
+        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/controls'
+
+        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+
+    def getOrgRequestItems(
+                    self, 
+                    id: str = '',
+                    fields: list = ["created_at","updated_at","description","owner","owner_email","received","request_item_status","requestor","due_date","send_recurrent_notifications","email_subject","email_message","position","project_type","owner","project","owner_user","requestor_user","cc_users","cc_contacts","contact_reference_name","contact_reference_email","contact_reference_table_id","contact_reference_record_id","target"],
+                    page_size: int = 100,
+                    page_number: int = 1,
+                    sort: Literal["id", "created_at", "updated_at", "description", "owner", "owner_email", "received", "requestor", "due_date", "send_recurrent_notifications", "email_subject", "email_message", "position", "-id" "-created_at" "-updated_at" "-description" "-owner" "-owner_email" "-received" "-requestor" "-due_date" "-send_recurrent_notifications" "-email_subject" "-email_message" "-position"] = "id",
+                    filter_project_name : str = None,
+                    filter_project_id : str = None,
+                    filter_project_status : str = None,
+                    filter_target_id : str = None,
+                    filter_target_type : str = None,
+                    filter_received : Literal["true", "false"] = None,
+                    ) -> dict:
+        """
+        Lista todas as solicitações da organização ou uma em específico.
+
+        #### Referência:
+        https://docs-apis.highbond.com/#operation/getOrgRequestItems \n
+        https://docs-apis.highbond.com/#operation/getRequestItem
+
+        #### Parâmetros:
+
+        #### Retorna:
+
+        #### Exceções:
+        - Sobe exceção se o ambiente não estiver definido corretamente.
+        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+        - Sobe exceção se houver uma falha desconhecida.
+
+        #### Exemplo de uso:
+
+        #### Observações:
+
+        """
+        protocol = 'https'
+
+        headers = {
+            'Content-type': 'application/vnd.api+json',
+            'Authorization': f'Bearer {self.token}'
+        }
+        
+        url = f'{protocol}://{self.server}/v1/orgs/{self.organization_id}/request_items/{id}'
+            
+        parameters = {
+            'fields[projects]': ','.join(fields),
+            'page[size]': page_size,
+            'page[number]': base64.encodebytes(str(page_number).encode()).decode(),
+            'sort': sort,
+            'filter[project.name]': filter_project_name,
+            'filter[project.id]': filter_project_id,
+            'filter[project.status]': filter_project_status,
+            'filter[target_id]': filter_target_id,
+            'filter[target_type]': filter_target_type,
+            'filter[received]': filter_received,
+        }
+
+        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
