@@ -50,6 +50,9 @@ class Highbond_API:
 
         curr_org = self.getOrganization()
 
+        # Classes auxiliares
+        self.robots = self._Robots(self)
+
         def is_jupyter_nb():
             try:
                 test = __file__
@@ -158,7 +161,7 @@ class Highbond_API:
             print(f'A requisição não foi possível:\n{e}')
             return None
         
-    def put_command(self, api_url: str, api_headers: dict, api_params: dict = {}) -> dict:
+    def put_command(self, api_url: str, api_headers: dict, api_params: dict = {}, api_schema: dict = None) -> dict:
         try:   
             if self.talkative == True:
                 print('Iniciando a requisição HTTP...')
@@ -199,6 +202,37 @@ class Highbond_API:
         except Exception as e:
             print(f'A requisição não foi possível:\n{e}')
             return None
+        
+    def delete_command(self, api_url: str, api_headers: dict) -> dict:
+        try:    
+            if self.parent.talkative == True:
+                print('Iniciando a requisição HTTP...')
+            response = rq.delete(api_url, headers=api_headers)
+
+            if response.status_code == 400:
+                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {response.json()}')
+            elif response.status_code == 401:
+                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.parent.token -> {response.json()}')
+            elif response.status_code == 403:
+                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {response.json()}')
+            elif response.status_code == 404:
+                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {response.json()}')
+            elif response.status_code == 415:
+                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {response.json()}')
+            elif response.status_code == 200:
+                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
+                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
+                if self.talkative == True:
+                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
+                    # SAÍDA COM SUCESSO
+                    return response.json()
+                else:
+                    return response.json()
+            else:
+                raise Exception(response.json())
+
+        except Exception as e:
+            print(f'A requisição não foi possível:\n{e}')
 
     def getOrganization(self) -> dict:
         """
@@ -267,1485 +301,6 @@ class Highbond_API:
 
         return self.get_command(api_url=url, api_headers=headers)
 
-    # Robots
-    def deleteRobot(self, robot_id: str) -> dict:
-        """
-        Deleta um robô e todas as tarefas associadas a ele
-
-        #### Referência:
-        https://docs-apis.highbond.com/#operation/deleteRobot
-
-        #### Parâmetros:
-        - robot_id (str): O ID do robô que será deletado.
-        
-        #### Retorna:
-        Um dicionário contendo informações sobre o robô deletado.
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
-        result = instance.deleteRobot('12345')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
-        """
-        apiHeaders = {
-            'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}'
-
-        # AÇÃO E RESPOSTA
-        try:
-            
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-            Response = rq.delete(url, headers=apiHeaders)
-
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.token -> {Response.json()}')
-            elif Response.status_code == 403:
-                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
-            elif Response.status_code == 404:
-                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
-            elif Response.status_code == 415:
-                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
-            elif Response.status_code == 200:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            else:
-                raise Exception(Response.json())
-
-        except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')
-
-    # Robot Tasks
-    def getRobotTasks(self, robot_id: str, environment: str) -> dict:
-        """
-        Lista as tarefas de um robô ACL.
-
-        #### Referência: 
-        https://docs-apis.highbond.com/#operation/getRobotTasks
-
-        #### Parâmetros:
-        - robot_id (str): O ID do robô ACL onde as tarefas estão armazenadas.
-        - environment (str): O ambiente onde as tarefas estão armazenadas. Pode ser 'production' para o ambiente de produção ou 'development' para o ambiente de desenvolvimento.
-
-        #### Retorna:
-        Um dicionário contendo informações sobre as tarefas do robô.
-
-        #### Exceções:
-        - Raises Exception se o ambiente não estiver definido corretamente.
-        - Raises Exception se a requisição API falhar com códigos de status diferentes de 200.
-        - Raises Exception se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(self.token='seu_self.token', organization_id='sua_organizacao')
-        result = instance.getRobotTasks(robot_id='123', environment='production')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        - A resposta é um dicionário contendo informações sobre as tarefas do robô.
-        """
-        headers = {
-            'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-
-        parameters = {
-            'env': environment
-        }
-
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}/robot_tasks'
-
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
-
-    def createRobotTask(self, robot_id, environment: Literal['production', 'development'], 
-                        task_name, app_version: int = None, emails_enabled: bool = False, 
-                        log_enabled: bool = False, pw_crypto_key: str = None, 
-                        share_encrypted: bool = False, analytic_names: list = None) -> dict:
-        """
-        Cria uma tarefa em um robô do Highbond, e em um ambiente específico
-
-        #### Referência:
-        https://docs-apis.highbond.com/#operation/createRobotTask
-
-        #### Parâmetros:
-        - robot_id (str): Id do robô onde a tarefa será criada
-        - environment (str): define o ambiente em que a tarefa será criada
-        - task_name (str): nome da tarefa que será criada
-        - app_version (int): versão do robô que a tarefa vai utilizar (no caso de tarefas em produção)
-        - emails_enabled (bool): Se True, habilita a notificação de e-mails da tarefa
-        - log_enabled (bool): Se True, habilita a saída de logs na execução da tarefa
-        - pw_crypto_key (str): define a chave de descriptografia RSA das senhas nas tarefas
-        - share_encrypted(bool): define se a tarefa pode ou não ser acessada quando uma senha foi criptografada
-        - analytic_names(list): define a lista de análises do robô que será executada pela tarefa
-
-        #### Retorna:
-        Um dict com informações sobre a tarefa criada.
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi('seu_self.token', 'sua_organização')
-        instance.createRobotTask('12345', 'production', 'tarefa 1')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        """
-        headers = {
-            'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-
-        schema = {
-            'data':{
-                'type': 'robot_tasks',
-                'attributes': {
-                    'app_version': app_version,
-                    'email_notifications_enabled': emails_enabled,
-                    'environment': environment,
-                    'log_enabled': log_enabled,
-                    'name': task_name,
-                    'public_key_name': pw_crypto_key,
-                    'share_encrypted': share_encrypted,
-                    'analytic_names': [analytic_names]
-                }
-            }
-        }
-
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}/robot_tasks'
-
-        return self.post_command(api_url=url, api_headers=headers, api_schema=schema)
-    
-    def putRobotTask(self, task_id, environment: Literal['production', 'development'], 
-                        task_name, app_version: int = None, emails_enabled: bool = False, 
-                        log_enabled: bool = False, pw_crypto_key: str = None, 
-                        share_encrypted: bool = False, analytic_names: list = None) -> dict:
-        """
-        Atualiza uma tarefa em um robô do Highbond, e em um ambiente específico
-
-        #### Referência:
-        https://docs-apis.highbond.com/#operation/putRobotTask
-
-        #### Parâmetros:
-        - task_id (str): Id da tarefa que será atualizada
-        - environment (str): define o ambiente em que a tarefa será atualizada
-        - task_name (str): nome da tarefa que será atualizada
-        - app_version (int): versão do robô que a tarefa vai utilizar (no caso de tarefas em produção)
-        - emails_enabled (bool): Se True, habilita a notificação de e-mails da tarefa
-        - log_enabled (bool): Se True, habilita a saída de logs na execução da tarefa
-        - pw_crypto_key (str): define a chave de descriptografia RSA das senhas nas tarefas
-        - share_encrypted(bool): define se a tarefa pode ou não ser acessada quando uma senha foi criptografada
-        - analytic_names(list): define a lista de análises do robô que será executada pela tarefa
-
-        #### Retorna:
-        Um dict com informações sobre a tarefa atualizada.
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi('seu_self.token', 'sua_organização')
-        instance.putRobotTask('12345', 'production', 'tarefa 1')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        """
-        apiHeaders = {
-            'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-
-        dSchema = {
-            'data':{
-                'type': 'robot_tasks',
-                'attributes': {
-                    'app_version': app_version,
-                    'email_notifications_enabled': emails_enabled,
-                    'environment': environment,
-                    'log_enabled': log_enabled,
-                    'name': task_name,
-                    'public_key_name': pw_crypto_key,
-                    'share_encrypted': share_encrypted,
-                    'analytic_names': analytic_names
-                }
-            }
-        }
-        
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_tasks/{task_id}'
-
-        # AÇÃO E RESPOSTA
-        try:
-            
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-            Response = rq.put(url, headers=apiHeaders, json=dSchema)
-
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.token -> {Response.json()}')
-            elif Response.status_code == 403:
-                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
-            elif Response.status_code == 404:
-                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
-            elif Response.status_code == 415:
-                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
-            elif Response.status_code == 422:
-                raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}')
-            elif Response.status_code == 200:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            else:
-                raise Exception(Response.json())
-
-        except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')
-
-    def deleteRobotTask(self, task_id: str) -> dict:
-        """
-        Deleta uma tarefa de um robô do Highbond
-
-        #### Referência:
-        https://docs-apis.highbond.com/#operation/deleteRobotTask
-
-        #### Parâmetros:
-        - task_id (str): Id da tarefa que será deletada
-
-        #### Retorna:
-        Um dict com informações sobre a tarefa deletada.
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi('seu_self.token', 'sua_organização')
-        instance.deleteRobotTask('12345')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        """
-        apiHeaders = {
-            'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-        
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_tasks/{task_id}'
-
-        # AÇÃO E RESPOSTA
-        try:
-            
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-            Response = rq.delete(url, headers=apiHeaders)
-
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.token -> {Response.json()}')
-            elif Response.status_code == 403:
-                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
-            elif Response.status_code == 404:
-                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
-            elif Response.status_code == 415:
-                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
-            elif Response.status_code == 422:
-                raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}')
-            elif Response.status_code == 200:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            else:
-                raise Exception(Response.json())
-
-        except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')
-
-    def runRobotTask(self, task_id: str, include: list = ['job_values','result_tables']) -> dict:
-        """
-        Inicia a execução de uma tarefa de um robô no Highbond
-
-        #### Referência:
-        https://docs-apis.highbond.com/#operation/runRobotTask
-
-        #### Parâmetros:
-        - task_id (str): Id da tarefa que será executada
-        - include (list): Define se os valores job_values e result_tables vão sair na resposta
-
-        #### Retorna:
-        Um dict com informações sobre a a execução da tarefa.
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi('seu_self.token', 'sua_organização')
-        instance.runRobotTask('12345', ['job_values','result_tables'])
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        """
-        includeCheckList = ['job_values','result_tables']
-
-        if not isinstance(include, list):
-            raise Exception('Precisa ser configurado no formato "list"')
-        else:
-            for item in include:
-                if not item in includeCheckList:
-                    raise Exception(f'"{item}" não é um valor permitido para essa API')
-
-            strInclude = ''
-            for item in include:
-                strInclude = strInclude + ',' + item
-            strInclude = strInclude[1:]
-
-        headers = {
-            'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-        
-        parameters = {
-            'include': strInclude
-        }
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_tasks/{task_id}/run_now'
-
-        return self.post_command(api_url=url, api_headers=headers, api_params=parameters)
-
-    def getValues(self, task_id: str) -> dict:
-        """
-        Lista os valores em uma tarefa de um robô.
-
-        #### Referência: 
-        https://docs-apis.highbond.com/#operation/getValues
-
-        #### Parâmetros:
-        - task_id (str): Id da tarefa, onde os parâmetros estão disponíveis
-
-        #### Retorna:
-        Um dicionário contendo informações sobre os parâmetros da tarefa.
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(self.token='seu_self.token', organization_id='sua_organizacao')
-        result = instance.getValues(task_id='123')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        - A resposta é um dicionário contendo informações sobre os jobs do robô.
-        """
-        headers = {
-            'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_tasks/{task_id}/values'
-
-        return self.get_command(api_url=url, api_headers=headers)
-
-    def putValues(self, task_id: str, multi_mode: bool, analytic_name: str = None, parameter_id: str = None, 
-                    encrypted: bool = None, value: str = None, 
-                    value_type: Literal["character","date","datetime","file","logical","number","table","time"] = None, 
-                    values_list: List[list] = None) -> dict:
-        """
-        Atualiza o valor de um parâmetro de uma tarefa
-
-        #### Referência:
-        https://docs-apis.highbond.com/#operation/putValues
-
-        #### Parâmetros:
-        - task_id (str): Id da tarefa que será atualizada
-        - multi_mode (bool): Define se o método atualizará um valor ou vários valores
-        - analytic_name (str): define o nome da análise que será alterada se multi_mod = False
-        - parameter_id (str): define qual parâmetro será alterado se multi_mod = False
-        - encrypted (bool): Se True, define que o parâmetro é protegido e mascarado como uma senha se multi_mod = False
-        - value (str): conteúdo do valor que será alterado se multi_mod = False
-        - value_type (str): tipo do valor que será alterado se multi_mod = False
-        - values_list (list): se multi_mod = True, recebe [analytic_name, parameter_id, encrypted, value, value_type] para cada valor que será alterado
-
-        #### Retorna:
-        Um dict com informações sobre os parâmetros que serão atualizados.
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso se multi_mod = False:
-        ```python
-        instance = hbapi('seu_self.token', 'sua_organização')
-        instance.putValues('1234565', multi_mod=False, 'Nome da Análise', 'Nome do ParÂmetro', False, 'Novo Valor', 'character')
-        ```
-
-        #### Exemplo de uso se multi_mod = True
-        ```python
-            instance = hbapi('self.token', 'organizacao')
-            instance.putValues('tarefa', multi_mod=True, values_list=[
-                ['Nome da Análise 1', 'Nome do Parâmetro 1', True, 'Novo Valor 1', 'character'], 
-                ['Nome da Análise 2', 'Nome do Parâmetro 2', True, 'Novo Valor 2', 'character']
-            ]
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        - Caso haja calores com senha entre os parâmetros da tarefa, putValues deve sempre rodar em multi_mod=True
-        pois, o parâmetro de senha deve ser passado junto dos outros.
-        """
-        apiHeaders = {
-            'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-        
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_tasks/{task_id}/values'
-
-        # AÇÃO E RESPOSTA
-        try:
-
-            if multi_mode == False:
-                if values_list != None:
-                    dSchema = {
-                        "data": [
-                            {
-                                "type": "values",
-                                "attributes": {
-                                    "analytic_name": analytic_name,
-                                    "parameter_id": parameter_id,
-                                    "encrypted": encrypted,
-                                    "data": {
-                                        "value": value,
-                                        "type": value_type
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                else:
-                    raise Exception('"values_list" não pode ser definido se multi_mod=False')
-            else:
-                if not values_list == None:
-                    for item in values_list:
-                        if len(item) != 5:
-                            raise Exception('Um dos valores de values_list foi mal configurado')
-                        dSchema = {
-                            "data": []
-                        }
-
-                        hashTemp = {
-                                "type": "values",
-                                "attributes": {
-                                    "analytic_name": item[0],
-                                    "parameter_id": item[1],
-                                    "encrypted": item[2],
-                                    "data": {
-                                        "value": item[3],
-                                        "type": item[4]
-                                    }
-                                }
-                            }
-
-                    dSchema['data'].append(hashTemp)
-                else:
-                    raise Exception('"values_list" precisa ser corretamente definido se multi_mod=True')
-            
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-            Response = rq.put(url, headers=apiHeaders, json=dSchema)
-
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.token -> {Response.json()}')
-            elif Response.status_code == 403:
-                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
-            elif Response.status_code == 404:
-                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
-            elif Response.status_code == 415:
-                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
-            elif Response.status_code == 422:
-                raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}')
-            elif Response.status_code == 200:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            else:
-                raise Exception(Response.json())
-
-        except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')
-
-    def getSchedule(self, task_id: str) -> dict:
-        """
-        Informa sobre o agendamento de uma tarefa.
-
-        #### Referência: 
-        https://docs-apis.highbond.com/#operation/getSchedule
-
-        #### Parâmetros:
-        - task_id (str): o id da tarefa
-
-        #### Retorna:
-        Um dicionário contendo informações sobre os agendamentos da tarefa
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(self.token='seu_self.token', organization_id='sua_organizacao')
-        result = instance.getRobotJobs(task_id='123')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        """
-        headers = {
-            'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_tasks/{task_id}/schedule'
-
-        return self.get_command(api_url=url, api_headers=headers)
-
-    def createSchedule(self, task_id: str, frequency: Literal["once", "hourly", "daily", "weekly", "monthly"], 
-                        interval: int = 1, starts_at: str = None, timezone: str = None, days: List[Union[int,str]]= None) -> dict:
-        """
-        Cria o agendamento de uma tarefa.
-
-        #### Referência: 
-        https://docs-apis.highbond.com/#operation/createSchedule
-
-        #### Parâmetros:
-        - task_id (str): o id da tarefa
-        - frequency (str): frequência de execução do agendamento, pode ser:
-            - once: Define que o agendamento só será executado uma vez
-            - hourly: Define uma frequência horária (depende do intervalo)
-            - daily: Define uma frequência diária (depende do intervalo)
-            - weekly: Define uma frequência semanal (depende do intervalo)
-            - monthly: Define uma frequência mensal (depende do intervalo)
-        - interval (int): o intervalo de tempo, a unidade muda com a frequência escolhida:
-            - once: Não é definido
-            - hourly: define o intervalo em minutos
-            - daily: define o intervalo em dias
-            - weekly: define o intervalo em semanas
-            - monthly: define o intervalo em meses
-        - starts_at (str): datahora da primeira execução do agendamento (yyyy-mm-dd THH:MM:SS.sssZ)
-        - timezone (str): fusohorário da hora definida, (America/Sao_Paulo, conforme Ref.: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
-        - days (list of integers or strings): define diferentes intervalos de execução para cada frequência, exceto por "once", "hourly" e "daily"
-            - weekly: em quais dias da semana o agendamento será executado, sendo 0 domingo e 6 sábado, a lista pode ter 1 ou mais dias
-            - monthly: em quais dias do mês o agendamento será executado, os dias podem ser definidos entre 1 e 28. Ou "last_day" para o último dia do mês, a lista só pode ter um valor
-
-        #### Retorna:
-        Um dicionário contendo informações sobre os agendamentos da tarefa
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(self.token='seu_self.token', organization_id='sua_organizacao')
-        instance.createSchedule('67336','daily', 2, starts_at='2024-02-17T22:00:00Z',timezone='America/Sao_Paulo')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        """
-        headers = {
-            'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-        
-        frequencyNullCheckList = ['once', 'hourly', 'daily']
-
-        if frequency in frequencyNullCheckList:
-            hashDays = {}
-        else:
-            hashDays = {'days': days}
-
-        schema = {
-            "data": {
-                "type": "schedule",
-                "attributes": {
-                    "frequency": frequency,
-                    "interval": interval,
-                    "starts_at": starts_at,
-                    "starts_at_timezone": timezone,
-                    "settings": hashDays
-                }
-            }
-        }
-
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_tasks/{task_id}/schedule'
-
-        # AÇÃO E RESPOSTA
-        try:
-            if frequency == "once":
-                if starts_at == None:
-                    raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
-                if timezone == None:
-                    raise Exception('É preciso definir corretamente o fuso-horário!')
-                if interval != 1:
-                    raise Exception('O intervalo não pode ser diferente de 1 para essa frequência')
-                
-            elif frequency == 'hourly':
-                if starts_at == None:
-                    raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
-                if timezone == None:
-                    raise Exception('É preciso definir corretamente o fuso-horário!')
-                if interval <= 0:
-                    raise Exception('É preciso definir um intervalo em horas para essa frequência!')
-                
-            elif frequency == 'daily':
-                if starts_at == None:
-                    raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
-                if timezone == None:
-                    raise Exception('É preciso definir corretamente o fusohorário!')
-                if interval <= 0:
-                    raise Exception('É preciso definir um intervalo em dias para essa frequência!')
-            
-            elif frequency == 'weekly':
-                if starts_at == None:
-                    raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
-                if timezone == None:
-                    raise Exception('É preciso definir corretamente o fuso-horário!')
-                if interval <= 0:
-                    raise Exception('É preciso definir um intervalo em dias para essa frequência!')
-
-                for day in days:
-                    if not 0 <= day <= 6:
-                        raise Exception('O parâmetro "days" não foi definido corretamente')
-            
-            elif frequency == 'monthly':
-                if starts_at == None:
-                    raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
-                if timezone == None:
-                    raise Exception('É preciso definir corretamente o fuso-horário!')
-                if interval <= 0:
-                    raise Exception('É preciso definir um intervalo em dias para essa frequência!')
-
-                if len(days) == 1:
-                    for day in days:
-                        if isinstance(day, str):
-                            if not day == "last_day":
-                                raise Exception('O parâmetro "days" não foi definido corretamente')
-                        else:
-                            if not 1 <= day <= 28:
-                                raise Exception('O parâmetro "days" não foi definido corretamente')
-                else:
-                    raise Exception('Para esta frequência, o parâmetro "days" não pode ter mais de 1 item')
-
-        except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')
-            return None
-
-        return self.post_command(api_url=url, api_headers=headers, api_schema=schema)
-
-    def putSchedule(self, task_id: str, frequency: Literal["once", "hourly", "daily", "weekly", "monthly"], 
-                        interval: int = 1, starts_at: str = None, timezone: str = None, days: List[Union[int,str]]= None) -> dict:
-        """
-        Atualiza o agendamento de uma tarefa.
-
-        #### Referência: 
-        https://docs-apis.highbond.com/#operation/putSchedule
-
-        #### Parâmetros:
-        - task_id (str): o id da tarefa
-        - frequency (str): frequência de execução do agendamento, pode ser:
-            - once: Define que o agendamento só será executado uma vez
-            - hourly: Define uma frequência horária (depende do intervalo)
-            - daily: Define uma frequência diária (depende do intervalo)
-            - weekly: Define uma frequência semanal (depende do intervalo)
-            - monthly: Define uma frequência mensal (depende do intervalo)
-        - interval (int): o intervalo de tempo, a unidade muda com a frequência escolhida:
-            - once: Não é definido
-            - hourly: define o intervalo em minutos
-            - daily: define o intervalo em dias
-            - weekly: define o intervalo em semanas
-            - monthly: define o intervalo em meses
-        - starts_at (str): datahora da primeira execução do agendamento (yyyy-mm-dd THH:MM:SS.sssZ)
-        - timezone (str): fusohorário da hora definida, (America/Sao_Paulo, conforme Ref.: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
-        - days (list of integers or strings): define diferentes intervalos de execução para cada frequência, exceto por "once", "hourly" e "daily"
-            - weekly: em quais dias da semana o agendamento será executado, sendo 0 domingo e 6 sábado, a lista pode ter 1 ou mais dias
-            - monthly: em quais dias do mês o agendamento será executado, os dias podem ser definidos entre 1 e 28. Ou "last_day" para o último dia do mês, a lista só pode ter um valor
-
-        #### Retorna:
-        Um dicionário contendo informações sobre os agendamentos da tarefa
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(self.token='seu_self.token', organization_id='sua_organizacao')
-        instance.putSchedule('67336','daily', 2, starts_at='2024-02-17T22:00:00Z',timezone='America/Sao_Paulo')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        """
-        apiHeaders = {
-            'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-        
-        frequencyNullCheckList = ['once', 'hourly', 'daily']
-
-        if frequency in frequencyNullCheckList:
-            hashDays = {}
-        else:
-            hashDays = {'days': days}
-
-        dSchema = {
-            "data": {
-                "type": "schedule",
-                "attributes": {
-                    "frequency": frequency,
-                    "interval": interval,
-                    "starts_at": starts_at,
-                    "starts_at_timezone": timezone,
-                    "settings": hashDays
-                }
-            }
-        }
-
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_tasks/{task_id}/schedule'
-
-        # AÇÃO E RESPOSTA
-        try:
-            if frequency == "once":
-                if starts_at == None:
-                    raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
-                if timezone == None:
-                    raise Exception('É preciso definir corretamente o fuso-horário!')
-                if interval != 1:
-                    raise Exception('O intervalo não pode ser diferente de 1 para essa frequência')
-                
-            elif frequency == 'hourly':
-                if starts_at == None:
-                    raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
-                if timezone == None:
-                    raise Exception('É preciso definir corretamente o fuso-horário!')
-                if interval <= 0:
-                    raise Exception('É preciso definir um intervalo em horas para essa frequência!')
-                
-            elif frequency == 'daily':
-                if starts_at == None:
-                    raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
-                if timezone == None:
-                    raise Exception('É preciso definir corretamente o fusohorário!')
-                if interval <= 0:
-                    raise Exception('É preciso definir um intervalo em dias para essa frequência!')
-            
-            elif frequency == 'weekly':
-                if starts_at == None:
-                    raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
-                if timezone == None:
-                    raise Exception('É preciso definir corretamente o fuso-horário!')
-                if interval <= 0:
-                    raise Exception('É preciso definir um intervalo em dias para essa frequência!')
-
-                for day in days:
-                    if not 0 <= day <= 6:
-                        raise Exception('O parâmetro "days" não foi definido corretamente')
-            
-            elif frequency == 'monthly':
-                if starts_at == None:
-                    raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
-                if timezone == None:
-                    raise Exception('É preciso definir corretamente o fuso-horário!')
-                if interval <= 0:
-                    raise Exception('É preciso definir um intervalo em dias para essa frequência!')
-
-                if len(days) == 1:
-                    for day in days:
-                        if isinstance(day, str):
-                            if not day == "last_day":
-                                raise Exception('O parâmetro "days" não foi definido corretamente')
-                        else:
-                            if not 1 <= day <= 28:
-                                raise Exception('O parâmetro "days" não foi definido corretamente')
-                else:
-                    raise Exception('Para esta frequência, o parâmetro "days" não pode ter mais de 1 item')
-                
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-            Response = rq.put(url, headers=apiHeaders, json=dSchema)
-
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.token -> {Response.json()}')
-            elif Response.status_code == 403:
-                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
-            elif Response.status_code == 404:
-                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
-            elif Response.status_code == 415:
-                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
-            elif Response.status_code == 422:
-                raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}')
-            elif Response.status_code == 200:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            else:
-                raise Exception(Response.json())
-
-        except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')
-
-    def deleteSchedule(self, task_id: str):
-        """
-        Deleta o agendamento de uma tarefa
-
-        #### Referência:
-        https://docs-apis.highbond.com/#operation/deleteRobotTask
-
-        #### Parâmetros:
-        - task_id (str): Id da tarefa
-
-        #### Retorna:
-        Um dict com informações sobre o agendamento deletado.
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi('seu_self.token', 'sua_organização')
-        instance.deleteRobotTask('12345')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        """
-        apiHeaders = {
-            'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-        
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_tasks/{task_id}/schedule'
-
-        # AÇÃO E RESPOSTA
-        try:
-            
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-            Response = rq.delete(url, headers=apiHeaders)
-
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.token -> {Response.json()}')
-            elif Response.status_code == 403:
-                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
-            elif Response.status_code == 404:
-                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
-            elif Response.status_code == 415:
-                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
-            elif Response.status_code == 422:
-                raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}')
-            elif Response.status_code == 200:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            else:
-                raise Exception(Response.json())
-
-        except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')
-
-    # Robot Jobs
-    def getRobotJobs(self, robot_id: str, environment: str, 
-                include: list = ['robot','task','triggered_by'], 
-                page_size: int = 100, page_num: int = 1) -> dict:
-        """
-        Lista os jobs (execuções) de um robô ACL.
-
-        #### Referência: 
-        https://docs-apis.highbond.com/#operation/getRobotJobs
-
-        #### Parâmetros:
-        - robot_id (str): O ID do robô ACL onde os jobs estão armazenados.
-        - environment (str): O ambiente onde os jobs estão armazenados. Pode ser 'production' para o ambiente de produção ou 'development' para o ambiente de desenvolvimento.
-        - include (list): Controla se os dados 'robot', 'task' e 'triggered_by' aparecem no JSON de saída. Todos os campos marcados na consulta pela classe são incluídos. Padrão é ['robot','task','triggered_by'].
-        - page_size (int): Controla a quantidade de registros que aparecerão em cada consulta. Padrão é 100.
-        - page_num (int): Controla o número da página. A API divide em páginas quando o número de registros ultrapassa page_size. Padrão é 1.
-
-        #### Retorna:
-        Um dicionário contendo informações sobre os jobs do robô.
-
-        #### Exceções:
-        - Sobe exceção se o ambiente não estiver definido corretamente.
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(self.token='seu_self.token', organization_id='sua_organizacao')
-        result = instance.getRobotJobs(robot_id='123', environment='production')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        - A resposta é um dicionário contendo informações sobre os jobs do robô.
-        """
-        includeCheckList = ['robot', 'task', 'triggered_by']
-
-        if not isinstance(include, list):
-            raise Exception('Precisa ser configurado no formato "list"')
-        else:
-            for item in include:
-                if not item in includeCheckList:
-                    raise Exception(f'"{item}" não é um valor permitido para essa API')
-
-            strInclude = ''
-            for item in include:
-                strInclude = strInclude + ',' + item
-            strInclude = strInclude[1:]
-
-        headers = {
-            'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-
-        parameters = {
-            'env': environment,
-            'include': strInclude,
-            'page[size]': str(page_size),
-            'page[number]': str(page_num)
-        }
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}/jobs'
-
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
-
-    def deleteRobotJobs(self, job_id: str):
-        """
-        Deleta um registro de execução do robô
-
-        #### Referência:
-        https://docs-apis.highbond.com/#operation/deleteRobotJobs
-
-        #### Parâmetros:
-        - job_id (str): Id do registro de execução
-
-        #### Retorna:
-        Um dict com informações sobre o registro de execução deletado
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi('seu_self.token', 'sua_organização')
-        instance.deleteRobotJobs('12345')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        """
-        apiHeaders = {
-            'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-        
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/jobs/{job_id}'
-
-        # AÇÃO E RESPOSTA
-        try:
-            
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-            Response = rq.delete(url, headers=apiHeaders)
-
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.token -> {Response.json()}')
-            elif Response.status_code == 403:
-                raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
-            elif Response.status_code == 404:
-                raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
-            elif Response.status_code == 415:
-                raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
-            elif Response.status_code == 422:
-                raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}')
-            elif Response.status_code == 200:
-                # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
-                # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
-                if self.talkative == True:
-                    print('Código: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    return Response.json()
-                else:
-                    return Response.json()
-            else:
-                raise Exception(Response.json())
-
-        except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')
-
-    # Analytic Scripts
-    def getRobotApp(self, robot_id: str, robot_app_id: str):
-        """
-        Informa sobre uma versão específica de desenvolvimentode um robô do ACL.
-
-        #### Referência:
-        https://docs-apis.highbond.com/#operation/getRobotApp
-
-        #### Parâmetros:
-        - robot_id (str): O ID do robô ACL para o qual os arquivos estão armazenados.
-        - robot_app_id (str): O id da versão especificada
-
-        #### Retorna:
-        - Um dict com os dados solicitados
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
-        result = instance.getRobotApp(robot_id='123', robot_app_id='456')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        """
-        headers = {
-            'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}/robot_apps/{robot_app_id}'
-
-        return self.get_command(api_url=url, api_headers=headers)
-
-    def getRobotApps(self, robot_id):
-        """
-        Informa sobre todas as versões de desenvolvimento de um robô do ACL.
-
-        #### Referência:
-        https://docs-apis.highbond.com/#operation/getRobotApps
-
-        #### Parâmetros:
-        - robot_id (str): O ID do robô ACL para o qual os arquivos estão armazenados.
-
-        #### Retorna:
-        - Um dict com os dados solicitados
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
-        result = instance.getRobotApp(robot_id='123', robot_app_id='456')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        """
-        
-        headers = {
-            'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}/robot_apps'
-
-        return self.get_command(api_url=url, api_headers=headers)
-
-    def createRobotApp(self, robot_id: str, code_page: int, comment: str, is_unicode: bool, input_file: str) -> dict:
-        """
-        Método que faz upload dos arquivos relacionados de um robô ACL
-
-        #### Referência:
-        - https://docs-apis.highbond.com/#operation/createRobotApp
-        
-        #### Parâmetros:
-        - robot_id (str): id do robô
-        - code_page (int): id do encoding do robô (21 - Brazil) (Ref.: https://en.wikipedia.org/wiki/Code_page)
-        - comment (str): comentário da nova versão
-        - is_unicode (bool): define se o projeto está na versão unicode ou não
-        - input_file(str): uma string com o caminho para o arquivo .acl do projeto
-
-        #### Retorna:
-        Um dicionário contendo informações sobre o arquivo recém-criado.
-
-        #### Exceções:
-        - Raises Exception se a requisição API falhar com códigos de status diferentes de 200.
-        - Raises Exception se houver uma falha desconhecida.
-        - Raises Exception se a entidade for considerada improcessável (código 422).
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi('seu_self.token', 'sua_organização')
-        result = instance.createRobotApp(
-            robot_id='123', code_page=21, comment='Versão de teste ro robô', 
-            is_unicode=False, input_file='caminho/do/arquivo.acl'
-            )
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        """
-        headers = {
-            'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-
-        schema = {
-            'code_page': code_page,
-            'comment': comment,
-            'is_unicode': is_unicode,
-            'file': open(input_file, 'rb')
-        }
-
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}/robot_apps'
-
-        return self.post_command(api_url=url, api_headers=headers, api_schema=schema)
-
-    # Robot Script versions (Robô Python)
-    def getRobotScriptVersion(self, robot_id: str, version_id: str, include: Literal[None, 'analytics'] = 'analytics'):
-        """
-        Informa sobre uma versão específica de desenvolvimentode um robô do ACL.
-
-        #### Referência:
-        https://docs-apis.highbond.com/#operation/getRobotScriptVersion
-
-        #### Parâmetros:
-        - robot_id (str): O ID do robô ACL.
-        - version_id (str): O id da versão especificada
-
-        #### Retorna:
-        - Um dict com os dados solicitados
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
-        result = instance.getRobotScriptVersion(robot_id='123', version_id='456')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        """
-        headers = {
-            'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-        parameters = {
-            'include': include
-        }
-
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}/versions/{version_id}'
-
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
-
-    # ACL Robot Related Files
-    def getRobotFiles(self, robot_id: str, environment: str) -> dict:
-        """
-        Lista os arquivos relacionados a um robô ACL em um ambiente específico.
-
-        #### Referência:
-        https://docs-apis.highbond.com/#operation/getRobotFile
-
-        #### Parâmetros:
-        - robot_id (str): O ID do robô ACL para o qual os arquivos estão armazenados.
-        - environment (str): O ambiente onde os arquivos estão armazenados. Pode ser 'production' para o ambiente de produção ou 'development' para o ambiente de desenvolvimento.
-
-        #### Retorna:
-        Um dicionário contendo informações sobre os arquivos do robô.
-
-        #### Exceções:
-        - Sobe exceção se o ambiente não estiver definido corretamente.
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
-        result = instance.getRobotFiles(robot_id='123', environment='production')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
-        """
-        headers = {
-            'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-
-        parameters = {
-            'env': environment
-        }
-
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}/robot_files'
-
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
-
-    def createRobotFile(self, inputFile: str, robot_id: str, environment: Literal['production', 'development']) -> dict:
-        """
-        Método que faz upload dos arquivos relacionados de um robô ACL
-
-        #### Referência:
-        - https://docs-apis.highbond.com/#operation/createRobotFile
-        
-        #### Parâmetros:
-        - inputFile (str): O caminho do arquivo a ser enviado para a API como parte da criação.
-        - robot_id (str): O ID do robô ACL para o qual o arquivo será associado.
-        - environment (str): O ambiente onde o arquivo será criado. Pode ser 'production' para o ambiente de produção ou 'development' para o ambiente de desenvolvimento.
-
-        #### Retorna:
-        Um dicionário contendo informações sobre o arquivo recém-criado.
-
-        #### Exceções:
-        - Raises Exception se o ambiente não estiver definido corretamente.
-        - Raises Exception se a requisição API falhar com códigos de status diferentes de 200.
-        - Raises Exception se houver uma falha desconhecida.
-        - Raises Exception se a entidade for considerada improcessável (código 422).
-
-        #### Exemplo de uso:
-        ```python
-        instance = SuaClasse()
-        result = instance.createRobotFile(inputFile='caminho/do/arquivo.txt', robot_id='123', environment='production')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        - O caminho do arquivo a ser enviado é especificado em 'inputFile'.
-        - A resposta é um dicionário contendo informações sobre o arquivo recém-criado.
-        """
-        headers = {
-            'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-
-        parameters = {
-            'env': environment
-        }
-
-        schema = {
-            'file': open(inputFile, 'rb')
-        }
-
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}/robot_files'
-
-        try:
-            if not ((environment == 'production') or (environment == 'development')):
-                raise Exception('O ambiente não foi definido corretamente.')
-        except Exception as e:
-            print(f'A requisição não foi possível\n{e}')
-            return None
-        else:
-            return self.post_command(api_url=url, api_headers=headers, api_params=parameters, files=schema)
-
-    def deleteRobotFile(self, file_id: str) -> dict:
-        """
-        Deleta um arquivo de um robô ACL
-
-        #### Referência:
-        - https://docs-apis.highbond.com/#operation/createRobotFile
-        
-        #### Parâmetros:
-        - file_id (str): O ID do arquivo dentro do robô ACL a ser deletado.
-
-        #### Retorna:
-        Um dicionário contendo informações sobre o status da deleção.
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(self.token='seu_self.token', organization_id='sua_organizacao')
-        result = instance.deleteRobotFile(file_id='123')
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        - A resposta é um dicionário contendo informações sobre o status da deleção.
-        """
-        apiHeaders = {
-            'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_files/{file_id}'
-
-        try:
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-                
-            Response = rq.delete(url, headers=apiHeaders)
-            
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception('\nCódigo: 401\nMensagem: Falha na autenticação com self.token')
-            elif Response.status_code == 403:
-                raise Exception('\nCódigo: 403\nMensagem: Conexão não permitida pelo servidor')
-            elif Response.status_code == 404:
-                raise Exception('\nCódigo: 404\nMensagem: Recurso não encontrado no API')
-            elif Response.status_code == 415:
-                raise Exception('\nCódigo: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição')
-            elif Response.status_code == 200:
-                if self.talkative == True:
-                    print('\nCódigo: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    
-                    return Response.json()
-                else:
-                    return Response.json()
-            else:
-                raise Exception(Response.json())
-
-        except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')
-
-    def downloadFile(self, file_id: str, out_file: str) -> bytes:
-        """
-        Faz o download de um arquivo relacionado a um robô ACL.
-
-        Referência:
-        - https://docs-apis.highbond.com/#operation/downloadFile
-
-        Parâmetros:
-        - file_id (str): O ID do arquivo a ser baixado.
-        - out_file (str): O caminho do arquivo de saída onde o conteúdo baixado será salvo.
-
-        Retorna:
-        Bytes contendo o conteúdo do arquivo baixado.
-
-        Exceções:
-        - Raises Exception se a requisição API falhar com códigos de status diferentes de 200.
-        - Raises Exception se houver uma falha desconhecida.
-        - Raises Exception se o arquivo não for encontrado após o download.
-
-        Exemplo de uso:
-        ```python
-        instance = hbapi(self.token='seu_self.token', organization_id='sua_organizacao')
-        file_content = instance.downloadFile(file_id='123', out_file='caminho/do/arquivo/baixado.txt')
-        ```
-
-        Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de log.
-        - O conteúdo do arquivo baixado é salvo no caminho especificado em 'out_file'.
-        """
-        apiHeaders = {
-            'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
-
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robot_files/{file_id}/download'
-
-        try:
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-
-            Response = rq.get(url, headers=apiHeaders)
-
-            if Response.status_code == 400:
-                raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
-            elif Response.status_code == 401:
-                raise Exception('\nCódigo: 401\nMensagem: Falha na autenticação com self.token')
-            elif Response.status_code == 403:
-                raise Exception('\nCódigo: 403\nMensagem: Conexão não permitida pelo servidor')
-            elif Response.status_code == 404:
-                raise Exception('\nCódigo: 404\nMensagem: Recurso não encontrado no API')
-            elif Response.status_code == 415:
-                raise Exception('\nCódigo: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição')
-            elif Response.status_code == 200:
-                if self.talkative == True:
-                    print('\nCódigo: 200\nMensagem: Requisição executada com sucesso\n')
-                    # SAÍDA COM SUCESSO
-                    
-                    output = pl.Path(out_file)
-                    output.write_bytes(Response.content)
-                    if not os.path.exists(out_file):
-                        raise Exception('\nArquivo não encontrado após o download')
-                else:
-                    output = pl.Path(out_file)
-                    output.write_bytes(Response.content)
-                    if not os.path.exists(out_file):
-                        raise Exception('\nArquivo não encontrado após o download')
-            else:
-                raise Exception(Response.json())
-
-        except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')
 
     def getEntities(self, fields_entities: str = 'title,description,created_at,updated_at,parent,children_count,entity_category', page_size: int = 100, page_num: int = 1) -> dict:
         """
@@ -1784,7 +339,7 @@ class Highbond_API:
             'Authorization': f'Bearer {self.token}'
         }
 
-        parameters = {
+        params = {
             'fields[entities]': fields_entities,
             'page_size': page_size,
             'page[number]': base64.encodebytes(str(page_num).encode()).decode()
@@ -1792,7 +347,7 @@ class Highbond_API:
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/entities'
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
 
     def getStrategyRisks(self, 
                             fields: str = 'title,description,status,score,residual_score,heat,residual_heat,strategy_custom_attributes,risk_manager_risk_id,created_at,updated_at', 
@@ -1838,7 +393,7 @@ class Highbond_API:
             'Authorization': f'Bearer {self.token}'
         }
 
-        parameters = {
+        params = {
             'fields[strategy_risks]': fields,
             'page[size]' : page_size,
             'page[number]': base64.encodebytes(str(page).encode()).decode()
@@ -1846,7 +401,7 @@ class Highbond_API:
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/strategy_risks'
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
 
     def getStrategySegments(self, 
                             page_size: int = 100, 
@@ -1890,14 +445,14 @@ class Highbond_API:
             'Authorization': f'Bearer {self.token}'
         }
 
-        parameters = {
+        params = {
             'page[size]' : page_size,
             'page[number]': base64.encodebytes(str(page).encode()).decode()
         }
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/strategy_segments'
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
 
     def getStrategyRiskSegments(self, strategy_risk_id: str, page_size: int = 100, page: int = 1) -> dict:
         """
@@ -1934,14 +489,14 @@ class Highbond_API:
             'Authorization': f'Bearer {self.token}'
         }
         
-        parameters = {
+        params = {
             'page[size]': page_size,
             'page[number]': base64.encodebytes(str(page).encode()).decode()
         }
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/strategy_risks/{strategy_risk_id}/strategy_segments'
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
 
     
     def getStrategyRiskSegment(self, 
@@ -1991,14 +546,14 @@ class Highbond_API:
         if segment_fields == '':
             raise Exception('O método não pode ser chamado sem um campo de consulta')
 
-        parameters = {
+        params = {
             'fields[strategy_segments]': segment_fields,
             'fields[strategy_factors]': factors_fields
         }
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/strategy_risks/{strategy_risk_id}/strategy_segments/{segment_id}'
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
 
     def getStrategyObjectives(self, page_size: int = 100, page_num: int = 1) -> dict:
         """
@@ -2033,14 +588,14 @@ class Highbond_API:
             'Authorization': f'Bearer {self.token}'
         }
 
-        parameters = {
+        params = {
             'page[size]': page_size,
             'page[number]': base64.encodebytes(str(page_num).encode()).decode()
         }
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/strategy_objectives'
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
 
     def getProjects(
                     self, 
@@ -2083,7 +638,7 @@ class Highbond_API:
             'Authorization': f'Bearer {self.token}'
         }
 
-        parameters = {
+        params = {
             'fields[projects]': fields,
             'page[size]': page_size,
             'page[number]': base64.encodebytes(str(page_num).encode()).decode(),
@@ -2093,7 +648,7 @@ class Highbond_API:
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/projects'
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
 
     def createProject(
             self,
@@ -2163,7 +718,7 @@ class Highbond_API:
             'Authorization': f'Bearer {self.token}'
         }
 
-        parameters = {
+        params = {
             'fields[projects]': fields
         }
 
@@ -2205,7 +760,7 @@ class Highbond_API:
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/projects'
 
-        return self.post_command(api_url=url, api_headers=headers, api_params=parameters, api_schema=schema)
+        return self.post_command(api_url=url, api_headers=headers, api_params=params, api_schema=schema)
 
     def getProject(self, project_id: str, fields: str = 'name,state,status,created_at,updated_at,description,background,budget,position,header_alert_enabled,header_alert_text,certification,control_performance,risk_assurance,management_response,max_sample_size,number_of_testing_rounds,opinion,opinion_description,purpose,scope,start_date,target_date,tag_list,project_type,entities,collaborators,risk_assurance_data,collaborator_groups,time_spent,progress,planned_start_date,actual_start_date,planned_end_date,actual_end_date,planned_milestone_date,actual_milestone_date') -> dict:
         """
@@ -2241,13 +796,13 @@ class Highbond_API:
             'Authorization': f'Bearer {self.token}'
         }
 
-        parameters = {
+        params = {
             'fields[projects]': fields,
         }
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/projects/{project_id}'
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
 
     def updateProject(
             self, 
@@ -2333,16 +888,16 @@ class Highbond_API:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         """
 
-        apiHeaders = {
+        headers = {
             'Content-Type': 'application/vnd.api+json',
             'Authorization': f'Bearer {self.token}'
         }
 
-        qParameters = {
+        params = {
             'fields[projects]': fields
         }
 
-        dSchema = {
+        schema = {
             "data": {
                 "id": project_id,
                 "type": "projects",
@@ -2363,94 +918,94 @@ class Highbond_API:
         }
 
         if bool(planned_start_date):
-            dSchema['data']['attributes']['planned_start_date'] = planned_start_date
+            schema['data']['attributes']['planned_start_date'] = planned_start_date
 
         if bool(planned_end_date):
-            dSchema['data']['attributes']["planned_end_date"] = planned_end_date
+            schema['data']['attributes']["planned_end_date"] = planned_end_date
 
         if bool(actual_start_date):
-            dSchema['data']['attributes']["actual_start_date"] = actual_start_date
+            schema['data']['attributes']["actual_start_date"] = actual_start_date
 
         if bool(actual_end_date):
-            dSchema['data']['attributes']["actual_end_date"] = actual_end_date
+            schema['data']['attributes']["actual_end_date"] = actual_end_date
 
         if bool(actual_milestone_date):
-            dSchema['data']['attributes']["actual_milestone_date"] = actual_milestone_date
+            schema['data']['attributes']["actual_milestone_date"] = actual_milestone_date
 
         if bool(planned_milestone_date):
-            dSchema['data']['attributes']["planned_milestone_date"] = planned_milestone_date
+            schema['data']['attributes']["planned_milestone_date"] = planned_milestone_date
 
         if bool(status):
-            dSchema['data']['attributes']["status"] = status
+            schema['data']['attributes']["status"] = status
 
         if bool(description):
-            dSchema['data']['attributes']["description"] = description
+            schema['data']['attributes']["description"] = description
 
         if bool(background):
-            dSchema['data']['attributes']["background"] = background
+            schema['data']['attributes']["background"] = background
 
         if bool(budget):
-            dSchema['data']['attributes']["budget"] = budget
+            schema['data']['attributes']["budget"] = budget
 
         if bool(certification):
-            dSchema['data']['attributes']["certification"] = certification
+            schema['data']['attributes']["certification"] = certification
 
         if bool(control_performance):
-            dSchema['data']['attributes']["control_performance"] = control_performance
+            schema['data']['attributes']["control_performance"] = control_performance
 
         if bool(risk_assurance):
-            dSchema['data']['attributes']["risk_assurance"] = risk_assurance
+            schema['data']['attributes']["risk_assurance"] = risk_assurance
 
         if bool(management_response):
-            dSchema['data']['attributes']["management_response"] = management_response
+            schema['data']['attributes']["management_response"] = management_response
 
         if bool(max_sample_size):
-            dSchema['data']['attributes']["max_sample_size"] = max_sample_size
+            schema['data']['attributes']["max_sample_size"] = max_sample_size
 
         if bool(opinion):
-            dSchema['data']['attributes']["opinion"] = opinion
+            schema['data']['attributes']["opinion"] = opinion
 
         if bool(opinion_description):
-            dSchema['data']['attributes']["opinion_description"] = opinion_description
+            schema['data']['attributes']["opinion_description"] = opinion_description
 
         if bool(purpose):
-            dSchema['data']['attributes']["purpose"] = purpose
+            schema['data']['attributes']["purpose"] = purpose
 
         if bool(scope):
-            dSchema['data']['attributes']["scope"] = scope
+            schema['data']['attributes']["scope"] = scope
 
         if len(tag_list) > 0:
-            if not 'tag_list' in dSchema['data']['attributes']:
-                dSchema['data']['attributes']['tag_list'] = []
+            if not 'tag_list' in schema['data']['attributes']:
+                schema['data']['attributes']['tag_list'] = []
 
             for tag in tag_list:
-                dSchema['data']['attributes']['tag_list'].append(tag)
+                schema['data']['attributes']['tag_list'].append(tag)
         
         if len(custom_attributes) > 0:
-            if not 'custom_attributes' in dSchema['data']['attributes']:
-                dSchema['data']['attributes']['custom_attributes'] = []
+            if not 'custom_attributes' in schema['data']['attributes']:
+                schema['data']['attributes']['custom_attributes'] = []
 
             for custAttrib in custom_attributes:
-                dSchema['data']['attributes']['custom_attributes'].append(custAttrib)
+                schema['data']['attributes']['custom_attributes'].append(custAttrib)
 
         if len(entities) > 0:
-            if not 'relationships' in dSchema['data']:
-                dSchema['data']['relationships'] = {}
+            if not 'relationships' in schema['data']:
+                schema['data']['relationships'] = {}
 
-            dSchema['data']['relationships']['entities'] = {}
-            dSchema['data']['relationships']['entities']['data'] = []
+            schema['data']['relationships']['entities'] = {}
+            schema['data']['relationships']['entities']['data'] = []
             
             for entity in entities:
-                dSchema['data']['entities']['data'].append(entity)
+                schema['data']['entities']['data'].append(entity)
 
         if bool(project_type_id):
-            if not 'relationships' in dSchema['data']:
-                dSchema['data']['relationships'] = {}
+            if not 'relationships' in schema['data']:
+                schema['data']['relationships'] = {}
             
-            dSchema['data']['relationships']['project_type'] = {}
-            dSchema['data']['relationships']['project_type']['data'] = {}
-            dSchema['data']['relationships']['project_type']['data']['id'] = project_type_id
-            dSchema['data']['relationships']['project_type']['data']['type'] = "project_types"
+            schema['data']['relationships']['project_type'] = {}
+            schema['data']['relationships']['project_type']['data'] = {}
+            schema['data']['relationships']['project_type']['data']['id'] = project_type_id
+            schema['data']['relationships']['project_type']['data']['type'] = "project_types"
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/projects/{project_id}'
 
@@ -2459,7 +1014,7 @@ class Highbond_API:
             
             if self.talkative == True:
                 print('Iniciando a requisição HTTP...')
-            Response = rq.patch(url, params=qParameters, headers=apiHeaders, json=dSchema)
+            Response = rq.patch(url, params=params, headers=headers, json=schema)
 
             if Response.status_code == 400:
                 raise Exception(f'Código: 400\nMensagem: Falha na requisição API -> {Response.json()}')
@@ -2525,12 +1080,12 @@ class Highbond_API:
         else:
             permanent_value = None
 
-        apiHeaders = {
+        headers = {
             'Content-type': 'application/vnd.api+json',
             'Authorization': f'Bearer {self.token}'
         }
 
-        qParameters = {
+        params = {
             'permament': permanent_value
         }
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/projects/{project_id}'
@@ -2539,7 +1094,7 @@ class Highbond_API:
         try:
             if self.talkative:
                 print('Iniciando a requisição HTTP...')
-            response = rq.delete(url, params=qParameters, headers=apiHeaders)
+            response = rq.delete(url, params=params, headers=headers)
 
             if response.status_code == 400:
                 raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {response.json()}')
@@ -2649,7 +1204,7 @@ class Highbond_API:
         #### Observações:
         - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
         """
-        apiHeaders = {
+        headers = {
             'Content-type': 'application/vnd.api+json',
             'Authorization': f'Bearer {self.token}'
         }
@@ -2661,7 +1216,7 @@ class Highbond_API:
             
             if self.talkative == True:
                 print('Iniciando a requisição HTTP...')
-            Response = rq.delete(url, headers=apiHeaders)
+            Response = rq.delete(url, headers=headers)
 
             if Response.status_code == 400:
                 raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
@@ -2741,7 +1296,7 @@ class Highbond_API:
             'Authorization': f'Bearer {self.token}'
         }
 
-        parameters = {
+        params = {
             'filter[metadata.status][]': status,
             'filter[metadata.assignee]': assignee
         }
@@ -2750,7 +1305,7 @@ class Highbond_API:
             table_id = str(table_id)
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/tables/{table_id}/records'
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
 
     def uploadRecords(self, table_id: str, input_data: pd.DataFrame, explicit_field_types: dict = {}, overwrite: bool = False) -> dict:
         """
@@ -3188,7 +1743,7 @@ class Highbond_API:
             'Authorization': f'Bearer {self.token}'
         }
 
-        parameters = {
+        params = {
             'filter[project.id]': filter_project_id,
             'filter[project.state]': filter_project_state,
             'filter[target.type]': filter_target_type,
@@ -3202,7 +1757,7 @@ class Highbond_API:
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/issues'
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
     
     def getActions(self,
                    issue_id: str,
@@ -3244,7 +1799,7 @@ class Highbond_API:
             'Authorization': f'Bearer {self.token}'
         }
 
-        parameters = {
+        params = {
             'page[size]': page_size,
             'page[number]': base64.encodebytes(str(page_num).encode()).decode(),
         }
@@ -3254,7 +1809,7 @@ class Highbond_API:
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/issues/{issue_id}/actions'
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
         
     def getAction(self,
                 action_id: str,
@@ -3295,7 +1850,7 @@ class Highbond_API:
             'Authorization': f'Bearer {self.token}'
         }
 
-        parameters = {
+        params = {
 
         }
 
@@ -3304,7 +1859,7 @@ class Highbond_API:
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/actions/{action_id}'
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
     
     def getSignOffs(self,
             fields: list = ['created_at','updated_at','prepared_at','detail_reviewed_at','general_reviewed_at','supplemental_reviewed_at','specialty_reviewed_at',
@@ -3376,7 +1931,7 @@ class Highbond_API:
             'Authorization': f'Bearer {self.token}'
         }
 
-        parameters = {
+        params = {
         'fields[signoffs]': ','.join(fields),
         'include': ','.join(include) if include else include,
         'page[size]': str(page_size),
@@ -3395,7 +1950,7 @@ class Highbond_API:
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/signoffs'
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
     
     def getControlTests(self, fields: list = ['testing_round_number','not_applicable','sample_size','testing_results','testing_conclusion','testing_conclusion_status',
                                               'created_at','updated_at','custom_attributes','control','assigned_user','actual_milestone_date','planned_milestone_date'],
@@ -3418,7 +1973,7 @@ class Highbond_API:
             'Authorization': f'Bearer {self.token}'
         }
 
-        parameters = {
+        params = {
             'fields[control_tests]': ','.join(fields),
             'sort': sort,
             'filter[project.id]': project_id,
@@ -3449,7 +2004,7 @@ class Highbond_API:
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/control_tests'
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
     
     def getAControlTest(
             self,
@@ -3464,14 +2019,14 @@ class Highbond_API:
             'Authorization': f'Bearer {self.token}'
         }
 
-        parameters = {
+        params = {
             'fields[control_tests]': ','.join(fields),
             'include': ','.join(include) if include else include,
         }
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/control_tests/{resource_id}'
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
     
     def getPlanningFiles(self,
                         parent_resource_type: Literal["projects", "frameworks"],
@@ -3517,7 +2072,7 @@ class Highbond_API:
             'Authorization': f'Bearer {self.token}'
         }
 
-        parameters = {
+        params = {
         'fields[planning_files]': ','.join(fields),
         'page[size]': str(page_size),
         'page[number]': base64.b64encode(str(page_num).encode()).decode()
@@ -3525,7 +2080,7 @@ class Highbond_API:
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/{parent_resource_type}/{parent_resource_id}/planning_files'
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
     
     def getOrganizationWalkthroughs(self,
                         fields: list = ['walkthrough_results', 'control_design', 'created_at', 'updated_at', 'custom_attributes',
@@ -3652,7 +2207,7 @@ class Highbond_API:
             'Authorization': f'Bearer {self.token}'
         }
 
-        parameters = {
+        params = {
             'fields[walkthroughs]': ','.join(fields) if fields else fields,
             'sort': sort,
             'filter[project.id]': project_id,
@@ -3683,7 +2238,7 @@ class Highbond_API:
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/walkthroughs'
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
     
     def getWalkthrough(self,
                         walkthrough_id: str,
@@ -3734,14 +2289,14 @@ class Highbond_API:
             'Authorization': f'Bearer {self.token}'
         }
 
-        parameters = {
+        params = {
             'fields[walkthroughs]': ','.join(fields) if fields else fields,
             'include': ','.join(include) if include else include,
         }
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/walkthroughs/{walkthrough_id}'
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
     
     def getTables(self, analysis_id: int) -> dict:
 
@@ -3806,7 +2361,7 @@ class Highbond_API:
             'Authorization': f'Bearer {self.token}'
         }
 
-        parameters = {
+        params = {
             'fields[controls]': ','.join(fields_controls) if fields_controls else fields_controls,
             'fields[objectives]': ','.join(fields_objectives) if fields_objectives else fields_objectives,
             'fields[walkthroughs]': ','.join(fields_walkthroughs) if fields_walkthroughs else fields_walkthroughs,
@@ -3823,7 +2378,7 @@ class Highbond_API:
 
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/controls'
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
 
     def getOrgRequestItems(
                     self, 
@@ -3866,7 +2421,7 @@ class Highbond_API:
         
         url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/request_items/{id}'
             
-        parameters = {
+        params = {
             'fields[projects]': ','.join(fields),
             'page[size]': page_size,
             'page[number]': base64.encodebytes(str(page_num).encode()).decode(),
@@ -3879,133 +2434,1521 @@ class Highbond_API:
             'filter[received]': filter_received,
         }
 
-        return self.get_command(api_url=url, api_headers=headers, api_params=parameters)
+        return self.get_command(api_url=url, api_headers=headers, api_params=params)
     
 
-class Robots(Highbond_API):
-    def __init__(self, token: str, organization_id: str, protocol: str, server: str, talkative: bool = True):
-        # herda inicialização da classe base
-        super().__init__(token=token, organization_id=organization_id, protocol=protocol, server=server, talkative=talkative)
+    class _Robots:
+        def __init__(self, parent):
+            self.parent = parent
 
-    # === GET ===
-    def getRobots(self) -> dict:
-        """
-        Lista os robôs disponíveis no robotics
+        # === GET ===
+        def getRobots(self) -> dict:
+            """
+            Lista os robôs disponíveis no robotics
 
-        #### Referência:
-        https://docs-apis.highbond.com/#operation/getRobots
+            #### Referência:
+            https://docs-apis.highbond.com/#operation/getRobots
 
-        #### Retorna:
-        Um dicionário contendo informações sobre os robôs.
+            #### Retorna:
+            Um dicionário contendo informações sobre os robôs.
 
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
 
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
-        result = instance.getRobots()
-        ```
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
+            result = instance.getRobots()
+            ```
 
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        """
-        headers = {
-            'Content-type': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            """
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
 
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots'
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots'
 
-        return self.get_command(api_url=url, api_headers=headers)
-    
-    # === POST ===
-    def createRobot(self, robot_name: str, robot_description: str = None, robot_category: Literal['acl', 'highbond', 'workflow'] = 'acl') -> dict:
-        """
-        Cria um robô na organização
+            return self.parent.get_command(api_url=url, api_headers=headers)
+        
+        # === POST ===
+        def createRobot(self, robot_name: str, robot_description: str = None, robot_category: Literal['acl', 'highbond', 'workflow'] = 'acl') -> dict:
+            """
+            Cria um robô na organização
 
-        #### Referência:
-        https://docs-apis.highbond.com/#operation/createRobot
+            #### Referência:
+            https://docs-apis.highbond.com/#operation/createRobot
 
-        #### Parâmetros:
-        - robot_name (str): O nome do robô ACL que será criado.
-        - robot_description (str): A descrição do robô.
-        - robot_category (str): O topo de robô que será criado, padrão é 'acl'
+            #### Parâmetros:
+            - robot_name (str): O nome do robô ACL que será criado.
+            - robot_description (str): A descrição do robô.
+            - robot_category (str): O topo de robô que será criado, padrão é 'acl'
 
-        #### Retorna:
-        Um dict com informações sobre o robô criado.
+            #### Retorna:
+            Um dict com informações sobre o robô criado.
 
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
 
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
-        result = instance.createRobot('nome_robô', 'descricao_robo', 'acl')
-        ```
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
+            result = instance.createRobot('nome_robô', 'descricao_robo', 'acl')
+            ```
 
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        """
-        headers = {
-            'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            """
+            headers = {
+                'Accept': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
 
-        parameters = {
-            'name': robot_name,
-            'description': robot_description,
-            'category': robot_category
-        }
+            params = {
+                'name': robot_name,
+                'description': robot_description,
+                'category': robot_category
+            }
 
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots'
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots'
 
-        return self.post_command(api_url=url, api_headers=headers, api_params=parameters)
-    
-    # === PUT ===
-    def putRobot(self, robot_id, robot_new_name: str, robot_new_description: str, robot_new_category: Literal['acl', 'highbond', 'workflow']) -> dict:
-        """
-        Atualiza as informações de um robô
+            return self.parent.post_command(api_url=url, api_headers=headers, api_params=params)
+        
+        # === PUT ===
+        def putRobot(self, robot_id, robot_new_name: str, robot_new_description: str, robot_new_category: Literal['acl', 'highbond', 'workflow']) -> dict:
+            """
+            Atualiza as informações de um robô
 
-        #### Referência:
-        https://docs-apis.highbond.com/#operation/putRobot
+            #### Referência:
+            https://docs-apis.highbond.com/#operation/putRobot
 
-        #### Parâmetros:
-        - robot_id (str): O ID do robô cujos dados serão alterados.
-        - robot_new_name (str): O novo nome do robô (manter o mesmo caso não queira trocar).
-        - robot_new_description (str): A nova descrição do robô (manter o mesmo caso não queira trocar)
-        - robot_new_category (str): A nova categoria do robô (manter a mesma caso não queira trocar)
+            #### Parâmetros:
+            - robot_id (str): O ID do robô cujos dados serão alterados.
+            - robot_new_name (str): O novo nome do robô (manter o mesmo caso não queira trocar).
+            - robot_new_description (str): A nova descrição do robô (manter o mesmo caso não queira trocar)
+            - robot_new_category (str): A nova categoria do robô (manter a mesma caso não queira trocar)
 
-        #### Retorna:
-        Um dicionário contendo informações sobre as alterações feitas no robô.
+            #### Retorna:
+            Um dicionário contendo informações sobre as alterações feitas no robô.
 
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
 
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
-        result = instance.putRobot('novo_nome', 'nova_descricao', 'acl')
-        ```
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
+            result = instance.putRobot('novo_nome', 'nova_descricao', 'acl')
+            ```
 
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        """
-        apiHeaders = {
-            'Accept': 'application/vnd.api+json',
-            'Authorization': f'Bearer {self.token}'
-        }
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            """
+            headers = {
+                'Accept': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
 
-        qParameters = {
-            'id': robot_id,
-            'name': robot_new_name,
-            'description': robot_new_description,
-            'category': robot_new_category
-        }
+            params = {
+                'id': robot_id,
+                'name': robot_new_name,
+                'description': robot_new_description,
+                'category': robot_new_category
+            }
 
-        url = f'{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/robots/{robot_id}'
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}'
 
-        return self.put_command(api_url=url, api_headers=apiHeaders, api_params=qParameters)
+            return self.parent.put_command(api_url=url, api_headers=headers, api_params=params)
+        
+        def deleteRobot(self, robot_id: str) -> dict:
+            """
+            Deleta um robô e todas as tarefas associadas a ele
+
+            #### Referência:
+            https://docs-apis.highbond.com/#operation/deleteRobot
+
+            #### Parâmetros:
+            - robot_id (str): O ID do robô que será deletado.
+            
+            #### Retorna:
+            Um dicionário contendo informações sobre o robô deletado.
+
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
+
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi(self.token='seu_self.token', organization_id='id_da_organização')
+            result = instance.deleteRobot('12345')
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
+            """
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}'
+
+            return self.parent.delete_command(api_url=url, api_headers=headers)
+            
+        def getRobotTasks(self, robot_id: str, environment: str) -> dict:
+            """
+            Lista as tarefas de um robô ACL.
+
+            #### Referência: 
+            https://docs-apis.highbond.com/#operation/getRobotTasks
+
+            #### Parâmetros:
+            - robot_id (str): O ID do robô ACL onde as tarefas estão armazenadas.
+            - environment (str): O ambiente onde as tarefas estão armazenadas. Pode ser 'production' para o ambiente de produção ou 'development' para o ambiente de desenvolvimento.
+
+            #### Retorna:
+            Um dicionário contendo informações sobre as tarefas do robô.
+
+            #### Exceções:
+            - Raises Exception se o ambiente não estiver definido corretamente.
+            - Raises Exception se a requisição API falhar com códigos de status diferentes de 200.
+            - Raises Exception se houver uma falha desconhecida.
+
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi(self.token='seu_self.token', organization_id='sua_organizacao')
+            result = instance.getRobotTasks(robot_id='123', environment='production')
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            - A resposta é um dicionário contendo informações sobre as tarefas do robô.
+            """
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            params = {
+                'env': environment
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_tasks'
+
+            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+
+        def createRobotTask(self, robot_id, environment: Literal['production', 'development'], 
+                            task_name, app_version: int = None, emails_enabled: bool = False, 
+                            log_enabled: bool = False, pw_crypto_key: str = None, 
+                            share_encrypted: bool = False, analytic_names: list = None) -> dict:
+            """
+            Cria uma tarefa em um robô do Highbond, e em um ambiente específico
+
+            #### Referência:
+            https://docs-apis.highbond.com/#operation/createRobotTask
+
+            #### Parâmetros:
+            - robot_id (str): Id do robô onde a tarefa será criada
+            - environment (str): define o ambiente em que a tarefa será criada
+            - task_name (str): nome da tarefa que será criada
+            - app_version (int): versão do robô que a tarefa vai utilizar (no caso de tarefas em produção)
+            - emails_enabled (bool): Se True, habilita a notificação de e-mails da tarefa
+            - log_enabled (bool): Se True, habilita a saída de logs na execução da tarefa
+            - pw_crypto_key (str): define a chave de descriptografia RSA das senhas nas tarefas
+            - share_encrypted(bool): define se a tarefa pode ou não ser acessada quando uma senha foi criptografada
+            - analytic_names(list): define a lista de análises do robô que será executada pela tarefa
+
+            #### Retorna:
+            Um dict com informações sobre a tarefa criada.
+
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
+
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi('seu_self.parent.token', 'sua_organização')
+            instance.createRobotTask('12345', 'production', 'tarefa 1')
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            """
+            headers = {
+                'Accept': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            schema = {
+                'data':{
+                    'type': 'robot_tasks',
+                    'attributes': {
+                        'app_version': app_version,
+                        'email_notifications_enabled': emails_enabled,
+                        'environment': environment,
+                        'log_enabled': log_enabled,
+                        'name': task_name,
+                        'public_key_name': pw_crypto_key,
+                        'share_encrypted': share_encrypted,
+                        'analytic_names': [analytic_names]
+                    }
+                }
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_tasks'
+
+            return self.parent.post_command(api_url=url, api_headers=headers, api_schema=schema)
+        
+        def putRobotTask(self, task_id, environment: Literal['production', 'development'], 
+                            task_name, app_version: int = None, emails_enabled: bool = False, 
+                            log_enabled: bool = False, pw_crypto_key: str = None, 
+                            share_encrypted: bool = False, analytic_names: list = None) -> dict:
+            """
+            Atualiza uma tarefa em um robô do Highbond, e em um ambiente específico
+
+            #### Referência:
+            https://docs-apis.highbond.com/#operation/putRobotTask
+
+            #### Parâmetros:
+            - task_id (str): Id da tarefa que será atualizada
+            - environment (str): define o ambiente em que a tarefa será atualizada
+            - task_name (str): nome da tarefa que será atualizada
+            - app_version (int): versão do robô que a tarefa vai utilizar (no caso de tarefas em produção)
+            - emails_enabled (bool): Se True, habilita a notificação de e-mails da tarefa
+            - log_enabled (bool): Se True, habilita a saída de logs na execução da tarefa
+            - pw_crypto_key (str): define a chave de descriptografia RSA das senhas nas tarefas
+            - share_encrypted(bool): define se a tarefa pode ou não ser acessada quando uma senha foi criptografada
+            - analytic_names(list): define a lista de análises do robô que será executada pela tarefa
+
+            #### Retorna:
+            Um dict com informações sobre a tarefa atualizada.
+
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
+
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi('seu_self.parent.token', 'sua_organização')
+            instance.putRobotTask('12345', 'production', 'tarefa 1')
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            """
+            headers = {
+                'Accept': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            schema = {
+                'data':{
+                    'type': 'robot_tasks',
+                    'attributes': {
+                        'app_version': app_version,
+                        'email_notifications_enabled': emails_enabled,
+                        'environment': environment,
+                        'log_enabled': log_enabled,
+                        'name': task_name,
+                        'public_key_name': pw_crypto_key,
+                        'share_encrypted': share_encrypted,
+                        'analytic_names': analytic_names
+                    }
+                }
+            }
+            
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_tasks/{task_id}'
+
+            return self.parent.put_command(api_url=url, api_headers=headers, api_schema=schema)
+
+        def deleteRobotTask(self, task_id: str) -> dict:
+            """
+            Deleta uma tarefa de um robô do Highbond
+
+            #### Referência:
+            https://docs-apis.highbond.com/#operation/deleteRobotTask
+
+            #### Parâmetros:
+            - task_id (str): Id da tarefa que será deletada
+
+            #### Retorna:
+            Um dict com informações sobre a tarefa deletada.
+
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
+
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi('seu_self.parent.token', 'sua_organização')
+            instance.deleteRobotTask('12345')
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            """
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+            
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_tasks/{task_id}'
+
+            return self.parent.delete_command(api_url=url, api_headers=headers)
+
+        def runRobotTask(self, task_id: str, include: list = ['job_values','result_tables']) -> dict:
+            """
+            Inicia a execução de uma tarefa de um robô no Highbond
+
+            #### Referência:
+            https://docs-apis.highbond.com/#operation/runRobotTask
+
+            #### Parâmetros:
+            - task_id (str): Id da tarefa que será executada
+            - include (list): Define se os valores job_values e result_tables vão sair na resposta
+
+            #### Retorna:
+            Um dict com informações sobre a a execução da tarefa.
+
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
+
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi('seu_self.parent.token', 'sua_organização')
+            instance.runRobotTask('12345', ['job_values','result_tables'])
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            """
+            includeCheckList = ['job_values','result_tables']
+
+            if not isinstance(include, list):
+                raise Exception('Precisa ser configurado no formato "list"')
+            else:
+                for item in include:
+                    if not item in includeCheckList:
+                        raise Exception(f'"{item}" não é um valor permitido para essa API')
+
+                strInclude = ''
+                for item in include:
+                    strInclude = strInclude + ',' + item
+                strInclude = strInclude[1:]
+
+            headers = {
+                'Accept': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+            
+            params = {
+                'include': strInclude
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_tasks/{task_id}/run_now'
+
+            return self.parent.post_command(api_url=url, api_headers=headers, api_params=params)
+
+        def getValues(self, task_id: str) -> dict:
+            """
+            Lista os valores em uma tarefa de um robô.
+
+            #### Referência: 
+            https://docs-apis.highbond.com/#operation/getValues
+
+            #### Parâmetros:
+            - task_id (str): Id da tarefa, onde os parâmetros estão disponíveis
+
+            #### Retorna:
+            Um dicionário contendo informações sobre os parâmetros da tarefa.
+
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
+
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='sua_organizacao')
+            result = instance.getValues(task_id='123')
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            - A resposta é um dicionário contendo informações sobre os jobs do robô.
+            """
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_tasks/{task_id}/values'
+
+            return self.parent.get_command(api_url=url, api_headers=headers)
+
+        def putValues(self, task_id: str, multi_mode: bool, analytic_name: str = None, parameter_id: str = None, 
+                        encrypted: bool = None, value: str = None, 
+                        value_type: Literal["character","date","datetime","file","logical","number","table","time"] = None, 
+                        values_list: List[list] = None) -> dict:
+            """
+            Atualiza o valor de um parâmetro de uma tarefa
+
+            #### Referência:
+            https://docs-apis.highbond.com/#operation/putValues
+
+            #### Parâmetros:
+            - task_id (str): Id da tarefa que será atualizada
+            - multi_mode (bool): Define se o método atualizará um valor ou vários valores
+            - analytic_name (str): define o nome da análise que será alterada se multi_mod = False
+            - parameter_id (str): define qual parâmetro será alterado se multi_mod = False
+            - encrypted (bool): Se True, define que o parâmetro é protegido e mascarado como uma senha se multi_mod = False
+            - value (str): conteúdo do valor que será alterado se multi_mod = False
+            - value_type (str): tipo do valor que será alterado se multi_mod = False
+            - values_list (list): se multi_mod = True, recebe [analytic_name, parameter_id, encrypted, value, value_type] para cada valor que será alterado
+
+            #### Retorna:
+            Um dict com informações sobre os parâmetros que serão atualizados.
+
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
+
+            #### Exemplo de uso se multi_mod = False:
+            ```python
+            instance = hbapi('seu_self.parent.token', 'sua_organização')
+            instance.putValues('1234565', multi_mod=False, 'Nome da Análise', 'Nome do ParÂmetro', False, 'Novo Valor', 'character')
+            ```
+
+            #### Exemplo de uso se multi_mod = True
+            ```python
+                instance = hbapi('self.parent.token', 'organizacao')
+                instance.putValues('tarefa', multi_mod=True, values_list=[
+                    ['Nome da Análise 1', 'Nome do Parâmetro 1', True, 'Novo Valor 1', 'character'], 
+                    ['Nome da Análise 2', 'Nome do Parâmetro 2', True, 'Novo Valor 2', 'character']
+                ]
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            - Caso haja calores com senha entre os parâmetros da tarefa, putValues deve sempre rodar em multi_mod=True
+            pois, o parâmetro de senha deve ser passado junto dos outros.
+            """
+            headers = {
+                'Accept': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            schema = {
+                "a": ""
+            }
+            
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_tasks/{task_id}/values'
+
+            # AÇÃO E RESPOSTA
+            try:
+
+                if multi_mode == False:
+                    if values_list != None:
+                        schema = {
+                            "data": [
+                                {
+                                    "type": "values",
+                                    "attributes": {
+                                        "analytic_name": analytic_name,
+                                        "parameter_id": parameter_id,
+                                        "encrypted": encrypted,
+                                        "data": {
+                                            "value": value,
+                                            "type": value_type
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    else:
+                        raise Exception('"values_list" não pode ser definido se multi_mod=False')
+                else:
+                    if not values_list == None:
+                        for item in values_list:
+                            if len(item) != 5:
+                                raise Exception('Um dos valores de values_list foi mal configurado')
+                            schema = {
+                                "data": []
+                            }
+
+                            hashTemp = {
+                                    "type": "values",
+                                    "attributes": {
+                                        "analytic_name": item[0],
+                                        "parameter_id": item[1],
+                                        "encrypted": item[2],
+                                        "data": {
+                                            "value": item[3],
+                                            "type": item[4]
+                                        }
+                                    }
+                                }
+
+                        schema['data'].append(hashTemp)
+                    else:
+                        raise Exception('"values_list" precisa ser corretamente definido se multi_mod=True')
+                
+                if self.parent.talkative == True:
+                    print('Iniciando a requisição HTTP...')
+                Response = rq.put(url, headers=headers, json=schema)
+
+                if Response.status_code == 400:
+                    raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
+                elif Response.status_code == 401:
+                    raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.parent.token -> {Response.json()}')
+                elif Response.status_code == 403:
+                    raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
+                elif Response.status_code == 404:
+                    raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
+                elif Response.status_code == 415:
+                    raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
+                elif Response.status_code == 422:
+                    raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}')
+                elif Response.status_code == 200:
+                    # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
+                    # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
+                    if self.parent.talkative == True:
+                        print('Código: 200\nMensagem: Requisição executada com sucesso\n')
+                        # SAÍDA COM SUCESSO
+                        return Response.json()
+                    else:
+                        return Response.json()
+                else:
+                    raise Exception(Response.json())
+
+            except Exception as e:
+                print(f'A requisição não foi possível:\n{e}')
+
+        def getSchedule(self, task_id: str) -> dict:
+            """
+            Informa sobre o agendamento de uma tarefa.
+
+            #### Referência: 
+            https://docs-apis.highbond.com/#operation/getSchedule
+
+            #### Parâmetros:
+            - task_id (str): o id da tarefa
+
+            #### Retorna:
+            Um dicionário contendo informações sobre os agendamentos da tarefa
+
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
+
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='sua_organizacao')
+            result = instance.getRobotJobs(task_id='123')
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            """
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_tasks/{task_id}/schedule'
+
+            return self.parent.get_command(api_url=url, api_headers=headers)
+
+        def createSchedule(self, task_id: str, frequency: Literal["once", "hourly", "daily", "weekly", "monthly"], 
+                            interval: int = 1, starts_at: str = None, timezone: str = None, days: List[Union[int,str]]= None) -> dict:
+            """
+            Cria o agendamento de uma tarefa.
+
+            #### Referência: 
+            https://docs-apis.highbond.com/#operation/createSchedule
+
+            #### Parâmetros:
+            - task_id (str): o id da tarefa
+            - frequency (str): frequência de execução do agendamento, pode ser:
+                - once: Define que o agendamento só será executado uma vez
+                - hourly: Define uma frequência horária (depende do intervalo)
+                - daily: Define uma frequência diária (depende do intervalo)
+                - weekly: Define uma frequência semanal (depende do intervalo)
+                - monthly: Define uma frequência mensal (depende do intervalo)
+            - interval (int): o intervalo de tempo, a unidade muda com a frequência escolhida:
+                - once: Não é definido
+                - hourly: define o intervalo em minutos
+                - daily: define o intervalo em dias
+                - weekly: define o intervalo em semanas
+                - monthly: define o intervalo em meses
+            - starts_at (str): datahora da primeira execução do agendamento (yyyy-mm-dd THH:MM:SS.sssZ)
+            - timezone (str): fusohorário da hora definida, (America/Sao_Paulo, conforme Ref.: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+            - days (list of integers or strings): define diferentes intervalos de execução para cada frequência, exceto por "once", "hourly" e "daily"
+                - weekly: em quais dias da semana o agendamento será executado, sendo 0 domingo e 6 sábado, a lista pode ter 1 ou mais dias
+                - monthly: em quais dias do mês o agendamento será executado, os dias podem ser definidos entre 1 e 28. Ou "last_day" para o último dia do mês, a lista só pode ter um valor
+
+            #### Retorna:
+            Um dicionário contendo informações sobre os agendamentos da tarefa
+
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
+
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='sua_organizacao')
+            instance.createSchedule('67336','daily', 2, starts_at='2024-02-17T22:00:00Z',timezone='America/Sao_Paulo')
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            """
+            headers = {
+                'Accept': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+            
+            frequencyNullCheckList = ['once', 'hourly', 'daily']
+
+            if frequency in frequencyNullCheckList:
+                hashDays = {}
+            else:
+                hashDays = {'days': days}
+
+            schema = {
+                "data": {
+                    "type": "schedule",
+                    "attributes": {
+                        "frequency": frequency,
+                        "interval": interval,
+                        "starts_at": starts_at,
+                        "starts_at_timezone": timezone,
+                        "settings": hashDays
+                    }
+                }
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_tasks/{task_id}/schedule'
+
+            # AÇÃO E RESPOSTA
+            try:
+                if frequency == "once":
+                    if starts_at == None:
+                        raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
+                    if timezone == None:
+                        raise Exception('É preciso definir corretamente o fuso-horário!')
+                    if interval != 1:
+                        raise Exception('O intervalo não pode ser diferente de 1 para essa frequência')
+                    
+                elif frequency == 'hourly':
+                    if starts_at == None:
+                        raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
+                    if timezone == None:
+                        raise Exception('É preciso definir corretamente o fuso-horário!')
+                    if interval <= 0:
+                        raise Exception('É preciso definir um intervalo em horas para essa frequência!')
+                    
+                elif frequency == 'daily':
+                    if starts_at == None:
+                        raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
+                    if timezone == None:
+                        raise Exception('É preciso definir corretamente o fusohorário!')
+                    if interval <= 0:
+                        raise Exception('É preciso definir um intervalo em dias para essa frequência!')
+                
+                elif frequency == 'weekly':
+                    if starts_at == None:
+                        raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
+                    if timezone == None:
+                        raise Exception('É preciso definir corretamente o fuso-horário!')
+                    if interval <= 0:
+                        raise Exception('É preciso definir um intervalo em dias para essa frequência!')
+
+                    for day in days:
+                        if not 0 <= day <= 6:
+                            raise Exception('O parâmetro "days" não foi definido corretamente')
+                
+                elif frequency == 'monthly':
+                    if starts_at == None:
+                        raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
+                    if timezone == None:
+                        raise Exception('É preciso definir corretamente o fuso-horário!')
+                    if interval <= 0:
+                        raise Exception('É preciso definir um intervalo em dias para essa frequência!')
+
+                    if len(days) == 1:
+                        for day in days:
+                            if isinstance(day, str):
+                                if not day == "last_day":
+                                    raise Exception('O parâmetro "days" não foi definido corretamente')
+                            else:
+                                if not 1 <= day <= 28:
+                                    raise Exception('O parâmetro "days" não foi definido corretamente')
+                    else:
+                        raise Exception('Para esta frequência, o parâmetro "days" não pode ter mais de 1 item')
+
+            except Exception as e:
+                print(f'A requisição não foi possível:\n{e}')
+                return None
+
+            return self.parent.post_command(api_url=url, api_headers=headers, api_schema=schema)
+
+        def putSchedule(self, task_id: str, frequency: Literal["once", "hourly", "daily", "weekly", "monthly"], 
+                            interval: int = 1, starts_at: str = None, timezone: str = None, days: List[Union[int,str]]= None) -> dict:
+            """
+            Atualiza o agendamento de uma tarefa.
+
+            #### Referência: 
+            https://docs-apis.highbond.com/#operation/putSchedule
+
+            #### Parâmetros:
+            - task_id (str): o id da tarefa
+            - frequency (str): frequência de execução do agendamento, pode ser:
+                - once: Define que o agendamento só será executado uma vez
+                - hourly: Define uma frequência horária (depende do intervalo)
+                - daily: Define uma frequência diária (depende do intervalo)
+                - weekly: Define uma frequência semanal (depende do intervalo)
+                - monthly: Define uma frequência mensal (depende do intervalo)
+            - interval (int): o intervalo de tempo, a unidade muda com a frequência escolhida:
+                - once: Não é definido
+                - hourly: define o intervalo em minutos
+                - daily: define o intervalo em dias
+                - weekly: define o intervalo em semanas
+                - monthly: define o intervalo em meses
+            - starts_at (str): datahora da primeira execução do agendamento (yyyy-mm-dd THH:MM:SS.sssZ)
+            - timezone (str): fusohorário da hora definida, (America/Sao_Paulo, conforme Ref.: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+            - days (list of integers or strings): define diferentes intervalos de execução para cada frequência, exceto por "once", "hourly" e "daily"
+                - weekly: em quais dias da semana o agendamento será executado, sendo 0 domingo e 6 sábado, a lista pode ter 1 ou mais dias
+                - monthly: em quais dias do mês o agendamento será executado, os dias podem ser definidos entre 1 e 28. Ou "last_day" para o último dia do mês, a lista só pode ter um valor
+
+            #### Retorna:
+            Um dicionário contendo informações sobre os agendamentos da tarefa
+
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
+
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='sua_organizacao')
+            instance.putSchedule('67336','daily', 2, starts_at='2024-02-17T22:00:00Z',timezone='America/Sao_Paulo')
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            """
+            headers = {
+                'Accept': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+            
+            frequencyNullCheckList = ['once', 'hourly', 'daily']
+
+            if frequency in frequencyNullCheckList:
+                hashDays = {}
+            else:
+                hashDays = {'days': days}
+
+            schema = {
+                "data": {
+                    "type": "schedule",
+                    "attributes": {
+                        "frequency": frequency,
+                        "interval": interval,
+                        "starts_at": starts_at,
+                        "starts_at_timezone": timezone,
+                        "settings": hashDays
+                    }
+                }
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_tasks/{task_id}/schedule'
+
+            # AÇÃO E RESPOSTA
+            try:
+                if frequency == "once":
+                    if starts_at == None:
+                        raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
+                    if timezone == None:
+                        raise Exception('É preciso definir corretamente o fuso-horário!')
+                    if interval != 1:
+                        raise Exception('O intervalo não pode ser diferente de 1 para essa frequência')
+                    
+                elif frequency == 'hourly':
+                    if starts_at == None:
+                        raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
+                    if timezone == None:
+                        raise Exception('É preciso definir corretamente o fuso-horário!')
+                    if interval <= 0:
+                        raise Exception('É preciso definir um intervalo em horas para essa frequência!')
+                    
+                elif frequency == 'daily':
+                    if starts_at == None:
+                        raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
+                    if timezone == None:
+                        raise Exception('É preciso definir corretamente o fusohorário!')
+                    if interval <= 0:
+                        raise Exception('É preciso definir um intervalo em dias para essa frequência!')
+                
+                elif frequency == 'weekly':
+                    if starts_at == None:
+                        raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
+                    if timezone == None:
+                        raise Exception('É preciso definir corretamente o fuso-horário!')
+                    if interval <= 0:
+                        raise Exception('É preciso definir um intervalo em dias para essa frequência!')
+
+                    for day in days:
+                        if not 0 <= day <= 6:
+                            raise Exception('O parâmetro "days" não foi definido corretamente')
+                
+                elif frequency == 'monthly':
+                    if starts_at == None:
+                        raise Exception('É preciso definir corretamente a data da execução para eseta frequência!')
+                    if timezone == None:
+                        raise Exception('É preciso definir corretamente o fuso-horário!')
+                    if interval <= 0:
+                        raise Exception('É preciso definir um intervalo em dias para essa frequência!')
+
+                    if len(days) == 1:
+                        for day in days:
+                            if isinstance(day, str):
+                                if not day == "last_day":
+                                    raise Exception('O parâmetro "days" não foi definido corretamente')
+                            else:
+                                if not 1 <= day <= 28:
+                                    raise Exception('O parâmetro "days" não foi definido corretamente')
+                    else:
+                        raise Exception('Para esta frequência, o parâmetro "days" não pode ter mais de 1 item')
+                    
+                if self.parent.talkative == True:
+                    print('Iniciando a requisição HTTP...')
+                Response = rq.put(url, headers=headers, json=schema)
+
+                if Response.status_code == 400:
+                    raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
+                elif Response.status_code == 401:
+                    raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.parent.token -> {Response.json()}')
+                elif Response.status_code == 403:
+                    raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
+                elif Response.status_code == 404:
+                    raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
+                elif Response.status_code == 415:
+                    raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
+                elif Response.status_code == 422:
+                    raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}')
+                elif Response.status_code == 200:
+                    # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
+                    # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
+                    if self.parent.talkative == True:
+                        print('Código: 200\nMensagem: Requisição executada com sucesso\n')
+                        # SAÍDA COM SUCESSO
+                        return Response.json()
+                    else:
+                        return Response.json()
+                else:
+                    raise Exception(Response.json())
+
+            except Exception as e:
+                print(f'A requisição não foi possível:\n{e}')
+
+        def deleteSchedule(self, task_id: str):
+            """
+            Deleta o agendamento de uma tarefa
+
+            #### Referência:
+            https://docs-apis.highbond.com/#operation/deleteRobotTask
+
+            #### Parâmetros:
+            - task_id (str): Id da tarefa
+
+            #### Retorna:
+            Um dict com informações sobre o agendamento deletado.
+
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
+
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi('seu_self.token', 'sua_organização')
+            instance.deleteRobotTask('12345')
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            """
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+            
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_tasks/{task_id}/schedule'
+
+            # AÇÃO E RESPOSTA
+            try:
+                
+                if self.parent.talkative == True:
+                    print('Iniciando a requisição HTTP...')
+                Response = rq.delete(url, headers=headers)
+
+                if Response.status_code == 400:
+                    raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
+                elif Response.status_code == 401:
+                    raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.parent.token -> {Response.json()}')
+                elif Response.status_code == 403:
+                    raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
+                elif Response.status_code == 404:
+                    raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
+                elif Response.status_code == 415:
+                    raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
+                elif Response.status_code == 422:
+                    raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}')
+                elif Response.status_code == 200:
+                    # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
+                    # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
+                    if self.parent.talkative == True:
+                        print('Código: 200\nMensagem: Requisição executada com sucesso\n')
+                        # SAÍDA COM SUCESSO
+                        return Response.json()
+                    else:
+                        return Response.json()
+                else:
+                    raise Exception(Response.json())
+
+            except Exception as e:
+                print(f'A requisição não foi possível:\n{e}')
+
+        # Robot Jobs
+        def getRobotJobs(self, robot_id: str, environment: str, 
+                    include: list = ['robot','task','triggered_by'], 
+                    page_size: int = 100, page_num: int = 1) -> dict:
+            """
+            Lista os jobs (execuções) de um robô ACL.
+
+            #### Referência: 
+            https://docs-apis.highbond.com/#operation/getRobotJobs
+
+            #### Parâmetros:
+            - robot_id (str): O ID do robô ACL onde os jobs estão armazenados.
+            - environment (str): O ambiente onde os jobs estão armazenados. Pode ser 'production' para o ambiente de produção ou 'development' para o ambiente de desenvolvimento.
+            - include (list): Controla se os dados 'robot', 'task' e 'triggered_by' aparecem no JSON de saída. Todos os campos marcados na consulta pela classe são incluídos. Padrão é ['robot','task','triggered_by'].
+            - page_size (int): Controla a quantidade de registros que aparecerão em cada consulta. Padrão é 100.
+            - page_num (int): Controla o número da página. A API divide em páginas quando o número de registros ultrapassa page_size. Padrão é 1.
+
+            #### Retorna:
+            Um dicionário contendo informações sobre os jobs do robô.
+
+            #### Exceções:
+            - Sobe exceção se o ambiente não estiver definido corretamente.
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
+
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='sua_organizacao')
+            result = instance.getRobotJobs(robot_id='123', environment='production')
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            - A resposta é um dicionário contendo informações sobre os jobs do robô.
+            """
+            includeCheckList = ['robot', 'task', 'triggered_by']
+
+            if not isinstance(include, list):
+                raise Exception('Precisa ser configurado no formato "list"')
+            else:
+                for item in include:
+                    if not item in includeCheckList:
+                        raise Exception(f'"{item}" não é um valor permitido para essa API')
+
+                strInclude = ''
+                for item in include:
+                    strInclude = strInclude + ',' + item
+                strInclude = strInclude[1:]
+
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            params = {
+                'env': environment,
+                'include': strInclude,
+                'page[size]': str(page_size),
+                'page[number]': str(page_num)
+            }
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/jobs'
+
+            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+
+        def deleteRobotJobs(self, job_id: str):
+            """
+            Deleta um registro de execução do robô
+
+            #### Referência:
+            https://docs-apis.highbond.com/#operation/deleteRobotJobs
+
+            #### Parâmetros:
+            - job_id (str): Id do registro de execução
+
+            #### Retorna:
+            Um dict com informações sobre o registro de execução deletado
+
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
+
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi('seu_self.parent.token', 'sua_organização')
+            instance.deleteRobotJobs('12345')
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            """
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+            
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/jobs/{job_id}'
+
+            # AÇÃO E RESPOSTA
+            try:
+                
+                if self.parent.talkative == True:
+                    print('Iniciando a requisição HTTP...')
+                Response = rq.delete(url, headers=headers)
+
+                if Response.status_code == 400:
+                    raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
+                elif Response.status_code == 401:
+                    raise Exception(f'Código: 401\nMensagem: Falha na autenticação com self.parent.token -> {Response.json()}')
+                elif Response.status_code == 403:
+                    raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {Response.json()}')
+                elif Response.status_code == 404:
+                    raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {Response.json()}')
+                elif Response.status_code == 415:
+                    raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {Response.json()}')
+                elif Response.status_code == 422:
+                    raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {Response.json()}')
+                elif Response.status_code == 200:
+                    # A PROPRIEDADE Talkative CONTROLA SE AS MENSAGENS 
+                    # DE SUCESSO VÃO FICAR SAINDO TODA VEZ QUE O MÉTODO RODA
+                    if self.parent.talkative == True:
+                        print('Código: 200\nMensagem: Requisição executada com sucesso\n')
+                        # SAÍDA COM SUCESSO
+                        return Response.json()
+                    else:
+                        return Response.json()
+                else:
+                    raise Exception(Response.json())
+
+            except Exception as e:
+                print(f'A requisição não foi possível:\n{e}')
+
+        # Analytic Scripts
+        def getRobotApp(self, robot_id: str, robot_app_id: str):
+            """
+            Informa sobre uma versão específica de desenvolvimentode um robô do ACL.
+
+            #### Referência:
+            https://docs-apis.highbond.com/#operation/getRobotApp
+
+            #### Parâmetros:
+            - robot_id (str): O ID do robô ACL para o qual os arquivos estão armazenados.
+            - robot_app_id (str): O id da versão especificada
+
+            #### Retorna:
+            - Um dict com os dados solicitados
+
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
+
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
+            result = instance.getRobotApp(robot_id='123', robot_app_id='456')
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            """
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_apps/{robot_app_id}'
+
+            return self.parent.get_command(api_url=url, api_headers=headers)
+
+        def getRobotApps(self, robot_id):
+            """
+            Informa sobre todas as versões de desenvolvimento de um robô do ACL.
+
+            #### Referência:
+            https://docs-apis.highbond.com/#operation/getRobotApps
+
+            #### Parâmetros:
+            - robot_id (str): O ID do robô ACL para o qual os arquivos estão armazenados.
+
+            #### Retorna:
+            - Um dict com os dados solicitados
+
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
+
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
+            result = instance.getRobotApp(robot_id='123', robot_app_id='456')
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            """
+            
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_apps'
+
+            return self.parent.get_command(api_url=url, api_headers=headers)
+
+        def createRobotApp(self, robot_id: str, code_page: int, comment: str, is_unicode: bool, input_file: str) -> dict:
+            """
+            Método que faz upload dos arquivos relacionados de um robô ACL
+
+            #### Referência:
+            - https://docs-apis.highbond.com/#operation/createRobotApp
+            
+            #### Parâmetros:
+            - robot_id (str): id do robô
+            - code_page (int): id do encoding do robô (21 - Brazil) (Ref.: https://en.wikipedia.org/wiki/Code_page)
+            - comment (str): comentário da nova versão
+            - is_unicode (bool): define se o projeto está na versão unicode ou não
+            - input_file(str): uma string com o caminho para o arquivo .acl do projeto
+
+            #### Retorna:
+            Um dicionário contendo informações sobre o arquivo recém-criado.
+
+            #### Exceções:
+            - Raises Exception se a requisição API falhar com códigos de status diferentes de 200.
+            - Raises Exception se houver uma falha desconhecida.
+            - Raises Exception se a entidade for considerada improcessável (código 422).
+
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi('seu_self.parent.token', 'sua_organização')
+            result = instance.createRobotApp(
+                robot_id='123', code_page=21, comment='Versão de teste ro robô', 
+                is_unicode=False, input_file='caminho/do/arquivo.acl'
+                )
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            """
+            headers = {
+                'Accept': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            schema = {
+                'code_page': code_page,
+                'comment': comment,
+                'is_unicode': is_unicode,
+                'file': open(input_file, 'rb')
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_apps'
+
+            return self.parent.post_command(api_url=url, api_headers=headers, api_schema=schema)
+
+        # Robot Script versions (Robô Python)
+        def getRobotScriptVersion(self, robot_id: str, version_id: str, include: Literal[None, 'analytics'] = 'analytics'):
+            """
+            Informa sobre uma versão específica de desenvolvimentode um robô do ACL.
+
+            #### Referência:
+            https://docs-apis.highbond.com/#operation/getRobotScriptVersion
+
+            #### Parâmetros:
+            - robot_id (str): O ID do robô ACL.
+            - version_id (str): O id da versão especificada
+
+            #### Retorna:
+            - Um dict com os dados solicitados
+
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
+
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
+            result = instance.getRobotScriptVersion(robot_id='123', version_id='456')
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            """
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+            params = {
+                'include': include
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/versions/{version_id}'
+
+            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+
+        # ACL Robot Related Files
+        def getRobotFiles(self, robot_id: str, environment: str) -> dict:
+            """
+            Lista os arquivos relacionados a um robô ACL em um ambiente específico.
+
+            #### Referência:
+            https://docs-apis.highbond.com/#operation/getRobotFile
+
+            #### Parâmetros:
+            - robot_id (str): O ID do robô ACL para o qual os arquivos estão armazenados.
+            - environment (str): O ambiente onde os arquivos estão armazenados. Pode ser 'production' para o ambiente de produção ou 'development' para o ambiente de desenvolvimento.
+
+            #### Retorna:
+            Um dicionário contendo informações sobre os arquivos do robô.
+
+            #### Exceções:
+            - Sobe exceção se o ambiente não estiver definido corretamente.
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
+
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
+            result = instance.getRobotFiles(robot_id='123', environment='production')
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
+            """
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            params = {
+                'env': environment
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_files'
+
+            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+
+        def createRobotFile(self, inputFile: str, robot_id: str, environment: Literal['production', 'development']) -> dict:
+            """
+            Método que faz upload dos arquivos relacionados de um robô ACL
+
+            #### Referência:
+            - https://docs-apis.highbond.com/#operation/createRobotFile
+            
+            #### Parâmetros:
+            - inputFile (str): O caminho do arquivo a ser enviado para a API como parte da criação.
+            - robot_id (str): O ID do robô ACL para o qual o arquivo será associado.
+            - environment (str): O ambiente onde o arquivo será criado. Pode ser 'production' para o ambiente de produção ou 'development' para o ambiente de desenvolvimento.
+
+            #### Retorna:
+            Um dicionário contendo informações sobre o arquivo recém-criado.
+
+            #### Exceções:
+            - Raises Exception se o ambiente não estiver definido corretamente.
+            - Raises Exception se a requisição API falhar com códigos de status diferentes de 200.
+            - Raises Exception se houver uma falha desconhecida.
+            - Raises Exception se a entidade for considerada improcessável (código 422).
+
+            #### Exemplo de uso:
+            ```python
+            instance = SuaClasse()
+            result = instance.createRobotFile(inputFile='caminho/do/arquivo.txt', robot_id='123', environment='production')
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            - O caminho do arquivo a ser enviado é especificado em 'inputFile'.
+            - A resposta é um dicionário contendo informações sobre o arquivo recém-criado.
+            """
+            headers = {
+                'Accept': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            params = {
+                'env': environment
+            }
+
+            schema = {
+                'file': open(inputFile, 'rb')
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_files'
+
+            try:
+                if not ((environment == 'production') or (environment == 'development')):
+                    raise Exception('O ambiente não foi definido corretamente.')
+            except Exception as e:
+                print(f'A requisição não foi possível\n{e}')
+                return None
+            else:
+                return self.parent.post_command(api_url=url, api_headers=headers, api_params=params, files=schema)
+
+        def deleteRobotFile(self, file_id: str) -> dict:
+            """
+            Deleta um arquivo de um robô ACL
+
+            #### Referência:
+            - https://docs-apis.highbond.com/#operation/createRobotFile
+            
+            #### Parâmetros:
+            - file_id (str): O ID do arquivo dentro do robô ACL a ser deletado.
+
+            #### Retorna:
+            Um dicionário contendo informações sobre o status da deleção.
+
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
+
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='sua_organizacao')
+            result = instance.deleteRobotFile(file_id='123')
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            - A resposta é um dicionário contendo informações sobre o status da deleção.
+            """
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_files/{file_id}'
+
+            try:
+                if self.parent.talkative == True:
+                    print('Iniciando a requisição HTTP...')
+                    
+                Response = rq.delete(url, headers=headers)
+                
+                if Response.status_code == 400:
+                    raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
+                elif Response.status_code == 401:
+                    raise Exception('\nCódigo: 401\nMensagem: Falha na autenticação com self.parent.token')
+                elif Response.status_code == 403:
+                    raise Exception('\nCódigo: 403\nMensagem: Conexão não permitida pelo servidor')
+                elif Response.status_code == 404:
+                    raise Exception('\nCódigo: 404\nMensagem: Recurso não encontrado no API')
+                elif Response.status_code == 415:
+                    raise Exception('\nCódigo: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição')
+                elif Response.status_code == 200:
+                    if self.parent.talkative == True:
+                        print('\nCódigo: 200\nMensagem: Requisição executada com sucesso\n')
+                        # SAÍDA COM SUCESSO
+                        
+                        return Response.json()
+                    else:
+                        return Response.json()
+                else:
+                    raise Exception(Response.json())
+
+            except Exception as e:
+                print(f'A requisição não foi possível:\n{e}')
+
+        def downloadFile(self, file_id: str, out_file: str) -> bytes:
+            """
+            Faz o download de um arquivo relacionado a um robô ACL.
+
+            Referência:
+            - https://docs-apis.highbond.com/#operation/downloadFile
+
+            Parâmetros:
+            - file_id (str): O ID do arquivo a ser baixado.
+            - out_file (str): O caminho do arquivo de saída onde o conteúdo baixado será salvo.
+
+            Retorna:
+            Bytes contendo o conteúdo do arquivo baixado.
+
+            Exceções:
+            - Raises Exception se a requisição API falhar com códigos de status diferentes de 200.
+            - Raises Exception se houver uma falha desconhecida.
+            - Raises Exception se o arquivo não for encontrado após o download.
+
+            Exemplo de uso:
+            ```python
+            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='sua_organizacao')
+            file_content = instance.downloadFile(file_id='123', out_file='caminho/do/arquivo/baixado.txt')
+            ```
+
+            Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de log.
+            - O conteúdo do arquivo baixado é salvo no caminho especificado em 'out_file'.
+            """
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_files/{file_id}/download'
+
+            try:
+                if self.parent.talkative == True:
+                    print('Iniciando a requisição HTTP...')
+
+                Response = rq.get(url, headers=headers)
+
+                if Response.status_code == 400:
+                    raise Exception(f'Código: 400\nMensagem: Falha na requisição API - > {Response.json()}')
+                elif Response.status_code == 401:
+                    raise Exception('\nCódigo: 401\nMensagem: Falha na autenticação com self.parent.token')
+                elif Response.status_code == 403:
+                    raise Exception('\nCódigo: 403\nMensagem: Conexão não permitida pelo servidor')
+                elif Response.status_code == 404:
+                    raise Exception('\nCódigo: 404\nMensagem: Recurso não encontrado no API')
+                elif Response.status_code == 415:
+                    raise Exception('\nCódigo: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição')
+                elif Response.status_code == 200:
+                    if self.parent.talkative == True:
+                        print('\nCódigo: 200\nMensagem: Requisição executada com sucesso\n')
+                        # SAÍDA COM SUCESSO
+                        
+                        output = pl.Path(out_file)
+                        output.write_bytes(Response.content)
+                        if not os.path.exists(out_file):
+                            raise Exception('\nArquivo não encontrado após o download')
+                    else:
+                        output = pl.Path(out_file)
+                        output.write_bytes(Response.content)
+                        if not os.path.exists(out_file):
+                            raise Exception('\nArquivo não encontrado após o download')
+                else:
+                    raise Exception(Response.json())
+
+            except Exception as e:
+                print(f'A requisição não foi possível:\n{e}')
