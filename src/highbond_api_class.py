@@ -273,6 +273,36 @@ class Highbond_API:
 
             return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
         
+        def getActionComments(
+                self,
+                action_id: str,
+                fields: list = ['message_content','commenter_name','commenter_email','created_at','updated_at','action','commenter_user'],
+                page_num: int = 1,
+                page_size: int = 100
+            ) -> dict:
+            """
+            Retorna todos os comentários associados a uma ação.
+
+            #### Referência:
+            https://docs-apis.highbond.com/#operation/getActionComments
+            """
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            params = {
+                'page[size]': page_size,
+                'page[number]': base64.encodebytes(str(page_num).encode()).decode(),
+            }
+
+            if fields:
+                params['fields[action_comments]'] = ",".join(fields)
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/actions/{action_id}/comments'
+
+            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+        
         # === POST ===
         
         # === PATCH ===
