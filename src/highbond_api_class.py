@@ -17,7 +17,6 @@ class Highbond_API:
             talkative: bool = True
         ):
         """
-        ________________________________________________________________________
         Cria uma instância da classe hbapi para interação simplificada com a API Highbond.
 
         #### Referência: 
@@ -51,8 +50,23 @@ class Highbond_API:
         curr_org = self.getOrganization()
 
         # Classes auxiliares
-        self.robots = self._Robots(self)
+        self.actions = self._Actions(self)
+        self.controls = self._Controls(self)
+        self.entities = self._Entities(self)
+        self.frameworks = self._Frameworks(self)
+        self.issues = self._Issues(self)
+        self.results = self._Results(self)
+        self.requests = self._Requests(self)
+        self.risks = self._Risks(self)
+        self.objectives = self._Objectives(self)
+        self.planningFiles = self._PlanningFiles(self)
         self.projects = self._Projects(self)
+        self.robots = self._Robots(self)
+        self.strategy = self._Strategy(self)
+        self.toDos = self._ToDos(self)
+        self.users = self._Users(self)
+        self.walkthroughs = self._Walkthroughs(self)
+        
             
         def is_jupyter_nb() -> bool:
             try:
@@ -71,7 +85,7 @@ class Highbond_API:
                 if is_jupyter_nb():
                     display(Image(curr_org['data']['attributes']['small_logo']))
     
-    def validate_response(self, response: rq.Response) -> dict | Exception :
+    def validate_response(self, response: rq.Response) -> dict | Exception:
         if response.status_code == 200:
             if self.talkative == True:
                 print('Código: 200\nMensagem: Requisição executada com sucesso\n')
@@ -98,101 +112,48 @@ class Highbond_API:
             raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {response.text}')
         else:
             raise Exception('Falha desconhecida.')
-    
-    def get_command(self, api_url: str, api_headers: dict, api_params: dict = {}) -> dict :
+
+    def requester(self, method: str, url: str, headers: dict, params: dict = {}, json: dict = {}, files: dict = {}) -> dict | None:
+        """Faz qualquer requisição HTTP e centraliza try/except + validação"""
         try:
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
+            if self.talkative:
+                print(f"Iniciando a requisição HTTP [{method.upper()}]...")
 
-            response = rq.get(
-                url=api_url,
-                headers=api_headers,
-                params=api_params
+            response = rq.request(
+                method=method,
+                url=url,
+                headers=headers,
+                params=params,
+                json=json,
+                files=files
             )
-            return Highbond_API.validate_response(self, response)
+
+            return self.validate_response(response)
 
         except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')
+            print(f"A requisição não foi possível:\n{e}")
             return None
-        
-    def post_command(self, api_url: str, api_headers: dict, api_params: dict = {}, api_schema: dict = {}, api_files: dict = {}) -> dict:
-        try:   
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-            
-            response = rq.post(
-                api_url,
-                headers=api_headers,
-                params=api_params,
-                json=api_schema,
-                files=api_files
-            )
 
-            return Highbond_API.validate_response(self, response)
+    def get_command(self, api_url: str, api_headers: dict, api_params: dict = {}) -> dict | None:
+        return self.requester("GET", api_url, api_headers, params=api_params)
 
-        except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')
-            return None
-        
-    def PATCH_command(self, api_url: str, api_headers: dict, api_params: dict = {}, api_schema: dict = {}) -> dict:
-        try:   
-            if self.talkative == True:
-                print('Iniciando a requisição HTTP...')
-            
-            response = rq.PATCH(
-                api_url,
-                headers=api_headers,
-                params=api_params,
-                json=api_schema
-            )
+    def post_command(self, api_url: str, api_headers: dict, api_params: dict = {}, api_schema: dict = {}, api_files: dict = {}) -> dict | None:
+        return self.requester("POST", api_url, api_headers, params=api_params, json=api_schema, files=api_files)
 
-            return Highbond_API.validate_response(self, response)
+    def patch_command(self, api_url: str, api_headers: dict, api_params: dict = {}, api_schema: dict = {}) -> dict | None:
+        return self.requester("PATCH", api_url, api_headers, params=api_params, json=api_schema)
 
-        except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')
-            return None
-        
-    def delete_command(self, api_url: str, api_headers: dict, api_params: dict = {}) -> dict:
-        try:    
-            if self.parent.talkative == True:
-                print('Iniciando a requisição HTTP...')
-                
-            response = rq.delete(
-                api_url,
-                headers=api_headers,
-                params=api_params
-            )
-
-            return Highbond_API.validate_response(self, response)
-
-        except Exception as e:
-            print(f'A requisição não foi possível:\n{e}')
-
+    def delete_command(self, api_url: str, api_headers: dict, api_params: dict = {}) -> dict | None:
+        return self.requester("DELETE", api_url, api_headers, params=api_params)
+    
 ######################################
 
     def getOrganization(self) -> dict:
         """
-        Lista os agentes do robotics instalados na organização
+        Retorna informações sobre a organização associada ao id fornecido.
 
         #### Referência:
         https://docs-apis.highbond.com/#operation/getOrganization
-
-        #### Retorna:
-        Um dicionário contendo informações sobre os agentes do robôs.
-
-        #### Exceções:
-        - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-        - Sobe exceção se houver uma falha desconhecida.
-
-        #### Exemplo de uso:
-        ```python
-        instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
-        result = instance.getAgents()
-        ```
-
-        #### Observações:
-        - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-        - A resposta é um dicionário contendo as informações sobre os agentes do robôs.
         """
         headers = {
             'Content-type': 'application/vnd.api+json',
@@ -748,7 +709,7 @@ class Highbond_API:
                 return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
             
             # === POST ===
-            def uploadRecords(self, table_id: str, inPATCH_data: pd.DataFrame, explicit_field_types: dict = {}, overwrite: bool = False) -> dict:
+            def uploadRecords(self, table_id: str, input_data: pd.DataFrame, explicit_field_types: dict = {}, overwrite: bool = False) -> dict:
                 """
                 Faz o upload de registros para uma tabela do módulo de resultados do highbond.
 
@@ -756,9 +717,9 @@ class Highbond_API:
                 https://docs-apis.highbond.com/#operation/uploadRecords
 
                 #### Parâmetros:
-                - inPATCH_data (obrigatório): (pd.DataFrame) Recebe um dataframe com os dados a serem carregados na tabela
+                - input_data (obrigatório): (pd.DataFrame) Recebe um dataframe com os dados a serem carregados na tabela
                 - overwrite (obrigatório): (bool) Define se os dados vão substituir a tabela atual ou acrescentar a ela
-                - explicit_field_types (opcional): (dict) Dicionário que força um tipo de campo do highbond para um campo de 'inPATCH_data', 
+                - explicit_field_types (opcional): (dict) Dicionário que força um tipo de campo do highbond para um campo de 'input_data', 
                 os campos podem ser dos tipos 'character', 'numeric', logical', 'date', 'time' e 'datetime'
 
                 #### Retorna:
@@ -780,7 +741,7 @@ class Highbond_API:
                     }, 
                     index=[0]
                 )
-                result = instance.uploadRecords(inPATCH_data=dfCustom, overwrite=True, explicit_field_types = {'A': 'numeric'})
+                result = instance.uploadRecords(input_data=dfCustom, overwrite=True, explicit_field_types = {'A': 'numeric'})
 
                 ```
 
@@ -794,7 +755,7 @@ class Highbond_API:
                 }
 
                 # Remove campos de metadados e extras
-                inPATCH_data = inPATCH_data[[field for field in inPATCH_data.columns if not re.search(r'(metadata\.|extras\.)', field)]]
+                input_data = input_data[[field for field in input_data.columns if not re.search(r'(metadata\.|extras\.)', field)]]
 
                 def map_dtype(
                         field: str, 
@@ -823,21 +784,21 @@ class Highbond_API:
                         return 'unknown'
                 
                 columns = {}
-                for col, dtype in inPATCH_data.dtypes.items():
+                for col, dtype in input_data.dtypes.items():
                     columns[col] = map_dtype(field=col, field_type=dtype, explicit_field_types=explicit_field_types)
 
                     if pd.api.types.is_datetime64_any_dtype(dtype):
-                        inPATCH_data[col] = inPATCH_data[col].astype('string').fillna("")
-                        inPATCH_data[col] = inPATCH_data[col].apply(lambda x: str(x))
+                        input_data[col] = input_data[col].astype('string').fillna("")
+                        input_data[col] = input_data[col].apply(lambda x: str(x))
                     if pd.api.types.is_timedelta64_dtype(dtype):
-                        inPATCH_data[col] = inPATCH_data[col].astype('string').fillna("")
-                        inPATCH_data[col] = inPATCH_data[col].apply(lambda x: str(x))
+                        input_data[col] = input_data[col].astype('string').fillna("")
+                        input_data[col] = input_data[col].apply(lambda x: str(x))
 
 
                 schema = {
                     'data': {
                         'columns': columns,
-                        'records': inPATCH_data.to_dict(orient='records')
+                        'records': input_data.to_dict(orient='records')
                     },
                     'options': {
                         'purge': overwrite
@@ -2426,7 +2387,7 @@ class Highbond_API:
 
             return self.parent.post_command(api_url=url, api_headers=headers, api_schema=schema)
         
-        def createRobotApp(self, robot_id: str, code_page: int, comment: str, is_unicode: bool, inPATCH_file: str) -> dict:
+        def createRobotApp(self, robot_id: str, code_page: int, comment: str, is_unicode: bool, input_file: str) -> dict:
             """
             Método que faz upload dos arquivos relacionados de um robô ACL
 
@@ -2438,7 +2399,7 @@ class Highbond_API:
             - code_page (int): id do encoding do robô (21 - Brazil) (Ref.: https://en.wikipedia.org/wiki/Code_page)
             - comment (str): comentário da nova versão
             - is_unicode (bool): define se o projeto está na versão unicode ou não
-            - inPATCH_file(str): uma string com o caminho para o arquivo .acl do projeto
+            - input_file(str): uma string com o caminho para o arquivo .acl do projeto
 
             #### Retorna:
             Um dicionário contendo informações sobre o arquivo recém-criado.
@@ -2453,7 +2414,7 @@ class Highbond_API:
             instance = hbapi('seu_self.parent.token', 'sua_organização')
             result = instance.createRobotApp(
                 robot_id='123', code_page=21, comment='Versão de teste ro robô', 
-                is_unicode=False, inPATCH_file='caminho/do/arquivo.acl'
+                is_unicode=False, input_file='caminho/do/arquivo.acl'
                 )
             ```
 
@@ -2469,14 +2430,14 @@ class Highbond_API:
                 'code_page': code_page,
                 'comment': comment,
                 'is_unicode': is_unicode,
-                'file': open(inPATCH_file, 'rb')
+                'file': open(input_file, 'rb')
             }
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_apps'
 
             return self.parent.post_command(api_url=url, api_headers=headers, api_schema=schema)
 
-        def createRobotFile(self, inPATCHFile: str, robot_id: str, environment: Literal['production', 'development']) -> dict:
+        def createRobotFile(self, inputFile: str, robot_id: str, environment: Literal['production', 'development']) -> dict:
             """
             Método que faz upload dos arquivos relacionados de um robô ACL
 
@@ -2484,7 +2445,7 @@ class Highbond_API:
             - https://docs-apis.highbond.com/#operation/createRobotFile
             
             #### Parâmetros:
-            - inPATCHFile (str): O caminho do arquivo a ser enviado para a API como parte da criação.
+            - inputFile (str): O caminho do arquivo a ser enviado para a API como parte da criação.
             - robot_id (str): O ID do robô ACL para o qual o arquivo será associado.
             - environment (str): O ambiente onde o arquivo será criado. Pode ser 'production' para o ambiente de produção ou 'development' para o ambiente de desenvolvimento.
 
@@ -2500,12 +2461,12 @@ class Highbond_API:
             #### Exemplo de uso:
             ```python
             instance = SuaClasse()
-            result = instance.createRobotFile(inPATCHFile='caminho/do/arquivo.txt', robot_id='123', environment='production')
+            result = instance.createRobotFile(inputFile='caminho/do/arquivo.txt', robot_id='123', environment='production')
             ```
 
             #### Observações:
             - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - O caminho do arquivo a ser enviado é especificado em 'inPATCHFile'.
+            - O caminho do arquivo a ser enviado é especificado em 'inputFile'.
             - A resposta é um dicionário contendo informações sobre o arquivo recém-criado.
             """
             headers = {
@@ -2518,7 +2479,7 @@ class Highbond_API:
             }
 
             schema = {
-                'file': open(inPATCHFile, 'rb')
+                'file': open(inputFile, 'rb')
             }
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_files'
@@ -2763,7 +2724,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}'
 
-            return self.parent.PATCH_command(api_url=url, api_headers=headers, api_params=params)
+            return self.parent.patch_command(api_url=url, api_headers=headers, api_params=params)
 
         def PATCHRobotTask(self, task_id, environment: Literal['production', 'development'], 
                             task_name, app_version: int = None, emails_enabled: bool = False, 
@@ -2825,7 +2786,7 @@ class Highbond_API:
             
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_tasks/{task_id}'
 
-            return self.parent.PATCH_command(api_url=url, api_headers=headers, api_schema=schema)
+            return self.parent.patch_command(api_url=url, api_headers=headers, api_schema=schema)
 
         def PATCHValues(self, task_id: str, multi_mode: bool, analytic_name: str = None, parameter_id: str = None, 
                         encrypted: bool = None, value: str = None, 
@@ -3562,12 +3523,6 @@ class Highbond_API:
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/strategy_objectives'
 
             return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
-            
-            # === POST ===
-                
-            # === PATCH ===
-            
-            # === DELETE ===
         
         # === POST ===
         
