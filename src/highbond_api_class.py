@@ -19,7 +19,7 @@ class Highbond_API:
         """
         Cria uma instância da classe hbapi para interação simplificada com a API Highbond.
 
-        #### Referência: 
+        #### Referência 
         - https://docs-apis.highbond.com/
 
         #### Parâmetros:
@@ -150,9 +150,9 @@ class Highbond_API:
 
     def getOrganization(self) -> dict:
         """
-        Retorna informações sobre a organização associada ao id fornecido.
+        Retorna informaçãos sobre a organização associada ao id fornecido.
 
-        #### Referência:
+        #### Referência
         https://docs-apis.highbond.com/#operation/getOrganization
         """
         headers = {
@@ -177,9 +177,9 @@ class Highbond_API:
                     page_num: int = 1,
                     page_size: int = 100) -> dict:
             """
-            Lista as ações de um problema da organização.
+            Retorna as ações de um problema da organização.
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/getActions
 
             #### Parâmetros:
@@ -189,7 +189,7 @@ class Highbond_API:
             - page_size: Define a quantidade de registros retornados.
 
             #### Retorna:
-            Um dicionário contendo informações sobre as ações do risco consultado
+            Um dicionário contendo informaçãos sobre as ações do risco consultado
 
             #### Exceções:
             - Sobe exceção se o ambiente não estiver definido corretamente.
@@ -204,7 +204,7 @@ class Highbond_API:
 
             #### Observações:
             - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
+            - A resposta é um dicionário contendo as informaçãos sobre os arquivos do robô.
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -230,7 +230,7 @@ class Highbond_API:
             """
             Consulta uma ação específica de um problema da organização.
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/getAction
 
             #### Parâmetros:
@@ -240,7 +240,7 @@ class Highbond_API:
             - page_size: Define a quantidade de registros retornados.
 
             #### Retorna:
-            Um dicionário contendo informações sobre as ações do risco consultado
+            Um dicionário contendo informaçãos sobre as ações do risco consultado
 
             #### Exceções:
             - Sobe exceção se o ambiente não estiver definido corretamente.
@@ -255,7 +255,7 @@ class Highbond_API:
 
             #### Observações:
             - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
+            - A resposta é um dicionário contendo as informaçãos sobre os arquivos do robô.
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -283,7 +283,7 @@ class Highbond_API:
             """
             Retorna todos os comentários associados a uma ação.
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/getActionComments
             """
             headers = {
@@ -322,7 +322,7 @@ class Highbond_API:
                                         'control_tests','mitigations','owner_user','entities','framework_origin'],
                         include: Literal['', 'objective'] = '', page_size: int = 100, page_num: int = 1) -> dict:
             """
-            Lista todos os controles de um objetivo.
+            Retorna todos os controles de um objetivo.
             """
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/objectives/{parent_resource_id}/controls'
             
@@ -522,7 +522,7 @@ class Highbond_API:
             """
             Retorna todas as entidades (entities) da organização.
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/getEntities
 
             #### Parâmetros:
@@ -603,9 +603,9 @@ class Highbond_API:
                         sort: str = None
                         ) -> dict:
             """
-            Lista os Problemas de uma organização.
+            Retorna os Problemas de uma organização.
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/getOrgIssues
 
             #### Parâmetros:
@@ -614,7 +614,7 @@ class Highbond_API:
             - page_num: Define a página que será trazida (caso a quantidade de registrso ultrapasse page_size)
 
             #### Retorna:
-            Um dicionário contendo informações sobre os Problemas de uma organização do Highbond
+            Um dicionário contendo informaçãos sobre os Problemas de uma organização do Highbond
 
             #### Exceções:
             - Sobe exceção se o ambiente não estiver definido corretamente.
@@ -629,7 +629,7 @@ class Highbond_API:
 
             #### Observações:
             - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
+            - A resposta é um dicionário contendo as informaçãos sobre os arquivos do robô.
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -698,14 +698,14 @@ class Highbond_API:
                 """
                 Recebe uma tabela do módulo de resultados do highbond
 
-                #### Referência:
+                #### Referência
                 (getRecords)[https://docs-apis.highbond.com/#operation/getRecords]
                 
                 #### Parâmetros:
                 - page_size: parâmetro que define a quantidade de registros retornados
                 
                 #### Retorna:
-                Um dicionário contendo informações sobre o segmento do risco estratégico consultado consultado
+                Um dicionário contendo informaçãos sobre o segmento do risco estratégico consultado consultado
 
                 #### Exceções:
                 - Sobe exceção se o ambiente não estiver definido corretamente.
@@ -720,7 +720,7 @@ class Highbond_API:
 
                 #### Observações:
                 - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-                - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
+                - A resposta é um dicionário contendo as informaçãos sobre os arquivos do robô.
                 """
                 headers = {
                     'Content-type': 'application/vnd.api+json',
@@ -743,7 +743,7 @@ class Highbond_API:
                 """
                 Faz o upload de registros para uma tabela do módulo de resultados do highbond.
 
-                #### Referência:
+                #### Referência
                 https://docs-apis.highbond.com/#operation/uploadRecords
 
                 #### Parâmetros:
@@ -753,7 +753,7 @@ class Highbond_API:
                 os campos podem ser dos tipos 'character', 'numeric', logical', 'date', 'time' e 'datetime'
 
                 #### Retorna:
-                Um dict com informações sobre os dados carregados
+                Um dict com informaçãos sobre os dados carregados
 
                 #### Exceções:
                 - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
@@ -863,9 +863,9 @@ class Highbond_API:
                 filter_received : Literal["true", "false"] = None,
             ) -> dict:
             """
-            Lista todas as solicitações da organização ou uma em específico.
+            Retorna todas as solicitações da organização ou uma em específico.
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/getOrgRequestItems \n
             https://docs-apis.highbond.com/#operation/getRequestItem
 
@@ -911,7 +911,7 @@ class Highbond_API:
             """
             Consulta todos os status de itens de requisição associados a um tipo de projeto.
             
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/public.html#operation/getRequestItemStatuses
 
             #### Parâmetros:
@@ -919,7 +919,7 @@ class Highbond_API:
             - fields: define os campos que serão trazidos
 
             #### Retorna:
-            Um dicionário contendo informações dos status de itens de requisição associados a um tipo de projeto
+            Um dicionário contendo informaçãos dos status de itens de requisição associados a um tipo de projeto
 
             #### Exceções:
             - Sobe exceção se o id não for encontrado.
@@ -1033,16 +1033,16 @@ class Highbond_API:
                         page_size=100,
                         page_num=1) -> dict: 
             """
-            Lista os objetivos de um projeto ACL.
+            Retorna os objetivos de um projeto ACL.
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/getObjectives
 
             #### Parâmetros:
             - page_size: parâmetro que define a quantidade de registros retornados
 
             #### Retorna:
-            Um dicionário contendo informações sobre o segmento do risco estratégico consultado consultado
+            Um dicionário contendo informaçãos sobre o segmento do risco estratégico consultado consultado
 
             #### Exceções:
             - Sobe exceção se o ambiente não estiver definido corretamente.
@@ -1057,7 +1057,7 @@ class Highbond_API:
 
             #### Observações:
             - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
+            - A resposta é um dicionário contendo as informaçãos sobre os arquivos do robô.
             """
             url = f"{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/{parent_resource_type}/{parent_resource_id}/objectives"
 
@@ -1122,13 +1122,13 @@ class Highbond_API:
             """
             Consulta arquivos de planejamento (planning_files) associados a projetos ou frameworks na organização.
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#tag/Planning-files
 
             #### Parâmetros:
             - **parent_resource_type** (`Literal["projects", "frameworks"]`): Tipo do recurso pai (projeto ou framework) ao qual os arquivos de planejamento estão vinculados.
             - **parent_resource_id** (`str`): Identificador único do recurso pai.
-            - **fields** (`list`): Lista de campos a serem retornados na resposta. Padrão inclui campos essenciais como `name`, `reference_id`, `custom_attributes`, datas planejadas e reais.
+            - **fields** (`list`): Retorna de campos a serem retornados na resposta. Padrão inclui campos essenciais como `name`, `reference_id`, `custom_attributes`, datas planejadas e reais.
             
             ##### Paginação:
             - **page_size** (`int`): Quantidade máxima de registros por página. Padrão: 100.
@@ -1150,7 +1150,7 @@ class Highbond_API:
 
             #### Observações:
             - A resposta pode conter dados vinculados a projetos ou frameworks, conforme especificado.
-            - Verifique se os campos informados no parâmetro `fields` estão disponíveis para o recurso selecionado.
+            - Verifique se os campos Retornados no parâmetro `fields` estão disponíveis para o recurso selecionado.
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -1186,9 +1186,9 @@ class Highbond_API:
                         filter_name: str = None,
                         filter_status: str = None) -> dict:
             """
-            Lista os Projetos de uma organização.
+            Retorna os Projetos de uma organização.
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/getProjects
 
             #### Parâmetros:
@@ -1197,7 +1197,7 @@ class Highbond_API:
             - page_num: Define a página que será trazida (caso a quantidade de registrso ultrapasse page_size)
 
             #### Retorna:
-            Um dicionário contendo informações sobre os Projetos de uma organização do Highbond
+            Um dicionário contendo informaçãos sobre os Projetos de uma organização do Highbond
 
             #### Exceções:
             - Sobe exceção se o ambiente não estiver definido corretamente.
@@ -1212,7 +1212,7 @@ class Highbond_API:
 
             #### Observações:
             - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
+            - A resposta é um dicionário contendo as informaçãos sobre os arquivos do robô.
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -1238,7 +1238,7 @@ class Highbond_API:
             """
             Enumera as propriedades detalhadas de um projeto específico.
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/getProject
 
             #### Parâmetros:
@@ -1246,7 +1246,7 @@ class Highbond_API:
             - fields: Define os campos que serão trazidos na requisição. O padrão é tudo
 
             #### Retorna:
-            Um dicionário contendo informações sobre os Projetos de uma organização do Highbond
+            Um dicionário contendo informaçãos sobre os Projetos de uma organização do Highbond
 
             #### Exceções:
             - Sobe exceção se o ambiente não estiver definido corretamente.
@@ -1261,7 +1261,7 @@ class Highbond_API:
 
             #### Observações:
             - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
+            - A resposta é um dicionário contendo as informaçãos sobre os arquivos do robô.
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -1298,14 +1298,14 @@ class Highbond_API:
             """
             Consulta aprovações (sign-offs) vinculadas a projetos da organização.
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#tag/Sign-offs
 
             #### Parâmetros:
             Todos os parâmetros são opcionais.
 
-            - **fields** (`list`): Lista de campos a serem retornados na resposta. Por padrão, traz todos os campos principais.
-            - **include** (`List[Literal]`): Lista de entidades relacionadas a serem incluídas na resposta (ex: reviewer, project, etc).
+            - **fields** (`list`): Retorna de campos a serem retornados na resposta. Por padrão, traz todos os campos principais.
+            - **include** (`List[Literal]`): Retorna de entidades relacionadas a serem incluídas na resposta (ex: reviewer, project, etc).
             
             ##### Filtros:
             - **project_id** (`str`): Filtra os sign-offs por ID do projeto.
@@ -1339,7 +1339,7 @@ class Highbond_API:
 
             #### Observações:
             - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
+            - A resposta é um dicionário contendo as informaçãos sobre os arquivos do robô.
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -1392,7 +1392,7 @@ class Highbond_API:
             """
             Cria um projeto em uma organização
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/createProject
 
             #### Parâmetros:
@@ -1413,10 +1413,10 @@ class Highbond_API:
             - opinion_description: campo com a descrição da opinião
             - purpose: propósito do projeto
             - scope: campo com a abrangência de atuação do projeto
-            - tag_list: lista de strings com as tags do projeto
+            - tag_list: Retorna de strings com as tags do projeto
 
             #### Retorna:
-            Um dict com informações sobre o projeto criado (pode ser limitado com o parâmetro "fields")
+            Um dict com informaçãos sobre o projeto criado (pode ser limitado com o parâmetro "fields")
 
             #### Exceções:
             - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
@@ -1487,7 +1487,7 @@ class Highbond_API:
             """
             Conecta uma entidade ao projeto, marcando a mesma para toda a hierarquia inferior
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/createProjectEntityLink
 
             #### Parâmetros:
@@ -1495,7 +1495,7 @@ class Highbond_API:
             - entity_id (obrigatório): (str) define a entidade que será associada
 
             #### Retorna:
-            Um dict com informações sobre a entidade associada
+            Um dict com informaçãos sobre a entidade associada
 
             #### Exceções:
             - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
@@ -1561,7 +1561,7 @@ class Highbond_API:
             """
             Atualiza um projeto em uma organização
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/updateProject
 
             """
@@ -1729,7 +1729,7 @@ class Highbond_API:
             """
             Conecta uma entidade ao projeto, marcando a mesma para toda a hierarquia inferior
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/createProjectEntityLink
 
             #### Parâmetros:
@@ -1737,7 +1737,7 @@ class Highbond_API:
             - entity_id (obrigatório): (str) define a entidade que será desassociada
 
             #### Retorna:
-            Um dict com informações sobre a entidade desassociada
+            Um dict com informaçãos sobre a entidade desassociada
 
             #### Exceções:
             - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
@@ -1818,7 +1818,7 @@ class Highbond_API:
             """
             Adiciona um projeto para ser deletado em 30 dias ou o deleta permanentemente
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/deleteProject
 
             """
@@ -1846,27 +1846,11 @@ class Highbond_API:
         # === GET ===
         def getAgents(self) -> dict:
             """
-            Lista os agentes do robotics instalados na organização
+            #### Descrição
+            Retorna todos os agentes de robôs disponíveis da organização.
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/getAgents
-
-            #### Retorna:
-            Um dicionário contendo informações sobre os agentes do robôs.
-
-            #### Exceções:
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
-            result = instance.getAgents()
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - A resposta é um dicionário contendo as informações sobre os agentes do robôs.
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/getAgents
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -1879,26 +1863,11 @@ class Highbond_API:
     
         def getRobots(self) -> dict:
             """
-            Lista os robôs disponíveis no robotics
+            #### Descrição
+            Retorna todos os robôs disponíveis no módulo de robôs.
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/getRobots
-
-            #### Retorna:
-            Um dicionário contendo informações sobre os robôs.
-
-            #### Exceções:
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
-            result = instance.getRobots()
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/getRobots
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -1911,32 +1880,11 @@ class Highbond_API:
                       
         def getRobotTasks(self, robot_id: str, environment: str) -> dict:
             """
-            Lista as tarefas de um robô ACL.
+            #### Descrição
+            Retorna as tarefas de um robô.
 
-            #### Referência: 
-            https://docs-apis.highbond.com/#operation/getRobotTasks
-
-            #### Parâmetros:
-            - robot_id (str): O ID do robô ACL onde as tarefas estão armazenadas.
-            - environment (str): O ambiente onde as tarefas estão armazenadas. Pode ser 'production' para o ambiente de produção ou 'development' para o ambiente de desenvolvimento.
-
-            #### Retorna:
-            Um dicionário contendo informações sobre as tarefas do robô.
-
-            #### Exceções:
-            - Raises Exception se o ambiente não estiver definido corretamente.
-            - Raises Exception se a requisição API falhar com códigos de status diferentes de 200.
-            - Raises Exception se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='sua_organizacao')
-            result = instance.getRobotTasks(robot_id='123', environment='production')
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - A resposta é um dicionário contendo informações sobre as tarefas do robô.
+            #### Referência 
+            * https://docs-apis.highbond.com/#operation/getRobotTasks
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -1953,30 +1901,11 @@ class Highbond_API:
 
         def getValues(self, task_id: str) -> dict:
             """
-            Lista os valores em uma tarefa de um robô.
+            #### Descrição
+            Retorna os valores em uma tarefa de um robô.
 
-            #### Referência: 
-            https://docs-apis.highbond.com/#operation/getValues
-
-            #### Parâmetros:
-            - task_id (str): Id da tarefa, onde os parâmetros estão disponíveis
-
-            #### Retorna:
-            Um dicionário contendo informações sobre os parâmetros da tarefa.
-
-            #### Exceções:
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='sua_organizacao')
-            result = instance.getValues(task_id='123')
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - A resposta é um dicionário contendo informações sobre os jobs do robô.
+            #### Referência 
+            * https://docs-apis.highbond.com/#operation/getValues
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -1989,29 +1918,11 @@ class Highbond_API:
  
         def getSchedule(self, task_id: str) -> dict:
             """
-            Informa sobre o agendamento de uma tarefa.
+            #### Descrição
+            Retorna informaçãos sobre o agendamento de uma tarefa.
 
-            #### Referência: 
-            https://docs-apis.highbond.com/#operation/getSchedule
-
-            #### Parâmetros:
-            - task_id (str): o id da tarefa
-
-            #### Retorna:
-            Um dicionário contendo informações sobre os agendamentos da tarefa
-
-            #### Exceções:
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='sua_organizacao')
-            result = instance.getRobotJobs(task_id='123')
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            #### Referência 
+            * https://docs-apis.highbond.com/#operation/getSchedule
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -2024,30 +1935,11 @@ class Highbond_API:
         
         def getRobotScriptVersion(self, robot_id: str, version_id: str, include: Literal[None, 'analytics'] = 'analytics'):
             """
-            Informa sobre uma versão específica de desenvolvimentode um robô do ACL.
+            #### Descrição
+            Retorna a versão específica de desenvolvimentode um robô.
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/getRobotScriptVersion
-
-            #### Parâmetros:
-            - robot_id (str): O ID do robô ACL.
-            - version_id (str): O id da versão especificada
-
-            #### Retorna:
-            - Um dict com os dados solicitados
-
-            #### Exceções:
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
-            result = instance.getRobotScriptVersion(robot_id='123', version_id='456')
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/getRobotScriptVersion
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -2063,38 +1955,18 @@ class Highbond_API:
 
         def getRobotFiles(self, robot_id: str, environment: str) -> dict:
             """
-            Lista os arquivos relacionados a um robô ACL em um ambiente específico.
+            #### Descrição
+            Retorna os metadados dos arquivos relacionados a um robô ACL em um ambiente específico.
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/getRobotFile
-
-            #### Parâmetros:
-            - robot_id (str): O ID do robô ACL para o qual os arquivos estão armazenados.
-            - environment (str): O ambiente onde os arquivos estão armazenados. Pode ser 'production' para o ambiente de produção ou 'development' para o ambiente de desenvolvimento.
-
-            #### Retorna:
-            Um dicionário contendo informações sobre os arquivos do robô.
-
-            #### Exceções:
-            - Sobe exceção se o ambiente não estiver definido corretamente.
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
-            result = instance.getRobotFiles(robot_id='123', environment='production')
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/getRobotFile
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
                 'Authorization': f'Bearer {self.parent.token}'
             }
 
+            # TODO: verify if this param (environment) works
             params = {
                 'env': environment
             }
@@ -2106,30 +1978,11 @@ class Highbond_API:
     
         def getRobotApp(self, robot_id: str, robot_app_id: str):
             """
-            Informa sobre uma versão específica de desenvolvimentode um robô do ACL.
+            #### Descrição
+            Retorna informações de uma versão específica de desenvolvimento de um robô.
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/getRobotApp
-
-            #### Parâmetros:
-            - robot_id (str): O ID do robô ACL para o qual os arquivos estão armazenados.
-            - robot_app_id (str): O id da versão especificada
-
-            #### Retorna:
-            - Um dict com os dados solicitados
-
-            #### Exceções:
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
-            result = instance.getRobotApp(robot_id='123', robot_app_id='456')
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/getRobotApp
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -2142,29 +1995,11 @@ class Highbond_API:
 
         def getRobotApps(self, robot_id):
             """
-            Informa sobre todas as versões de desenvolvimento de um robô do ACL.
+            #### Descrição
+            Retorna informações de todas as versões de desenvolvimento de um robô.
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/getRobotApps
-
-            #### Parâmetros:
-            - robot_id (str): O ID do robô ACL para o qual os arquivos estão armazenados.
-
-            #### Retorna:
-            - Um dict com os dados solicitados
-
-            #### Exceções:
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
-            result = instance.getRobotApp(robot_id='123', robot_app_id='456')
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/getRobotApps
             """
             
             headers = {
@@ -2176,39 +2011,19 @@ class Highbond_API:
 
             return self.parent.get_command(api_url=url, api_headers=headers)
         
-        def getRobotJobs(self, robot_id: str, environment: str, 
-                    include: list = ['robot','task','triggered_by'], 
-                    page_size: int = 100, page_num: int = 1) -> dict:
+        def getRobotJobs(self,
+                robot_id: str,
+                environment: str, 
+                include: list = ['robot','task','triggered_by'],
+                page_size: int = 100,
+                page_num: int = 1
+                ) -> dict:
             """
-            Lista os jobs (execuções) de um robô ACL.
+            #### Descrição
+            Retorna as runs/jobs (execuções) de um robô.
 
-            #### Referência: 
-            https://docs-apis.highbond.com/#operation/getRobotJobs
-
-            #### Parâmetros:
-            - robot_id (str): O ID do robô ACL onde os jobs estão armazenados.
-            - environment (str): O ambiente onde os jobs estão armazenados. Pode ser 'production' para o ambiente de produção ou 'development' para o ambiente de desenvolvimento.
-            - include (list): Controla se os dados 'robot', 'task' e 'triggered_by' aparecem no JSON de saída. Todos os campos marcados na consulta pela classe são incluídos. Padrão é ['robot','task','triggered_by'].
-            - page_size (int): Controla a quantidade de registros que aparecerão em cada consulta. Padrão é 100.
-            - page_num (int): Controla o número da página. A API divide em páginas quando o número de registros ultrapassa page_size. Padrão é 1.
-
-            #### Retorna:
-            Um dicionário contendo informações sobre os jobs do robô.
-
-            #### Exceções:
-            - Sobe exceção se o ambiente não estiver definido corretamente.
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='sua_organizacao')
-            result = instance.getRobotJobs(robot_id='123', environment='production')
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - A resposta é um dicionário contendo informações sobre os jobs do robô.
+            #### Referência 
+            * https://docs-apis.highbond.com/#operation/getRobotJobs
             """
             includeCheckList = ['robot', 'task', 'triggered_by']
 
@@ -2241,32 +2056,11 @@ class Highbond_API:
 
         def downloadFile(self, file_id: str, out_file: str) -> bytes:
             """
+            #### Descrição
             Faz o download de um arquivo relacionado a um robô ACL.
 
-            Referência:
-            - https://docs-apis.highbond.com/#operation/downloadFile
-
-            Parâmetros:
-            - file_id (str): O ID do arquivo a ser baixado.
-            - out_file (str): O caminho do arquivo de saída onde o conteúdo baixado será salvo.
-
-            Retorna:
-            Bytes contendo o conteúdo do arquivo baixado.
-
-            Exceções:
-            - Raises Exception se a requisição API falhar com códigos de status diferentes de 200.
-            - Raises Exception se houver uma falha desconhecida.
-            - Raises Exception se o arquivo não for encontrado após o download.
-
-            Exemplo de uso:
-            ```python
-            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='sua_organizacao')
-            file_content = instance.downloadFile(file_id='123', out_file='caminho/do/arquivo/baixado.txt')
-            ```
-
-            Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de log.
-            - O conteúdo do arquivo baixado é salvo no caminho especificado em 'out_file'.
+            Referência
+            * https://docs-apis.highbond.com/#operation/downloadFile
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -2275,6 +2069,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_files/{file_id}/download'
 
+            
             try:
                 if self.parent.talkative == True:
                     print('Iniciando a requisição HTTP...')
@@ -2296,13 +2091,13 @@ class Highbond_API:
                         print('\nCódigo: 200\nMensagem: Requisição executada com sucesso\n')
                         # SAÍDA COM SUCESSO
                         
-                        outPATCH = pl.Path(out_file)
-                        outPATCH.write_bytes(Response.content)
+                        output = pl.Path(out_file)
+                        output.write_bytes(Response.content)
                         if not os.path.exists(out_file):
                             raise Exception('\nArquivo não encontrado após o download')
                     else:
-                        outPATCH = pl.Path(out_file)
-                        outPATCH.write_bytes(Response.content)
+                        output = pl.Path(out_file)
+                        output.write_bytes(Response.content)
                         if not os.path.exists(out_file):
                             raise Exception('\nArquivo não encontrado após o download')
                 else:
@@ -2312,33 +2107,18 @@ class Highbond_API:
                 print(f'A requisição não foi possível:\n{e}')
     
         # === POST ===
-        def createRobot(self, robot_name: str, robot_description: str = None, robot_category: Literal['acl', 'highbond', 'workflow'] = 'acl') -> dict:
+        def createRobot(self,
+                robot_name: str,
+                robot_description: str = None,
+                robot_category: Literal['acl', 'highbond', 'workflow'] = 'acl'
+            ) -> dict:
+            
             """
-            Cria um robô na organização
+            #### Descrição
+            Cria um robô na organização.
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/createRobot
-
-            #### Parâmetros:
-            - robot_name (str): O nome do robô ACL que será criado.
-            - robot_description (str): A descrição do robô.
-            - robot_category (str): O topo de robô que será criado, padrão é 'acl'
-
-            #### Retorna:
-            Um dict com informações sobre o robô criado.
-
-            #### Exceções:
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
-            result = instance.createRobot('nome_robô', 'descricao_robo', 'acl')
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/createRobot
             """
             headers = {
                 'Accept': 'application/vnd.api+json',
@@ -2355,42 +2135,23 @@ class Highbond_API:
 
             return self.parent.post_command(api_url=url, api_headers=headers, api_params=params)
     
-        def createRobotTask(self, robot_id, environment: Literal['production', 'development'], 
-                            task_name, app_version: int = None, emails_enabled: bool = False, 
-                            log_enabled: bool = False, pw_crypto_key: str = None, 
-                            share_encrypted: bool = False, analytic_names: list = None) -> dict:
+        def createRobotTask(self,
+                robot_id,
+                environment: Literal['production', 'development'],
+                task_name,
+                app_version: int = None,
+                emails_enabled: bool = False,
+                log_enabled: bool = False,
+                pw_crypto_key: str = None,
+                share_encrypted: bool = False,
+                analytic_names: list = None
+            ) -> dict:
             """
-            Cria uma tarefa em um robô do Highbond, e em um ambiente específico
+            #### Descrição
+            Cria uma tarefa para um ambiente específico de um robô;
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/createRobotTask
-
-            #### Parâmetros:
-            - robot_id (str): Id do robô onde a tarefa será criada
-            - environment (str): define o ambiente em que a tarefa será criada
-            - task_name (str): nome da tarefa que será criada
-            - app_version (int): versão do robô que a tarefa vai utilizar (no caso de tarefas em produção)
-            - emails_enabled (bool): Se True, habilita a notificação de e-mails da tarefa
-            - log_enabled (bool): Se True, habilita a saída de logs na execução da tarefa
-            - pw_crypto_key (str): define a chave de descriptografia RSA das senhas nas tarefas
-            - share_encrypted(bool): define se a tarefa pode ou não ser acessada quando uma senha foi criptografada
-            - analytic_names(list): define a lista de análises do robô que será executada pela tarefa
-
-            #### Retorna:
-            Um dict com informações sobre a tarefa criada.
-
-            #### Exceções:
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi('seu_self.parent.token', 'sua_organização')
-            instance.createRobotTask('12345', 'production', 'tarefa 1')
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/createRobotTask
             """
             headers = {
                 'Accept': 'application/vnd.api+json',
@@ -2419,37 +2180,11 @@ class Highbond_API:
         
         def createRobotApp(self, robot_id: str, code_page: int, comment: str, is_unicode: bool, input_file: str) -> dict:
             """
-            Método que faz upload dos arquivos relacionados de um robô ACL
+            #### Descrição
+            Cria uma nova versão para um robô ACL.
 
-            #### Referência:
-            - https://docs-apis.highbond.com/#operation/createRobotApp
-            
-            #### Parâmetros:
-            - robot_id (str): id do robô
-            - code_page (int): id do encoding do robô (21 - Brazil) (Ref.: https://en.wikipedia.org/wiki/Code_page)
-            - comment (str): comentário da nova versão
-            - is_unicode (bool): define se o projeto está na versão unicode ou não
-            - input_file(str): uma string com o caminho para o arquivo .acl do projeto
-
-            #### Retorna:
-            Um dicionário contendo informações sobre o arquivo recém-criado.
-
-            #### Exceções:
-            - Raises Exception se a requisição API falhar com códigos de status diferentes de 200.
-            - Raises Exception se houver uma falha desconhecida.
-            - Raises Exception se a entidade for considerada improcessável (código 422).
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi('seu_self.parent.token', 'sua_organização')
-            result = instance.createRobotApp(
-                robot_id='123', code_page=21, comment='Versão de teste ro robô', 
-                is_unicode=False, input_file='caminho/do/arquivo.acl'
-                )
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/createRobotApp
             """
             headers = {
                 'Accept': 'application/vnd.api+json',
@@ -2469,35 +2204,12 @@ class Highbond_API:
 
         def createRobotFile(self, inputFile: str, robot_id: str, environment: Literal['production', 'development']) -> dict:
             """
-            Método que faz upload dos arquivos relacionados de um robô ACL
+            #### Descrição
+            Faz upload dos arquivos relacionados de um robô ACL
 
-            #### Referência:
-            - https://docs-apis.highbond.com/#operation/createRobotFile
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/createRobotFile
             
-            #### Parâmetros:
-            - inputFile (str): O caminho do arquivo a ser enviado para a API como parte da criação.
-            - robot_id (str): O ID do robô ACL para o qual o arquivo será associado.
-            - environment (str): O ambiente onde o arquivo será criado. Pode ser 'production' para o ambiente de produção ou 'development' para o ambiente de desenvolvimento.
-
-            #### Retorna:
-            Um dicionário contendo informações sobre o arquivo recém-criado.
-
-            #### Exceções:
-            - Raises Exception se o ambiente não estiver definido corretamente.
-            - Raises Exception se a requisição API falhar com códigos de status diferentes de 200.
-            - Raises Exception se houver uma falha desconhecida.
-            - Raises Exception se a entidade for considerada improcessável (código 422).
-
-            #### Exemplo de uso:
-            ```python
-            instance = SuaClasse()
-            result = instance.createRobotFile(inputFile='caminho/do/arquivo.txt', robot_id='123', environment='production')
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - O caminho do arquivo a ser enviado é especificado em 'inputFile'.
-            - A resposta é um dicionário contendo informações sobre o arquivo recém-criado.
             """
             headers = {
                 'Accept': 'application/vnd.api+json',
@@ -2526,46 +2238,11 @@ class Highbond_API:
         def createSchedule(self, task_id: str, frequency: Literal["once", "hourly", "daily", "weekly", "monthly"], 
                             interval: int = 1, starts_at: str = None, timezone: str = None, days: List[Union[int,str]]= None) -> dict:
             """
+            #### Descrição
             Cria o agendamento de uma tarefa.
 
-            #### Referência: 
-            https://docs-apis.highbond.com/#operation/createSchedule
-
-            #### Parâmetros:
-            - task_id (str): o id da tarefa
-            - frequency (str): frequência de execução do agendamento, pode ser:
-                - once: Define que o agendamento só será executado uma vez
-                - hourly: Define uma frequência horária (depende do intervalo)
-                - daily: Define uma frequência diária (depende do intervalo)
-                - weekly: Define uma frequência semanal (depende do intervalo)
-                - monthly: Define uma frequência mensal (depende do intervalo)
-            - interval (int): o intervalo de tempo, a unidade muda com a frequência escolhida:
-                - once: Não é definido
-                - hourly: define o intervalo em minutos
-                - daily: define o intervalo em dias
-                - weekly: define o intervalo em semanas
-                - monthly: define o intervalo em meses
-            - starts_at (str): datahora da primeira execução do agendamento (yyyy-mm-dd THH:MM:SS.sssZ)
-            - timezone (str): fusohorário da hora definida, (America/Sao_Paulo, conforme Ref.: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
-            - days (list of integers or strings): define diferentes intervalos de execução para cada frequência, exceto por "once", "hourly" e "daily"
-                - weekly: em quais dias da semana o agendamento será executado, sendo 0 domingo e 6 sábado, a lista pode ter 1 ou mais dias
-                - monthly: em quais dias do mês o agendamento será executado, os dias podem ser definidos entre 1 e 28. Ou "last_day" para o último dia do mês, a lista só pode ter um valor
-
-            #### Retorna:
-            Um dicionário contendo informações sobre os agendamentos da tarefa
-
-            #### Exceções:
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='sua_organizacao')
-            instance.createSchedule('67336','daily', 2, starts_at='2024-02-17T22:00:00Z',timezone='America/Sao_Paulo')
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            #### Referência 
+            * https://docs-apis.highbond.com/#operation/createSchedule
             """
             headers = {
                 'Accept': 'application/vnd.api+json',
@@ -2658,30 +2335,11 @@ class Highbond_API:
  
         def runRobotTask(self, task_id: str, include: list = ['job_values','result_tables']) -> dict:
             """
-            Inicia a execução de uma tarefa de um robô no Highbond
+            #### Descrição
+            Inicia a execução de uma tarefa de um robô.
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/runRobotTask
-
-            #### Parâmetros:
-            - task_id (str): Id da tarefa que será executada
-            - include (list): Define se os valores job_values e result_tables vão sair na resposta
-
-            #### Retorna:
-            Um dict com informações sobre a a execução da tarefa.
-
-            #### Exceções:
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi('seu_self.parent.token', 'sua_organização')
-            instance.runRobotTask('12345', ['job_values','result_tables'])
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/runRobotTask
             """
             includeCheckList = ['job_values','result_tables']
 
@@ -2711,34 +2369,13 @@ class Highbond_API:
             return self.parent.post_command(api_url=url, api_headers=headers, api_params=params)
 
         # === PATCH ===
-        def PATCHRobot(self, robot_id, robot_new_name: str, robot_new_description: str, robot_new_category: Literal['acl', 'highbond', 'workflow']) -> dict:
+        def putRobot(self, robot_id, robot_new_name: str, robot_new_description: str, robot_new_category: Literal['acl', 'highbond', 'workflow']) -> dict:
             """
-            Atualiza as informações de um robô
+            #### Descrição
+            Atualiza as informaçãos de um robô
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/PATCHRobot
-
-            #### Parâmetros:
-            - robot_id (str): O ID do robô cujos dados serão alterados.
-            - robot_new_name (str): O novo nome do robô (manter o mesmo caso não queira trocar).
-            - robot_new_description (str): A nova descrição do robô (manter o mesmo caso não queira trocar)
-            - robot_new_category (str): A nova categoria do robô (manter a mesma caso não queira trocar)
-
-            #### Retorna:
-            Um dicionário contendo informações sobre as alterações feitas no robô.
-
-            #### Exceções:
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
-            result = instance.PATCHRobot('novo_nome', 'nova_descricao', 'acl')
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/putRobot
             """
             headers = {
                 'Accept': 'application/vnd.api+json',
@@ -2756,42 +2393,16 @@ class Highbond_API:
 
             return self.parent.patch_command(api_url=url, api_headers=headers, api_params=params)
 
-        def PATCHRobotTask(self, task_id, environment: Literal['production', 'development'], 
+        def putRobotTask(self, task_id, environment: Literal['production', 'development'], 
                             task_name, app_version: int = None, emails_enabled: bool = False, 
                             log_enabled: bool = False, pw_crypto_key: str = None, 
                             share_encrypted: bool = False, analytic_names: list = None) -> dict:
             """
-            Atualiza uma tarefa em um robô do Highbond, e em um ambiente específico
+            #### Descrição
+            Atualiza uma tarefa em um robô e em um ambiente específico
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/PATCHRobotTask
-
-            #### Parâmetros:
-            - task_id (str): Id da tarefa que será atualizada
-            - environment (str): define o ambiente em que a tarefa será atualizada
-            - task_name (str): nome da tarefa que será atualizada
-            - app_version (int): versão do robô que a tarefa vai utilizar (no caso de tarefas em produção)
-            - emails_enabled (bool): Se True, habilita a notificação de e-mails da tarefa
-            - log_enabled (bool): Se True, habilita a saída de logs na execução da tarefa
-            - pw_crypto_key (str): define a chave de descriptografia RSA das senhas nas tarefas
-            - share_encrypted(bool): define se a tarefa pode ou não ser acessada quando uma senha foi criptografada
-            - analytic_names(list): define a lista de análises do robô que será executada pela tarefa
-
-            #### Retorna:
-            Um dict com informações sobre a tarefa atualizada.
-
-            #### Exceções:
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi('seu_self.parent.token', 'sua_organização')
-            instance.PATCHRobotTask('12345', 'production', 'tarefa 1')
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/putRobotTask
             """
             headers = {
                 'Accept': 'application/vnd.api+json',
@@ -2818,52 +2429,16 @@ class Highbond_API:
 
             return self.parent.patch_command(api_url=url, api_headers=headers, api_schema=schema)
 
-        def PATCHValues(self, task_id: str, multi_mode: bool, analytic_name: str = None, parameter_id: str = None, 
+        def putValues(self, task_id: str, multi_mode: bool, analytic_name: str = None, parameter_id: str = None, 
                         encrypted: bool = None, value: str = None, 
                         value_type: Literal["character","date","datetime","file","logical","number","table","time"] = None, 
                         values_list: List[list] = None) -> dict:
             """
-            Atualiza o valor de um parâmetro de uma tarefa
+            #### Descrição
+            Atualiza o valor de um parâmetro de uma tarefa.
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/PATCHValues
-
-            #### Parâmetros:
-            - task_id (str): Id da tarefa que será atualizada
-            - multi_mode (bool): Define se o método atualizará um valor ou vários valores
-            - analytic_name (str): define o nome da análise que será alterada se multi_mod = False
-            - parameter_id (str): define qual parâmetro será alterado se multi_mod = False
-            - encrypted (bool): Se True, define que o parâmetro é protegido e mascarado como uma senha se multi_mod = False
-            - value (str): conteúdo do valor que será alterado se multi_mod = False
-            - value_type (str): tipo do valor que será alterado se multi_mod = False
-            - values_list (list): se multi_mod = True, recebe [analytic_name, parameter_id, encrypted, value, value_type] para cada valor que será alterado
-
-            #### Retorna:
-            Um dict com informações sobre os parâmetros que serão atualizados.
-
-            #### Exceções:
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso se multi_mod = False:
-            ```python
-            instance = hbapi('seu_self.parent.token', 'sua_organização')
-            instance.PATCHValues('1234565', multi_mod=False, 'Nome da Análise', 'Nome do ParÂmetro', False, 'Novo Valor', 'character')
-            ```
-
-            #### Exemplo de uso se multi_mod = True
-            ```python
-                instance = hbapi('self.parent.token', 'organizacao')
-                instance.PATCHValues('tarefa', multi_mod=True, values_list=[
-                    ['Nome da Análise 1', 'Nome do Parâmetro 1', True, 'Novo Valor 1', 'character'], 
-                    ['Nome da Análise 2', 'Nome do Parâmetro 2', True, 'Novo Valor 2', 'character']
-                ]
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - Caso haja calores com senha entre os parâmetros da tarefa, PATCHValues deve sempre rodar em multi_mod=True
-            pois, o parâmetro de senha deve ser passado junto dos outros.
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/putValues
             """
             headers = {
                 'Accept': 'application/vnd.api+json',
@@ -2956,49 +2531,14 @@ class Highbond_API:
             except Exception as e:
                 print(f'A requisição não foi possível:\n{e}')
 
-        def PATCHSchedule(self, task_id: str, frequency: Literal["once", "hourly", "daily", "weekly", "monthly"], 
+        def putSchedule(self, task_id: str, frequency: Literal["once", "hourly", "daily", "weekly", "monthly"], 
                             interval: int = 1, starts_at: str = None, timezone: str = None, days: List[Union[int,str]]= None) -> dict:
             """
+            #### Descrição
             Atualiza o agendamento de uma tarefa.
 
-            #### Referência: 
-            https://docs-apis.highbond.com/#operation/PATCHSchedule
-
-            #### Parâmetros:
-            - task_id (str): o id da tarefa
-            - frequency (str): frequência de execução do agendamento, pode ser:
-                - once: Define que o agendamento só será executado uma vez
-                - hourly: Define uma frequência horária (depende do intervalo)
-                - daily: Define uma frequência diária (depende do intervalo)
-                - weekly: Define uma frequência semanal (depende do intervalo)
-                - monthly: Define uma frequência mensal (depende do intervalo)
-            - interval (int): o intervalo de tempo, a unidade muda com a frequência escolhida:
-                - once: Não é definido
-                - hourly: define o intervalo em minutos
-                - daily: define o intervalo em dias
-                - weekly: define o intervalo em semanas
-                - monthly: define o intervalo em meses
-            - starts_at (str): datahora da primeira execução do agendamento (yyyy-mm-dd THH:MM:SS.sssZ)
-            - timezone (str): fusohorário da hora definida, (America/Sao_Paulo, conforme Ref.: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
-            - days (list of integers or strings): define diferentes intervalos de execução para cada frequência, exceto por "once", "hourly" e "daily"
-                - weekly: em quais dias da semana o agendamento será executado, sendo 0 domingo e 6 sábado, a lista pode ter 1 ou mais dias
-                - monthly: em quais dias do mês o agendamento será executado, os dias podem ser definidos entre 1 e 28. Ou "last_day" para o último dia do mês, a lista só pode ter um valor
-
-            #### Retorna:
-            Um dicionário contendo informações sobre os agendamentos da tarefa
-
-            #### Exceções:
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='sua_organizacao')
-            instance.PATCHSchedule('67336','daily', 2, starts_at='2024-02-17T22:00:00Z',timezone='America/Sao_Paulo')
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            #### Referência 
+            * https://docs-apis.highbond.com/#operation/putSchedule
             """
             headers = {
                 'Accept': 'application/vnd.api+json',
@@ -3120,14 +2660,14 @@ class Highbond_API:
             """
             Deleta o agendamento de uma tarefa
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/deleteRobotTask
 
             #### Parâmetros:
             - task_id (str): Id da tarefa
 
             #### Retorna:
-            Um dict com informações sobre o agendamento deletado.
+            Um dict com informaçãos sobre o agendamento deletado.
 
             #### Exceções:
             - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
@@ -3187,14 +2727,14 @@ class Highbond_API:
             """
             Deleta um registro de execução do robô
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/deleteRobotJobs
 
             #### Parâmetros:
             - job_id (str): Id do registro de execução
 
             #### Retorna:
-            Um dict com informações sobre o registro de execução deletado
+            Um dict com informaçãos sobre o registro de execução deletado
 
             #### Exceções:
             - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
@@ -3254,14 +2794,14 @@ class Highbond_API:
             """
             Deleta um arquivo de um robô ACL
 
-            #### Referência:
+            #### Referência
             - https://docs-apis.highbond.com/#operation/createRobotFile
             
             #### Parâmetros:
             - file_id (str): O ID do arquivo dentro do robô ACL a ser deletado.
 
             #### Retorna:
-            Um dicionário contendo informações sobre o status da deleção.
+            Um dicionário contendo informaçãos sobre o status da deleção.
 
             #### Exceções:
             - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
@@ -3275,7 +2815,7 @@ class Highbond_API:
 
             #### Observações:
             - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - A resposta é um dicionário contendo informações sobre o status da deleção.
+            - A resposta é um dicionário contendo informaçãos sobre o status da deleção.
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -3318,14 +2858,14 @@ class Highbond_API:
             """
             Deleta um robô e todas as tarefas associadas a ele
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/deleteRobot
 
             #### Parâmetros:
             - robot_id (str): O ID do robô que será deletado.
             
             #### Retorna:
-            Um dicionário contendo informações sobre o robô deletado.
+            Um dicionário contendo informaçãos sobre o robô deletado.
 
             #### Exceções:
             - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
@@ -3339,7 +2879,7 @@ class Highbond_API:
 
             #### Observações:
             - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
+            - A resposta é um dicionário contendo as informaçãos sobre os arquivos do robô.
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -3354,14 +2894,14 @@ class Highbond_API:
             """
             Deleta uma tarefa de um robô do Highbond
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/deleteRobotTask
 
             #### Parâmetros:
             - task_id (str): Id da tarefa que será deletada
 
             #### Retorna:
-            Um dict com informações sobre a tarefa deletada.
+            Um dict com informaçãos sobre a tarefa deletada.
 
             #### Exceções:
             - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
@@ -3395,13 +2935,11 @@ class Highbond_API:
                                 page_size: int = 100, 
                                 page: int = 1) -> dict:
             """
-            Lista os arquivos relacionados a um robô ACL em um ambiente específico.
+            #### Descrição
+            Retorna todos os riscos do módulo de estratégia da organização.
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/getStrategyRisks
-
-            #### Parâmetros:
-            
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/getStrategyRisks
             """
             
             
@@ -3424,13 +2962,11 @@ class Highbond_API:
                                 page_size: int = 100, 
                                 page: int = 1) -> dict:
             """
-            Lista os arquivos relacionados a um robô ACL em um ambiente específico.
+            #### Descrição
+            Retorna todos os segmentos do módulo de estratégia da organização.
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/getStrategySegments
-            
-            #### Parâmetros:
-
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/getStrategySegments
             """
             
             headers = {
@@ -3449,33 +2985,12 @@ class Highbond_API:
 
         def getStrategyRiskSegments(self, strategy_risk_id: str, page_size: int = 100, page: int = 1) -> dict:
             """
-            Retrieves the full list of the risks's operating segments from Strategy.
+            #### Descrição
+            Retorna todos os segmentos de um risco estratégico.
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/getStrategyRiskSegments
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/getStrategyRiskSegments
 
-            #### Parâmetros:
-            - strategy_risk_id: id do risco estratégico a ser consultado
-            - page_size: quantidade de registros nesta consulta
-            - page: página consultada
-
-            #### Retorna:
-            Um dicionário contendo informações sobre o risco estratégico consultado
-
-            #### Exceções:
-            - Sobe exceção se o ambiente não estiver definido corretamente.
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
-            result = instance.getStrategyRiskSegments(strategy_risk_id='45323', page_size=10, page=1)
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -3498,14 +3013,11 @@ class Highbond_API:
                                     factors_fields: str = 'id,treatment_value,treatment_weight,treatment_factors,severity_value'
                                     ) -> dict:
             """
-            Get information about an operating segment for the risk.
+            #### Descrição
+            Retorna informaçãos sobre um segmento do risco estratégico
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/getStrategyRiskSegment
-
-            #### Parâmetros:
-            
-            
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/getStrategyRiskSegment
             """
             
             headers = {
@@ -3530,14 +3042,11 @@ class Highbond_API:
 
         def getStrategyObjectives(self, page_size: int = 100, page_num: int = 1) -> dict:
             """
+            #### Descrição
             Retorna todos os objetivos estratégicos da organização.
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/getStrategyObjectives
-
-            #### Parâmetros:
-            - page_size: parâmetro que define a quantidade de registros retornados
-            
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/getStrategyObjectives
             """
             
             headers = {
@@ -3582,26 +3091,13 @@ class Highbond_API:
                 page_size: int = 100
                 ) -> dict:
             """
+            #### Descrição
             Consulta todos os to_dos da organização ou um em específico.
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/getOrgProjectsTodos\n
-            https://docs-apis.highbond.com/#operation/getTodo
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/getOrgProjectsTodos\n
+            * https://docs-apis.highbond.com/#operation/getTodo
 
-            #### Parâmetros:
-
-            #### Retorna:
-
-            #### Exceções:
-            - Sobe exceção se o id da organização não for encontrado.
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            ```
-
-            #### Observações:
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -3637,10 +3133,12 @@ class Highbond_API:
         # === GET ===
         def getUsers(self, uid: str = '') -> dict:
             """
-            Retorna todos ou um usuário caso seja passado o `id`
+            #### Descrição
+            Retorna todos ou um usuário caso seja passado o `uid`
             
-            #### Referência:
-            https://docs-apis.highbond.com/public.html#operation/getUsers
+            #### Referência
+            * https://docs-apis.highbond.com/public.html#operation/getUsers
+            * https://docs-apis.highbond.com/public.html#operation/getUser
             
             """
             
@@ -3666,15 +3164,32 @@ class Highbond_API:
         # === GET ===
             
         def getOrganizationWalkthroughs(self,
-                            fields: list = ['walkthrough_results', 'control_design', 'created_at', 'updated_at', 'custom_attributes',
-                                            'control', 'planned_milestone_date', 'actual_milestone_date'],
-                            sort: Literal["id", "walkthrough_results","control_design", "created_at", "updated_at"] = "id",
+                            fields: list = [
+                                'walkthrough_results',
+                                'control_design',
+                                'created_at',
+                                'updated_at',
+                                'custom_attributes',
+                                'control', 
+                                'planned_milestone_date',
+                                'actual_milestone_date'],
+                            sort: Literal[
+                                "id",
+                                "walkthrough_results",
+                                "control_design",
+                                "created_at", 
+                                "updated_at"
+                                ] = "id",
                             project_id: str = None,
                             project_name: str = None,
                             project_state: str = "active",
                             project_status: str = None,
                             control_id: list = None,
-                            control_design: Literal["true", "false", ""] = None,
+                            control_design: Literal[
+                                "true",
+                                "false",
+                                ""
+                                ] = None,
                             control_title: str = None,
                             control_id_interno: list = None,
                             control_query: str = None,
@@ -3694,96 +3209,11 @@ class Highbond_API:
                             page_size: int = 100,
                             page_num: int = 1) -> dict:
             """
+            #### Descrição
             Consulta Walkthroughs da organização com base em filtros avançados por projeto, controle, objetivo, responsáveis e status.
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/getOrganizationWalkthroughs
-
-            #### Parâmetros:
-
-            - **fields** (`list`): Lista de campos a serem retornados.  
-            *Exemplo:* `['walkthrough_results','control_design','created_at']`
-
-            - **sort** (`str`): Campo de ordenação (ascendente ou descendente com `-`).  
-            *Opções:* `"id"`, `"walkthrough_results"`, `"control_design"`, `"created_at"`, `"updated_at"`  
-            *Exemplo:* `"id"` ou `"-created_at"`
-
-            ##### Filtros de projeto:
-            - **project_id** (`str`): Filtra por ID do projeto.  
-            *Exemplo:* `"123"`
-            - **project_name** (`str`): Filtra por nome do projeto.  
-            *Exemplo:* `"Projeto X"`
-            - **project_state** (`str`): Filtra por estado do projeto.  
-            *Exemplo:* `"active"`
-            - **project_status** (`str`): Filtra por status do projeto.  
-            *Exemplo:* `"active"`
-
-            ##### Filtros de controle:
-            - **control_id** (`list`): Filtra por IDs do controle.  
-            *Exemplo:* `["1", "2", "3"]`
-            - **control_design** (`str`): Filtra por walkthroughs com controle adequadamente desenhado.  
-            *Valores:* `"true"`, `"false"`
-            - **control_title** (`str`): Filtra pelo título do controle.  
-            - **control_id_interno** (`list`): Filtra por IDs internos (`control.control_id`).  
-            *Exemplo:* `["001", "002"]`
-            - **control_query** (`str`): Busca textual no título ou descrição do controle.  
-            - **control_status** (`str`): Filtra pelo status do controle.  
-            *Exemplo:* `"Key Control"`
-            - **control_owner** (`str`): Filtra pelo proprietário do controle.  
-            *Exemplo:* `"usuario@empresa.com"`
-            - **control_frequency** (`str`): Filtra pela frequência do controle.  
-            *Exemplo:* `"Monthly"`
-            - **control_type** (`str`): Filtra pelo tipo do controle.  
-            *Exemplo:* `"Application/System Control"`
-
-            ##### Filtros de objetivo:
-            - **objective_title** (`str`): Filtra pelo título do objetivo.  
-            - **objective_reference** (`str`): Filtra pela referência do objetivo.  
-
-            ##### Filtros de responsáveis por testes:
-            - **test_round_1_user_id** (`str`): Filtra por usuário atribuído ao 1º round.  
-            - **test_round_2_user_id** (`str`): Filtra por usuário atribuído ao 2º round.  
-            - **test_round_3_user_id** (`str`): Filtra por usuário atribuído ao 3º round.  
-            - **test_round_4_user_id** (`str`): Filtra por usuário atribuído ao 4º round.  
-
-            ##### Inclusão de entidades relacionadas:
-            - **include** (`str`): Define entidades relacionadas para inclusão.  
-            *Exemplo:* `"control,control.objective"`
-            - **fields_controls** (`str`): Campos a retornar da entidade `controls`.  
-            *Exemplo:* `"title,control_id,owner,status"`
-            - **fields_objectives** (`str`): Campos a retornar da entidade `objectives`.  
-            *Exemplo:* `"title,reference,owner"`
-
-            ##### Paginação:
-            - **page_size** (`int`): Número de itens por página (padrão: 100, máx: 100).  
-            - **page_num** (`int`): Número da página (codificado em Base64 internamente).  
-
-            #### Retorno:
-            - `dict`: Dicionário com os walkthroughs encontrados conforme os filtros aplicados.
-
-            #### Exceções:
-            - Sobe exceção se o ambiente não estiver configurado corretamente (`self.parent.token`, `organization_id`, `self.parent.server`).
-            - Sobe exceção se a requisição retornar código HTTP diferente de `200`.
-            - Sobe exceção para falhas inesperadas ou erros internos da API.
-
-            #### Exemplo de uso:
-            ```python
-            api = hbapi(token="seu_token", organization_id="self.parent.organization_id")
-            walkthroughs = api.getOrganizationWalkthroughs(
-                project_id="123",
-                control_status="Key Control",
-                sort="-created_at",
-                page_size=50
-            )
-            ```
-            
-            #### Observações:
-            - Os filtros do tipo lista (ex: `control_id`, `control_id_interno`) são convertidos para string separada por vírgula conforme esperado pela API.
-            - O número da página é automaticamente codificado em Base64 para atender ao padrão exigido pela API (`page[number]`).
-            - O campo `sort` aceita apenas um valor por vez e deve ser utilizado com cautela para garantir performance.
-            - Os campos `fields[controls]` e `fields[objectives]` devem conter apenas atributos válidos das respectivas entidades.
-            - O uso do parâmetro `include` pode impactar o tempo de resposta da API, dependendo da profundidade das relações requisitadas.
-            - Certifique-se de que os valores utilizados nos filtros correspondem exatamente aos valores esperados pela base de dados da API (case-sensitive, enum etc.).
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/getOrganizationWalkthroughs
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -3833,39 +3263,11 @@ class Highbond_API:
                             include: List[Literal["control","control.objective", None]] = ["control","control.objective"]
             ) -> dict:
             """
-            Consulta Walkthroughs da organização com base em filtros avançados por projeto, controle, objetivo, responsáveis e status.
+            #### Descrição
+            Consulta um Walkthrough da organização.
 
-            #### Referência:
-            https://docs-apis.highbond.com/#operation/getWalkthrough
-
-            #### Parâmetros:
-
-            - **fields** (`list`): Lista de campos a serem retornados.  
-            *Exemplo:* `['walkthrough_results','control_design','created_at']` 
-
-            ##### Inclusão de entidades relacionadas:
-            - **include** (`str`): Define entidades relacionadas para inclusão.  
-            *Exemplo:* `"control,control.objective"`
-
-            #### Retorno:
-            - `dict`: Dicionário dados de um walkthrough específico.
-
-            #### Exceções:
-            - Sobe exceção se o ambiente não estiver configurado corretamente (`self.parent.token`, `organization_id`, `self.parent.server`).
-            - Sobe exceção se a requisição retornar código HTTP diferente de `200`.
-            - Sobe exceção para falhas inesperadas ou erros internos da API.
-
-            #### Exemplo de uso:
-            ```python
-            api = hbapi(token="seu_token", organization_id="self.parent.organization_id")
-            walkthroughs = api.getWalkthrough(
-                walkthrough_id="1234",
-            )
-            ```
-            
-            #### Observações:
-            - Os paramêtros do tipo lista (ex: `fields`, `include`) são convertidos para string separada por vírgula conforme esperado pela API.
-            - O uso do parâmetro `include` pode impactar o tempo de resposta da API, dependendo da profundidade das relações requisitadas.
+            #### Referência
+            * https://docs-apis.highbond.com/#operation/getWalkthrough
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
