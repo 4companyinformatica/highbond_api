@@ -114,7 +114,10 @@ class Highbond_API:
             raise Exception('Falha desconhecida.')
 
     def requester(self, method: str, url: str, headers: dict, params: dict = {}, json: dict = {}, files: dict = {}) -> dict | None:
-        """Faz qualquer requisição HTTP e centraliza try/except + validação"""
+        """
+        #### Descrição
+        Faz qualquer requisição HTTP e centraliza try/except + validação
+        """
         try:
             if self.talkative:
                 print(f"Iniciando a requisição HTTP [{method.upper()}]...")
@@ -150,9 +153,10 @@ class Highbond_API:
 
     def getOrganization(self) -> dict:
         """
+        #### Descrição
         Retorna informações sobre a organização associada ao id fornecido.
 
-        #### Referência:
+        #### Referência
         https://docs-apis.highbond.com/#operation/getOrganization
         """
         headers = {
@@ -177,34 +181,11 @@ class Highbond_API:
                     page_num: int = 1,
                     page_size: int = 100) -> dict:
             """
+            #### Descrição
             Lista as ações de um problema da organização.
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/getActions
-
-            #### Parâmetros:
-            - fields: Define os campos que serão trazidos na requisição. O padrão é tudo
-            - issue_id: Identificador único do problema.
-            - page_num: Define a página atual.
-            - page_size: Define a quantidade de registros retornados.
-
-            #### Retorna:
-            Um dicionário contendo informações sobre as ações do risco consultado
-
-            #### Exceções:
-            - Sobe exceção se o ambiente não estiver definido corretamente.
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
-            result = instance.getActives(fields=['title, description'], self.parent.organization_id = '1111', issue_id = '2222', page_num=1, page_size=25)
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -228,34 +209,11 @@ class Highbond_API:
                     fields: List[Literal["title","created_at","updated_at","owner_name","owner_email","send_recurring_reminder","include_issue_details","include_remediation_details","description","due_date","priority","closed","completed_date","status","submitted_on","slug","custom_attributes","issue","assigned_by","cc_users"]] = None
                     ) -> dict:
             """
+            #### Descrição
             Consulta uma ação específica de um problema da organização.
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/getAction
-
-            #### Parâmetros:
-            - fields: Define os campos que serão trazidos na requisição. O padrão é tudo
-            - action_id: Identificador único da ação.
-            - page_num: Define a página atual.
-            - page_size: Define a quantidade de registros retornados.
-
-            #### Retorna:
-            Um dicionário contendo informações sobre as ações do risco consultado
-
-            #### Exceções:
-            - Sobe exceção se o ambiente não estiver definido corretamente.
-            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-            - Sobe exceção se houver uma falha desconhecida.
-
-            #### Exemplo de uso:
-            ```python
-            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
-            result = instance.getActives(fields=['title, description'], self.parent.organization_id = '1111', issue_id = '2222', page_num=1, page_size=25)
-            ```
-
-            #### Observações:
-            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-            - A resposta é um dicionário contendo as informações sobre os arquivos do robô.
             """
             headers = {
                 'Content-type': 'application/vnd.api+json',
@@ -281,9 +239,10 @@ class Highbond_API:
                 page_size: int = 100
             ) -> dict:
             """
+            #### Descrição
             Retorna todos os comentários associados a uma ação.
 
-            #### Referência:
+            #### Referência
             https://docs-apis.highbond.com/#operation/getActionComments
             """
             headers = {
@@ -322,7 +281,11 @@ class Highbond_API:
                                         'control_tests','mitigations','owner_user','entities','framework_origin'],
                         include: Literal['', 'objective'] = '', page_size: int = 100, page_num: int = 1) -> dict:
             """
+            #### Descrição
             Lista todos os controles de um objetivo.
+
+            #### Referência
+            https://docs-apis.highbond.com/#operation/getControls
             """
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/objectives/{parent_resource_id}/controls'
             
@@ -340,13 +303,20 @@ class Highbond_API:
             
             return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)  
 
-        def getAControl(self, 
+        def getControl(self, 
                         resource_id,
                         fields: list = ['title','description','control_id','owner','frequency','control_type',
                                         'prevent_detect','method','status','position','created_at','updated_at',
                                         'custom_attributes','objective','walkthrough','control_test_plan',
                                         'control_tests','mitigations','owner_user','entities','framework_origin'],
                         include: Literal['', 'objective'] = '') -> dict:
+            """
+            #### Descrição
+            Retorna todas as informações de um controle específico. 
+            
+            #### Referência
+            https://docs-apis.highbond.com/#operation/getControl
+            """
             url = f"https://{self.parent.server}/v1/orgs/{self.parent.organization_id}/controls/{resource_id}"
 
             headers = {
@@ -370,14 +340,39 @@ class Highbond_API:
                 sort: str = None,
                 filter_frequency: str = None,
                 filter_owner: str = None,
-                filter_walkthrough_control_design: str = None,
+                filter_control_tests_1_signed_user_id: str = None,
+                filter_control_tests_2_signed_user_id: str = None,
+                filter_control_tests_3_signed_user_id: str = None,
+                filter_control_tests_4_signed_user_id: str = None,
+                filter_control_tests_not_applicable: Literal["true","false",""] = None,
+                filter_control_tests_testing_conclusion: Literal["true","false",""] = None,
+                filter_control_tests_testing_conclusion_status: str = None, # TODO verificar como passar diferentes status ao mesmo tempo
+                filter_walkthrough_control_design: Literal["true","false",""] = None,
                 filter_control_type: str = None,
                 filter_status: str = None,
+                filter_objective_title: str = None,
+                filter_objective_name: str = None,
+                filter_objective_reference: str = None,
+                filter_project_id: str = None,
+                filter_project_name: str = None,
+                filter_project_state: str = None,
+                filter_project_status: str = None,
+                filter_description: str = None,
+                filter_title: str = None,
+                filter_query: str = None,
                 filter_control_id: str = None,
                 filter_id: str = None,
+                include: List[Literal["objective","walkthough","control_tests","control_tests.assigned_user"]] = None,
                 page_size: int = 100,
                 page_num: int = 1
             ) -> dict:
+            """
+            #### Descrição
+            Retorna as informações de todos os controles da organização. 
+            
+            #### Referência
+            https://docs-apis.highbond.com/#operation/getOrganizationControls
+            """
             headers = {
                 'Content-type': 'application/vnd.api+json',
                 'Authorization': f'Bearer {self.parent.token}'
@@ -389,11 +384,31 @@ class Highbond_API:
                 'fields[walkthroughs]': ','.join(fields_walkthroughs) if fields_walkthroughs else fields_walkthroughs,
                 'fields[control_tests]': ','.join(fields_control_tests) if fields_control_tests else fields_control_tests,
                 'sort': sort,
+                'filter[frequency]': filter_frequency,
+                'filter[owner]': filter_owner,
+                'filter[control_tests.1.assigned_user.id]': filter_control_tests_1_signed_user_id,
+                'filter[control_tests.2.assigned_user.id]': filter_control_tests_2_signed_user_id,
+                'filter[control_tests.3.assigned_user.id]': filter_control_tests_3_signed_user_id,
+                'filter[control_tests.4.assigned_user.id]': filter_control_tests_4_signed_user_id,
+                'filter[control_tests.not_applicable]': filter_control_tests_not_applicable,
+                'filter[control_tests.testing_conclusion]': filter_control_tests_testing_conclusion,
+                'filter[control_tests.testing_conclusion_status]': filter_control_tests_testing_conclusion_status,
                 'filter[walkthrough.control_design]': filter_walkthrough_control_design,
                 'filter[control_type]': filter_control_type,
                 'filter[status]': filter_status,
+                'filter[objective.title]': filter_objective_title,
+                'filter[objective.name]': filter_objective_name,
+                'filter[objective.reference]': filter_objective_reference,
+                'filter[project.id]': filter_project_id,
+                'filter[project.name]': filter_project_name,
+                'filter[project.state]': filter_project_state,
+                'filter[project.status]': filter_project_status,
+                'filter[description]': filter_description,
+                'filter[title]': filter_title,
+                'filter[query]': filter_query,
                 'filter[control_id]': filter_control_id,
                 'filter[id]': filter_id,
+                'include': ','.join(include),
                 'page[size]': str(page_size),
                 'page[number]': base64.b64encode(str(page_num).encode()).decode()
             }
@@ -436,8 +451,14 @@ class Highbond_API:
                                                         "testing_round_1_id","testing_round_2_id","testing_round_3_id","testing_round_4_id","entities","framework",
                                                         "framework_origin","risk_assurance_data","planned_start_date","actual_start_date","planned_end_date","actual_end_date",
                                                         "planned_milestone_date","actual_milestone_date"]] = None
-                ) -> str:
+            ) -> str:
+            """
+            #### Descrição
+            Retorna as informações de todos os testes de controle da organização. 
             
+            #### Referência
+            https://docs-apis.highbond.com/#operation/getControlTests
+            """
             headers = {
                 'Content-type': 'application/vnd.api+json',
                 'Authorization': f'Bearer {self.parent.token}'
@@ -476,13 +497,20 @@ class Highbond_API:
 
             return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
         
-        def getAControlTest(self,
+        def getControlTest(self,
                 resource_id: str,
                 fields: list = ['assignee_name','testing_round_number','not_applicable','sample_size','testing_results','testing_conclusion','testing_conclusion_status',
                                 'created_at','updated_at','control','assigned_user','actual_milestone_date','planned_milestone_date','preparer_signoff',
                                 'detail_reviewer_signoff','general_reviewer_signoff','supplemental_reviewer','specialty_reviewer'],
                 include: List[Literal["control", "control.objective"]] = None,
             ) -> str:
+            """
+            #### Descrição
+            Retorna as informações de um teste de controle específico. 
+            
+            #### Referência
+            https://docs-apis.highbond.com/#operation/getControlTest
+            """
             headers = {
                 'Content-type': 'application/vnd.api+json',
                 'Authorization': f'Bearer {self.parent.token}'
@@ -3833,6 +3861,7 @@ class Highbond_API:
                             include: List[Literal["control","control.objective", None]] = ["control","control.objective"]
             ) -> dict:
             """
+            #### Descrição
             Consulta Walkthroughs da organização com base em filtros avançados por projeto, controle, objetivo, responsáveis e status.
 
             #### Referência:
