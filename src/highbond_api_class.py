@@ -589,7 +589,7 @@ class Highbond_API:
             
         # === GET ===
         def getFrameworks(self,
-                    fields: list = ['name','created_at','updated_at','folder_name','description','project_type'],
+                    fields: list = ['name','created_at','updated_at','folder_name','description','background','position','purpose','scope','risk_assurance','entities','project_type','collaborators','risk_assurance_data','collaborator_groups'],
                     page_size: int = 100,
                     page_num: int = 1
                 ) -> dict:
