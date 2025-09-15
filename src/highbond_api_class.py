@@ -1262,7 +1262,7 @@ class Highbond_API:
 
         def getProject(self,
                 project_id: str,
-                fields: str = 'name,state,status,created_at,updated_at,description,background,budget,position,header_alert_enabled,header_alert_text,certification,control_performance,risk_assurance,management_response,max_sample_size,number_of_testing_rounds,opinion,opinion_description,purpose,scope,start_date,target_date,tag_list,project_type,entities,collaborators,risk_assurance_data,collaborator_groups,time_spent,progress,planned_start_date,actual_start_date,planned_end_date,actual_end_date,planned_milestone_date,actual_milestone_date'
+                fields: str = ['name','state','status','created_at','updated_at','description','background','budget','position','header_alert_enabled','header_alert_text','certification','control_performance','risk_assurance','management_response','max_sample_size','number_of_testing_rounds','opinion','opinion_description','purpose','scope','start_date','target_date','tag_list','project_type','entities','collaborators','risk_assurance_data','collaborator_groups','time_spent','progress','planned_start_date','actual_start_date','planned_end_date','actual_end_date','planned_milestone_date','actual_milestone_date','custom_attributes']
             ) -> dict:
             """
             Enumera as propriedades detalhadas de um projeto específico.
@@ -1298,7 +1298,7 @@ class Highbond_API:
             }
 
             params = {
-                'fields[projects]': fields,
+                'fields[projects]': ','.join(fields),
             }
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/projects/{project_id}'
