@@ -1209,7 +1209,7 @@ class Highbond_API:
         # === GET ===
         def getProjects(
                         self, 
-                        fields: str = 'name,state,status,created_at,updated_at,description,background,budget,position,header_alert_enabled,header_alert_text,certification,control_performance,risk_assurance,management_response,max_sample_size,number_of_testing_rounds,opinion,opinion_description,purpose,scope,start_date,target_date,tag_list,project_type,entities,collaborators,risk_assurance_data,collaborator_groups,time_spent,progress,planned_start_date,actual_start_date,planned_end_date,actual_end_date,planned_milestone_date,actual_milestone_date',
+                        fields: str = ['name','state','status','created_at','updated_at','description','background','budget','position','header_alert_enabled','header_alert_text','certification','control_performance','risk_assurance','management_response','max_sample_size','number_of_testing_rounds','opinion','opinion_description','purpose','scope','start_date','target_date','tag_list','project_type','entities','collaborators','risk_assurance_data','collaborator_groups','time_spent','progress','planned_start_date','actual_start_date','planned_end_date','actual_end_date','planned_milestone_date','actual_milestone_date','custom_attributes'],
                         page_size: int = 100,
                         page_num: int = 1,
                         filter_name: str = None,
@@ -1249,7 +1249,7 @@ class Highbond_API:
             }
 
             params = {
-                'fields[projects]': fields,
+                'fields[projects]': ','.join(fields),
                 'page[size]': page_size,
                 'page[number]': base64.encodebytes(str(page_num).encode()).decode(),
                 'filter[name]': filter_name,
