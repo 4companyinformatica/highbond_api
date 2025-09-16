@@ -106,12 +106,14 @@ class Highbond_API:
             raise Exception(f'Código: 403\nMensagem: Conexão não permitida pelo servidor -> {response.text}')
         elif response.status_code == 404:
             raise Exception(f'Código: 404\nMensagem: Recurso não encontrado no API -> {response.text}')
+        elif response.status_code == 413:
+            raise Exception(f'Código: 413\nMensagem: A quantidade de dados carregados ultrapassa o limite permitido -> {response.text}')
         elif response.status_code == 415:
             raise Exception(f'Código: 415\nMensagem: Tipo de dado não suportado pelo API, altere o Content-Type no cabeçalho da requisição -> {response.text}')
         elif response.status_code == 422:
             raise Exception(f'Código: 422\nMensagem: Entidade improcessável -> {response.text}')
         else:
-            raise Exception('Falha desconhecida.')
+            raise Exception(response.json())
 
     def requester(self, method: str, url: str, headers: dict, params: dict = {}, json: dict = {}, files: dict = {}) -> dict | None:
         """
