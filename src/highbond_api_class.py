@@ -118,7 +118,7 @@ class Highbond_API:
     def requester(self, method: str, url: str, headers: dict, params: dict = {}, json: dict = {}, files: dict = {}) -> dict | None:
         """
         #### Descrição
-        Faz qualquer requisição HTTP e centraliza try/except + validação
+        Executa qualquer requisição HTTP (GET, POST, PATCH, DELETE)
         """
         try:
             if self.talkative:
@@ -138,18 +138,6 @@ class Highbond_API:
         except Exception as e:
             print(f"A requisição não foi possível:\n{e}")
             return None
-
-    def get_command(self, api_url: str, api_headers: dict, api_params: dict = {}) -> dict | None:
-        return self.requester("GET", api_url, api_headers, params=api_params)
-
-    def post_command(self, api_url: str, api_headers: dict, api_params: dict = {}, api_schema: dict = {}, api_files: dict = {}) -> dict | None:
-        return self.requester("POST", api_url, api_headers, params=api_params, json=api_schema, files=api_files)
-
-    def patch_command(self, api_url: str, api_headers: dict, api_params: dict = {}, api_schema: dict = {}) -> dict | None:
-        return self.requester("PATCH", api_url, api_headers, params=api_params, json=api_schema)
-
-    def delete_command(self, api_url: str, api_headers: dict, api_params: dict = {}) -> dict | None:
-        return self.requester("DELETE", api_url, api_headers, params=api_params)
     
 ######################################
 
@@ -168,8 +156,8 @@ class Highbond_API:
         
         url = f"{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/"
 
-        return self.get_command(api_url=url, api_headers=headers)
-    
+        return self.requester(method="GET", url=url, headers=headers)
+
 ######################################
 
     class _Actions():
@@ -205,7 +193,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/issues/{issue_id}/actions'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
         
         def getAction(self,
                     action_id: str,
@@ -232,7 +220,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/actions/{action_id}'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
         
         def getActionComments(
                 self,
@@ -263,7 +251,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/actions/{action_id}/comments'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
         
         # === POST ===
         
@@ -304,7 +292,7 @@ class Highbond_API:
                 "include": include
             }
             
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)  
+            return self.requester(method="GET", url=url, headers=headers, params=params)  
 
         def getControl(self, 
                         resource_id,
@@ -332,7 +320,7 @@ class Highbond_API:
                 "include": include
             }
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
         
         def getOrganizationControls(
                 self,
@@ -418,7 +406,7 @@ class Highbond_API:
         
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/controls'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
     
         def getControlTests(self,
                 fields: list = ['testing_round_number','not_applicable','sample_size','testing_results','testing_conclusion','testing_conclusion_status',
@@ -498,7 +486,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/control_tests'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
         
         def getControlTest(self,
                 resource_id: str,
@@ -526,7 +514,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/control_tests/{resource_id}'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
         
             # === POST ===
             
@@ -577,7 +565,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/entities'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
 
         # === POST ===
         
@@ -609,7 +597,7 @@ class Highbond_API:
                 'page[number]': base64.b64encode(str(page_num).encode()).decode()
             }
         
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
         
         # === POST ===
         
@@ -681,7 +669,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/issues'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
 
         # === POST ===
         
@@ -703,7 +691,8 @@ class Highbond_API:
                 
                 url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/analyses/{analysis_id}/tables'
 
-                return self.parent.get_command(api_url=url, api_headers=headers)
+                return self.requester(method="GET", url=url, headers=headers)
+                
             
             def getCollections(self) -> dict:
                 headers = {
@@ -713,7 +702,7 @@ class Highbond_API:
 
                 url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/collections'
 
-                return self.parent.get_command(api_url=url, api_headers=headers)
+                return self.requester(method="GET", url=url, headers=headers)
             
             def getAnalyses(self, collection_id: str) -> dict:
                 headers = {
@@ -723,7 +712,7 @@ class Highbond_API:
 
                 url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/collections/{collection_id}/analyses'
 
-                return self.parent.get_command(api_url=url, api_headers=headers)
+                return self.requester(method="GET", url=url, headers=headers)
             
             def getRecords(self, table_id: int, status: str = None, assignee: str = None) -> dict:
                 """
@@ -767,7 +756,7 @@ class Highbond_API:
                     table_id = str(table_id)
 
                 url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/tables/{table_id}/records'
-                return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+                return self.requester(method="GET", url=url, headers=headers, params=params)
             
             # === POST ===
             def uploadRecords(self, table_id: str, input_data: pd.DataFrame, explicit_field_types: dict = {}, overwrite: bool = False) -> dict:
@@ -865,10 +854,10 @@ class Highbond_API:
                         'purge': overwrite
                     }
                 }
-
+                
                 url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/tables/{table_id}/upload'
-
-                return self.parent.post_command(api_url=url, api_headers=headers, api_schema=schema)
+            
+                return self.requester(method="POST", url=url, headers=headers, json=schema)
             
             # === PATCH ===
             
@@ -933,7 +922,7 @@ class Highbond_API:
                 'filter[received]': filter_received,
             }
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
          
         def getRequestStatuses(self,
                 project_type_id,
@@ -977,7 +966,7 @@ class Highbond_API:
                 "field[request_item_statuses]":','.join(fields)
             }
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
         
         # === POST ===
         
@@ -1007,7 +996,7 @@ class Highbond_API:
                 "include": include
             }
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params) 
+            return self.requester(method="GET", url=url, headers=headers, params=params) 
    
         # === POST ===
         
@@ -1052,7 +1041,7 @@ class Highbond_API:
 
             url = f"{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/objectives/{objective_id}"
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
             
         def getObjectives(self, 
                         parent_resource_type: Literal['frameworks', 'projects'], 
@@ -1103,7 +1092,7 @@ class Highbond_API:
                 "fields[objectives]": ",".join(fields)
             }
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
     
         def getObjectiveRisks(self,
                 parent_resource_id: str,
@@ -1131,7 +1120,7 @@ class Highbond_API:
                 "include": include
             }
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params) 
+            return self.requester(method="GET", url=url, headers=headers, params=params) 
 
         # === POST ===
         
@@ -1196,7 +1185,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/{parent_resource_type}/{parent_resource_id}/planning_files'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
     
         # === POST ===
         
@@ -1260,7 +1249,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/projects'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
 
         def getProject(self,
                 project_id: str,
@@ -1305,7 +1294,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/projects/{project_id}'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
 
         def getSignOffs(self,
                 fields: list = ['created_at','updated_at','prepared_at','detail_reviewed_at','general_reviewed_at','supplemental_reviewed_at','specialty_reviewed_at',
@@ -1396,7 +1385,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/signoffs'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
 
         # === POST ===
         def createProject(
@@ -1509,7 +1498,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/projects'
 
-            return self.parent.post_command(api_url=url, api_headers=headers, api_params=params, api_schema=schema)
+            return self.requester(method="POST", url=url, headers=headers, params=params, json=schema)
 
         def createProjectEntityLink(
                 self,
@@ -1555,7 +1544,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/projects/{project_id}/entities'
 
-            return self.parent.post_command(api_url=url, api_headers=headers, api_schema=schema)
+            return self.requester(method="POST", url=url, headers=headers, json=schema)
         
         # === PATCH ===
         def updateProject(
@@ -1868,7 +1857,7 @@ class Highbond_API:
             }
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/projects/{project_id}'
 
-            return self.parent.delete_command(api_url=url, api_headers=headers, api_params=params)
+            return self.parent.requester(method="DELETE", url=url, headers=headers, params=params)
            
     class _Robots:
         def __init__(self, parent):
@@ -1890,7 +1879,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/agents'
 
-            return self.parent.get_command(api_url=url, api_headers=headers)
+            return self.requester(method="GET", url=url, headers=headers)
     
         def getRobots(self) -> dict:
             """
@@ -1907,7 +1896,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots'
 
-            return self.parent.get_command(api_url=url, api_headers=headers)
+            return self.requester(method="GET", url=url, headers=headers)
                       
         def getRobotTasks(self, robot_id: str, environment: str) -> dict:
             """
@@ -1928,7 +1917,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_tasks'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
 
         def getValues(self, task_id: str) -> dict:
             """
@@ -1945,7 +1934,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_tasks/{task_id}/values'
 
-            return self.parent.get_command(api_url=url, api_headers=headers)
+            return self.requester(method="GET", url=url, headers=headers)
  
         def getSchedule(self, task_id: str) -> dict:
             """
@@ -1962,7 +1951,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_tasks/{task_id}/schedule'
 
-            return self.parent.get_command(api_url=url, api_headers=headers)
+            return self.requester(method="GET", url=url, headers=headers)
         
         def getRobotScriptVersion(self, robot_id: str, version_id: str, include: Literal[None, 'analytics'] = 'analytics'):
             """
@@ -1982,7 +1971,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/versions/{version_id}'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
 
         def getRobotFiles(self, robot_id: str, environment: str) -> dict:
             """
@@ -2005,7 +1994,7 @@ class Highbond_API:
             # TODO verify: ONLY ACL Robot Related Files
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_files'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
     
         def getRobotApp(self, robot_id: str, robot_app_id: str):
             """
@@ -2022,7 +2011,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_apps/{robot_app_id}'
 
-            return self.parent.get_command(api_url=url, api_headers=headers)
+            return self.requester(method="GET", url=url, headers=headers)
 
         def getRobotApps(self, robot_id):
             """
@@ -2040,7 +2029,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_apps'
 
-            return self.parent.get_command(api_url=url, api_headers=headers)
+            return self.requester(method="GET", url=url, headers=headers)
         
         def getRobotJobs(self,
                 robot_id: str,
@@ -2083,7 +2072,7 @@ class Highbond_API:
             }
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/jobs'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
 
         def downloadFile(self, file_id: str, out_file: str) -> bytes:
             """
@@ -2164,7 +2153,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots'
 
-            return self.parent.post_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="POST", url=url, headers=headers, params=params)
     
         def createRobotTask(self,
                 robot_id,
@@ -2207,7 +2196,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_tasks'
 
-            return self.parent.post_command(api_url=url, api_headers=headers, api_schema=schema)
+            return self.requester(method="POST", url=url, headers=headers, json=schema)
         
         def createRobotApp(self, robot_id: str, code_page: int, comment: str, is_unicode: bool, input_file: str) -> dict:
             """
@@ -2231,7 +2220,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_apps'
 
-            return self.parent.post_command(api_url=url, api_headers=headers, api_schema=schema)
+            return self.requester(method="POST", url=url, headers=headers, json=schema)
 
         def createRobotFile(self, inputFile: str, robot_id: str, environment: Literal['production', 'development']) -> dict:
             """
@@ -2264,7 +2253,7 @@ class Highbond_API:
                 print(f'A requisição não foi possível\n{e}')
                 return None
             else:
-                return self.parent.post_command(api_url=url, api_headers=headers, api_params=params, files=schema)
+                return self.requester(method="POST", url=url, headers=headers, params=params, files=schema)
     
         def createSchedule(self, task_id: str, frequency: Literal["once", "hourly", "daily", "weekly", "monthly"], 
                             interval: int = 1, starts_at: str = None, timezone: str = None, days: List[Union[int,str]]= None) -> dict:
@@ -2362,7 +2351,7 @@ class Highbond_API:
                 print(f'A requisição não foi possível:\n{e}')
                 return None
 
-            return self.parent.post_command(api_url=url, api_headers=headers, api_schema=schema)
+            return self.requester(method="POST", url=url, headers=headers, json=schema)
  
         def runRobotTask(self, task_id: str, include: list = ['job_values','result_tables']) -> dict:
             """
@@ -2397,7 +2386,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_tasks/{task_id}/run_now'
 
-            return self.parent.post_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="POST", url=url, headers=headers, params=params)
 
         # === PATCH ===
         def putRobot(self, robot_id, robot_new_name: str, robot_new_description: str, robot_new_category: Literal['acl', 'highbond', 'workflow']) -> dict:
@@ -2422,7 +2411,8 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}'
 
-            return self.parent.patch_command(api_url=url, api_headers=headers, api_params=params)
+
+            return self.requester(method="PATCH", url=url, headers=headers, params=params)
 
         def putRobotTask(self, task_id, environment: Literal['production', 'development'], 
                             task_name, app_version: int = None, emails_enabled: bool = False, 
@@ -2458,7 +2448,7 @@ class Highbond_API:
             
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_tasks/{task_id}'
 
-            return self.parent.patch_command(api_url=url, api_headers=headers, api_schema=schema)
+            return self.requester(method="PATCH", url=url, headers=headers, schema=schema)
 
         def putValues(self, task_id: str, multi_mode: bool, analytic_name: str = None, parameter_id: str = None, 
                         encrypted: bool = None, value: str = None, 
@@ -2918,8 +2908,8 @@ class Highbond_API:
             }
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}'
-
-            return self.parent.delete_command(api_url=url, api_headers=headers)
+            
+            return self.parent.requester(method="DELETE", url=url, headers=headers)
 
         def deleteRobotTask(self, task_id: str) -> dict:
             """
@@ -2954,7 +2944,7 @@ class Highbond_API:
             
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_tasks/{task_id}'
 
-            return self.parent.delete_command(api_url=url, api_headers=headers)
+            return self.parent.requester(method="DELETE", url=url, headers=headers)
 
     class _Strategy():
         def __init__(self, parent):
@@ -2987,7 +2977,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/strategy_risks'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
 
         def getStrategySegments(self, 
                                 page_size: int = 100, 
@@ -3012,7 +3002,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/strategy_segments'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
 
         def getStrategyRiskSegments(self, strategy_risk_id: str, page_size: int = 100, page: int = 1) -> dict:
             """
@@ -3035,7 +3025,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/strategy_risks/{strategy_risk_id}/strategy_segments'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
 
         def getStrategyRiskSegment(self, 
                                     strategy_risk_id: str, 
@@ -3069,7 +3059,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/strategy_risks/{strategy_risk_id}/strategy_segments/{segment_id}'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
 
         def getStrategyObjectives(self, page_size: int = 100, page_num: int = 1) -> dict:
             """
@@ -3092,7 +3082,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/strategy_objectives'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
         
         # === POST ===
         
@@ -3149,7 +3139,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/projects_todos/{id}'
             
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
         
         # === POST ===
         
@@ -3180,7 +3170,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/users/{uid}'
 
-            return self.parent.get_command(api_url=url, api_headers=headers)
+            return self.requester(method="GET", url=url, headers=headers)
         
         # === POST ===
             
@@ -3282,7 +3272,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/walkthroughs'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
     
         def getWalkthrough(self,
                             walkthrough_id: str,
@@ -3312,7 +3302,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/walkthroughs/{walkthrough_id}'
 
-            return self.parent.get_command(api_url=url, api_headers=headers, api_params=params)
+            return self.requester(method="GET", url=url, headers=headers, params=params)
         
         # === POST ===
         
