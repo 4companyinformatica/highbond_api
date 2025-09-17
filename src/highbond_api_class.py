@@ -1,3 +1,5 @@
+import sys
+import json
 import requests as rq
 import pathlib as pl
 import os
@@ -759,7 +761,7 @@ class Highbond_API:
                 return self.requester(method="GET", url=url, headers=headers, params=params)
             
             # === POST ===
-            def uploadRecords(self, table_id: str, input_data: pd.DataFrame, explicit_field_types: dict = {}, overwrite: bool = False) -> dict:
+            def uploadRecords(self, table_id: str, input_data: pd.DataFrame, explicit_field_types: dict = {}, overwrite: bool = False) -> None:
                 """
                 Faz o upload de registros para uma tabela do módulo de resultados do highbond.
 
@@ -844,20 +846,73 @@ class Highbond_API:
                         input_data[col] = input_data[col].astype('string').fillna("")
                         input_data[col] = input_data[col].apply(lambda x: str(x))
 
+                def slicer(df: pd.DataFrame, size_limit: float) -> List[pd.DataFrame]:
+                    def payload_size(d: pd.DataFrame) -> float:
+                        return sys.getsizeof(json.dumps(d.to_dict(orient="records"))) / 1024
 
-                schema = {
-                    'data': {
-                        'columns': columns,
-                        'records': input_data.to_dict(orient='records')
-                    },
-                    'options': {
-                        'purge': overwrite
-                    }
-                }
+                    slices = []
+                    start = 0
+                    n = len(df)
+
+                    while start < n:
+                        step = 1
+                        # aumenta o step até atingir o limite
+                        while start + step <= n and payload_size(df[start:start+step]) <= size_limit:
+                            step += 1
+                        
+                        # se estourou, volta um
+                        if step > 1:
+                            step -= 1
+
+                        df_up = df[start:start+step].copy()
+                        slices.append(df_up)
+
+                        start += step
+
+                    return slices
                 
-                url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/tables/{table_id}/upload'
+                # Limite para carregar os dados do dataframe (em KB)
+                size_limit = 60.0
+
+                slices_df = slicer(df=input_data, size_limit=size_limit)
+                if self.parent.talkative:
+                    print(f"O dataframe foi particionado {len(slices_df)} vezes a fim de respeitar o limite de dados carregados.")
+
+                purge = overwrite
+
+                for i, df in enumerate(slices_df):
+                    if self.parent.talkative:
+                        print(f"Carregando partição: {i+1}")
+                        print(f"Tamanho do df: {len(df)}")
+                    schema = {
+                        'data': {
+                            'columns': columns,
+                            'records': df.to_dict(orient='records')
+                        },
+                        'options': {
+                            'purge': purge
+                        }
+                    }
+
+                    url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/tables/{table_id}/upload'
+                    purge = False
+
+                    resp = self.parent.requester(method="POST", url=url, headers=headers, json=schema)
+                    print(resp)
+
+                # schema = {
+                #     'data': {
+                #         'columns': columns,
+                #         'records': input_data.to_dict(orient='records')
+                #     },
+                #     'options': {
+                #         'purge': overwrite
+                #     }
+                # }
+                
+                # url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/tables/{table_id}/upload'
             
-                return self.requester(method="POST", url=url, headers=headers, json=schema)
+                # return self.requester(method="POST", url=url, headers=headers, json=schema)
             
             # === PATCH ===
             
