@@ -530,6 +530,33 @@ class Highbond_API:
         
         # === DELETE ===
     
+    class _CustomAttributes():
+        def __init__(self, parent):
+            self.parent = parent
+
+        def getCustomAttributes(
+                self,
+                project_type_id: str,
+                fields: str = ['term','options','customizable_type','field_type','weight','required','default_values'],
+                page_size: int = 100,
+                page_num: int = 1
+            ) -> dict:
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            params = {
+                'fields[custom_attributes]': ",".join(fields),
+                'page[size]': page_size,
+                'page[number]': base64.encodebytes(str(page_num).encode()).decode()
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/project_types/{project_type_id}/custom_attributes'
+
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
+        
+
     class _Entities():
         def __init__(self, parent):
             self.parent = parent
