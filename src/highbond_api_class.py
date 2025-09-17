@@ -158,7 +158,7 @@ class Highbond_API:
         
         url = f"{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/"
 
-        return self.requester(method="GET", url=url, headers=headers)
+        return self.parent.requester(method="GET", url=url, headers=headers)
 
 ######################################
 
@@ -195,7 +195,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/issues/{issue_id}/actions'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
         
         def getAction(self,
                     action_id: str,
@@ -222,7 +222,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/actions/{action_id}'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
         
         def getActionComments(
                 self,
@@ -253,7 +253,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/actions/{action_id}/comments'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
         
         # === POST ===
         
@@ -294,7 +294,7 @@ class Highbond_API:
                 "include": include
             }
             
-            return self.requester(method="GET", url=url, headers=headers, params=params)  
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)  
 
         def getControl(self, 
                         resource_id,
@@ -322,7 +322,7 @@ class Highbond_API:
                 "include": include
             }
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
         
         def getOrganizationControls(
                 self,
@@ -408,7 +408,7 @@ class Highbond_API:
         
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/controls'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
     
         def getControlTests(self,
                 fields: list = ['testing_round_number','not_applicable','sample_size','testing_results','testing_conclusion','testing_conclusion_status',
@@ -488,7 +488,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/control_tests'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
         
         def getControlTest(self,
                 resource_id: str,
@@ -516,7 +516,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/control_tests/{resource_id}'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
         
             # === POST ===
             
@@ -567,7 +567,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/entities'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
 
         # === POST ===
         
@@ -599,7 +599,7 @@ class Highbond_API:
                 'page[number]': base64.b64encode(str(page_num).encode()).decode()
             }
         
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
         
         # === POST ===
         
@@ -671,7 +671,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/issues'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
 
         # === POST ===
         
@@ -679,240 +679,260 @@ class Highbond_API:
         
         # === DELETE ===
 
+    class _Narratives():
+        def __init__(self, parent):
+            self.parent = parent
+
+        # === GET ===
+        def getNarratives(
+                self,
+                parent,
+                objective_id: str,
+                fields: list = ['title','description','created_at','updated_at','objective','framework_origin'],
+                page_size: int = 100,
+                page_num: int = 1
+            ) -> dict:
+            """
+            Retorna todas as narrativas associadas a um objetivo.
+
+            #### Referência:
+            https://docs-apis.highbond.com/#operation/getNarratives
+            """
+            url = f"{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/objectives/{objective_id}/narratives"
+
+            headers = {
+                'Content-Type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            params = {
+                "page[size]": page_size,
+                'page[number]': base64.b64encode(str(page_num).encode()).decode(),
+                "fields[narratives]": ",".join(fields)
+            }
+
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
+
     class _Results():
-            def __init__(self, parent):
-                self.parent = parent
-                
-            # === GET ===  
-            def getTables(self, analysis_id: int) -> dict:
-
-                headers = {
-                    'Content-type': 'application/vnd.api+json',
-                    'Authorization': f'Bearer {self.parent.token}'
-                }
-                
-                url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/analyses/{analysis_id}/tables'
-
-                return self.requester(method="GET", url=url, headers=headers)
-                
+        def __init__(self, parent):
+            self.parent = parent
             
-            def getCollections(self) -> dict:
-                headers = {
-                    'Content-type': 'application/vnd.api+json',
-                    'Authorization': f'Bearer {self.parent.token}'
-                }
+        # === GET ===  
+        def getTables(self, analysis_id: int) -> dict:
 
-                url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/collections'
-
-                return self.requester(method="GET", url=url, headers=headers)
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
             
-            def getAnalyses(self, collection_id: str) -> dict:
-                headers = {
-                    'Content-type': 'application/vnd.api+json',
-                    'Authorization': f'Bearer {self.parent.token}'
-                }
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/analyses/{analysis_id}/tables'
 
-                url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/collections/{collection_id}/analyses'
-
-                return self.requester(method="GET", url=url, headers=headers)
+            return self.parent.requester(method="GET", url=url, headers=headers)
             
-            def getRecords(self, table_id: int, status: str = None, assignee: str = None) -> dict:
-                """
-                Recebe uma tabela do módulo de resultados do highbond
+        
+        def getCollections(self) -> dict:
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
 
-                #### Referência
-                (getRecords)[https://docs-apis.highbond.com/#operation/getRecords]
-                
-                #### Parâmetros:
-                - page_size: parâmetro que define a quantidade de registros retornados
-                
-                #### Retorna:
-                Um dicionário contendo informaçãos sobre o segmento do risco estratégico consultado consultado
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/collections'
 
-                #### Exceções:
-                - Sobe exceção se o ambiente não estiver definido corretamente.
-                - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-                - Sobe exceção se houver uma falha desconhecida.
+            return self.parent.requester(method="GET", url=url, headers=headers)
+        
+        def getAnalyses(self, collection_id: str) -> dict:
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
 
-                #### Exemplo de uso:
-                ```python
-                instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
-                result = instance.getRecords(fields='title, description', page_size=25, page_num=1)
-                ```
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/collections/{collection_id}/analyses'
 
-                #### Observações:
-                - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-                - A resposta é um dicionário contendo as informaçãos sobre os arquivos do robô.
-                """
-                headers = {
-                    'Content-type': 'application/vnd.api+json',
-                    'Authorization': f'Bearer {self.parent.token}'
-                }
+            return self.parent.requester(method="GET", url=url, headers=headers)
+        
+        def getRecords(self, table_id: int, status: str = None, assignee: str = None) -> dict:
+            """
+            Recebe uma tabela do módulo de resultados do highbond
 
-                params = {
-                    'filter[metadata.status][]': status,
-                    'filter[metadata.assignee]': assignee
-                }
-
-                if type(table_id) == int or type(table_id) == float:
-                    table_id = str(table_id)
-
-                url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/tables/{table_id}/records'
-                return self.requester(method="GET", url=url, headers=headers, params=params)
+            #### Referência
+            (getRecords)[https://docs-apis.highbond.com/#operation/getRecords]
             
-            # === POST ===
-            def uploadRecords(self, table_id: str, input_data: pd.DataFrame, explicit_field_types: dict = {}, overwrite: bool = False) -> None:
-                """
-                Faz o upload de registros para uma tabela do módulo de resultados do highbond.
+            #### Parâmetros:
+            - page_size: parâmetro que define a quantidade de registros retornados
+            
+            #### Retorna:
+            Um dicionário contendo informaçãos sobre o segmento do risco estratégico consultado consultado
 
-                #### Referência
-                https://docs-apis.highbond.com/#operation/uploadRecords
+            #### Exceções:
+            - Sobe exceção se o ambiente não estiver definido corretamente.
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
 
-                #### Parâmetros:
-                - input_data (obrigatório): (pd.DataFrame) Recebe um dataframe com os dados a serem carregados na tabela
-                - overwrite (obrigatório): (bool) Define se os dados vão substituir a tabela atual ou acrescentar a ela
-                - explicit_field_types (opcional): (dict) Dicionário que força um tipo de campo do highbond para um campo de 'input_data', 
-                os campos podem ser dos tipos 'character', 'numeric', logical', 'date', 'time' e 'datetime'
+            #### Exemplo de uso:
+            ```python
+            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
+            result = instance.getRecords(fields='title, description', page_size=25, page_num=1)
+            ```
 
-                #### Retorna:
-                Um dict com informaçãos sobre os dados carregados
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            - A resposta é um dicionário contendo as informaçãos sobre os arquivos do robô.
+            """
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
 
-                #### Exceções:
-                - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
-                - Sobe exceção se houver uma falha desconhecida.
+            params = {
+                'filter[metadata.status][]': status,
+                'filter[metadata.assignee]': assignee
+            }
 
-                #### Exemplo de uso:
-                ```python
+            if type(table_id) == int or type(table_id) == float:
+                table_id = str(table_id)
 
-                instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/tables/{table_id}/records'
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
+        
+        # === POST ===
+        def uploadRecords(self, table_id: str, input_data: pd.DataFrame, explicit_field_types: dict = {}, overwrite: bool = False) -> None:
+            """
+            Faz o upload de registros para uma tabela do módulo de resultados do highbond.
 
-                dfCustom = pd.DataFrame(
-                    {
-                        'A': '1234',
-                        'B': 'custom text'
-                    }, 
-                    index=[0]
-                )
-                result = instance.uploadRecords(input_data=dfCustom, overwrite=True, explicit_field_types = {'A': 'numeric'})
+            #### Referência
+            https://docs-apis.highbond.com/#operation/uploadRecords
 
-                ```
+            #### Parâmetros:
+            - input_data (obrigatório): (pd.DataFrame) Recebe um dataframe com os dados a serem carregados na tabela
+            - overwrite (obrigatório): (bool) Define se os dados vão substituir a tabela atual ou acrescentar a ela
+            - explicit_field_types (opcional): (dict) Dicionário que força um tipo de campo do highbond para um campo de 'input_data', 
+            os campos podem ser dos tipos 'character', 'numeric', logical', 'date', 'time' e 'datetime'
 
-                #### Observações:
-                - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
-                - Esse método depende da biblioteca externa 'Pandas'
-                """
-                headers = {
-                    'Accept': 'application/vnd.api+json',
-                    'Authorization': f'Bearer {self.parent.token}'
-                }
+            #### Retorna:
+            Um dict com informaçãos sobre os dados carregados
 
-                # Remove campos de metadados e extras
-                input_data = input_data[[field for field in input_data.columns if not re.search(r'(metadata\.|extras\.)', field)]]
+            #### Exceções:
+            - Sobe exceção se a requisição API falhar com códigos de status diferentes de 200.
+            - Sobe exceção se houver uma falha desconhecida.
 
-                def map_dtype(
-                        field: str, 
-                        explicit_field_types: dict, 
-                        field_type: str = object
-                        ) -> str:
-                    if field in explicit_field_types:
-                        return explicit_field_types[field]
-                    
-                    elif pd.api.types.is_object_dtype(field_type):
-                        return 'character'
-                    
-                    elif pd.api.types.is_numeric_dtype(field_type):
-                        return 'numeric'
-                    
-                    elif pd.api.types.is_bool_dtype(field_type):
-                        return 'logical'
-                    
-                    elif pd.api.types.is_datetime64_any_dtype(field_type):
-                        return 'datetime'
-                    
-                    elif pd.api.types.is_timedelta64_dtype(field_type):
-                        return 'time'
-                    
-                    else:
-                        return 'unknown'
+            #### Exemplo de uso:
+            ```python
+
+            instance = hbapi(self.parent.token='seu_self.parent.token', organization_id='id_da_organização')
+
+            dfCustom = pd.DataFrame(
+                {
+                    'A': '1234',
+                    'B': 'custom text'
+                }, 
+                index=[0]
+            )
+            result = instance.uploadRecords(input_data=dfCustom, overwrite=True, explicit_field_types = {'A': 'numeric'})
+
+            ```
+
+            #### Observações:
+            - Certifique-se de que a propriedade 'talkative' esteja configurada corretamente para controlar as mensagens de sucesso.
+            - Esse método depende da biblioteca externa 'Pandas'
+            """
+            headers = {
+                'Accept': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            # Remove campos de metadados e extras
+            input_data = input_data[[field for field in input_data.columns if not re.search(r'(metadata\.|extras\.)', field)]]
+
+            def map_dtype(
+                    field: str, 
+                    explicit_field_types: dict, 
+                    field_type: str = object
+                    ) -> str:
+                if field in explicit_field_types:
+                    return explicit_field_types[field]
                 
-                columns = {}
-                for col, dtype in input_data.dtypes.items():
-                    columns[col] = map_dtype(field=col, field_type=dtype, explicit_field_types=explicit_field_types)
-
-                    if pd.api.types.is_datetime64_any_dtype(dtype):
-                        input_data[col] = input_data[col].astype('string').fillna("")
-                        input_data[col] = input_data[col].apply(lambda x: str(x))
-                    if pd.api.types.is_timedelta64_dtype(dtype):
-                        input_data[col] = input_data[col].astype('string').fillna("")
-                        input_data[col] = input_data[col].apply(lambda x: str(x))
-
-                def slicer(df: pd.DataFrame, size_limit: float) -> List[pd.DataFrame]:
-                    def payload_size(d: pd.DataFrame) -> float:
-                        return sys.getsizeof(json.dumps(d.to_dict(orient="records"))) / 1024
-
-                    slices = []
-                    start = 0
-                    n = len(df)
-
-                    while start < n:
-                        step = 1
-                        # aumenta o step até atingir o limite
-                        while start + step <= n and payload_size(df[start:start+step]) <= size_limit:
-                            step += 1
-                        
-                        # se estourou, volta um
-                        if step > 1:
-                            step -= 1
-
-                        df_up = df[start:start+step].copy()
-                        slices.append(df_up)
-
-                        start += step
-
-                    return slices
+                elif pd.api.types.is_object_dtype(field_type):
+                    return 'character'
                 
-                # Limite para carregar os dados do dataframe (em KB)
-                size_limit = 60.0
+                elif pd.api.types.is_numeric_dtype(field_type):
+                    return 'numeric'
+                
+                elif pd.api.types.is_bool_dtype(field_type):
+                    return 'logical'
+                
+                elif pd.api.types.is_datetime64_any_dtype(field_type):
+                    return 'datetime'
+                
+                elif pd.api.types.is_timedelta64_dtype(field_type):
+                    return 'time'
+                
+                else:
+                    return 'unknown'
+            
+            columns = {}
+            for col, dtype in input_data.dtypes.items():
+                columns[col] = map_dtype(field=col, field_type=dtype, explicit_field_types=explicit_field_types)
 
-                slices_df = slicer(df=input_data, size_limit=size_limit)
+                if pd.api.types.is_datetime64_any_dtype(dtype):
+                    input_data[col] = input_data[col].astype('string').fillna("")
+                    input_data[col] = input_data[col].apply(lambda x: str(x))
+                if pd.api.types.is_timedelta64_dtype(dtype):
+                    input_data[col] = input_data[col].astype('string').fillna("")
+                    input_data[col] = input_data[col].apply(lambda x: str(x))
+
+            def slicer(df: pd.DataFrame, size_limit: float) -> List[pd.DataFrame]:
+                def payload_size(d: pd.DataFrame) -> float:
+                    return sys.getsizeof(json.dumps(d.to_dict(orient="records"))) / 1024
+
+                slices = []
+                start = 0
+                n = len(df)
+
+                while start < n:
+                    step = 1
+                    # aumenta o step até atingir o limite
+                    while start + step <= n and payload_size(df[start:start+step]) <= size_limit:
+                        step += 1
+                    
+                    # se estourou, volta um
+                    if step > 1:
+                        step -= 1
+
+                    df_up = df[start:start+step].copy()
+                    slices.append(df_up)
+
+                    start += step
+
+                return slices
+            
+            # Limite para carregar os dados do dataframe (em KB)
+            size_limit = 60.0
+
+            slices_df = slicer(df=input_data, size_limit=size_limit)
+            if self.parent.talkative:
+                print(f"O dataframe foi particionado {len(slices_df)} vezes a fim de respeitar o limite de dados carregados.")
+
+            purge = overwrite
+
+            for i, df in enumerate(slices_df):
                 if self.parent.talkative:
-                    print(f"O dataframe foi particionado {len(slices_df)} vezes a fim de respeitar o limite de dados carregados.")
-
-                purge = overwrite
-
-                for i, df in enumerate(slices_df):
-                    if self.parent.talkative:
-                        print(f"Carregando partição: {i+1}")
-                        print(f"Tamanho do df: {len(df)}")
-                    schema = {
-                        'data': {
-                            'columns': columns,
-                            'records': df.to_dict(orient='records')
-                        },
-                        'options': {
-                            'purge': purge
-                        }
+                    print(f"Carregando partição: {i+1}")
+                    print(f"Tamanho do df: {len(df)}")
+                schema = {
+                    'data': {
+                        'columns': columns,
+                        'records': df.to_dict(orient='records')
+                    },
+                    'options': {
+                        'purge': purge
                     }
+                }
 
-                    url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/tables/{table_id}/upload'
-                    purge = False
+                url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/tables/{table_id}/upload'
+                purge = False
 
-                    resp = self.parent.requester(method="POST", url=url, headers=headers, json=schema)
-                    print(resp)
-
-                # schema = {
-                #     'data': {
-                #         'columns': columns,
-                #         'records': input_data.to_dict(orient='records')
-                #     },
-                #     'options': {
-                #         'purge': overwrite
-                #     }
-                # }
-                
-                # url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/tables/{table_id}/upload'
-            
-                # return self.requester(method="POST", url=url, headers=headers, json=schema)
+                resp = self.parent.requester(method="POST", url=url, headers=headers, json=schema)
+                print(resp)
             
             # === PATCH ===
             
@@ -977,7 +997,7 @@ class Highbond_API:
                 'filter[received]': filter_received,
             }
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
          
         def getRequestStatuses(self,
                 project_type_id,
@@ -1021,7 +1041,7 @@ class Highbond_API:
                 "field[request_item_statuses]":','.join(fields)
             }
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
         
         # === POST ===
         
@@ -1051,7 +1071,7 @@ class Highbond_API:
                 "include": include
             }
 
-            return self.requester(method="GET", url=url, headers=headers, params=params) 
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params) 
    
         # === POST ===
         
@@ -1096,7 +1116,7 @@ class Highbond_API:
 
             url = f"{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/objectives/{objective_id}"
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
             
         def getObjectives(self, 
                         parent_resource_type: Literal['frameworks', 'projects'], 
@@ -1147,7 +1167,7 @@ class Highbond_API:
                 "fields[objectives]": ",".join(fields)
             }
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
     
         def getObjectiveRisks(self,
                 parent_resource_id: str,
@@ -1175,7 +1195,7 @@ class Highbond_API:
                 "include": include
             }
 
-            return self.requester(method="GET", url=url, headers=headers, params=params) 
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params) 
 
         # === POST ===
         
@@ -1240,7 +1260,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/{parent_resource_type}/{parent_resource_id}/planning_files'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
     
         # === POST ===
         
@@ -1304,7 +1324,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/projects'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
 
         def getProject(self,
                 project_id: str,
@@ -1349,7 +1369,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/projects/{project_id}'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
 
         def getSignOffs(self,
                 fields: list = ['created_at','updated_at','prepared_at','detail_reviewed_at','general_reviewed_at','supplemental_reviewed_at','specialty_reviewed_at',
@@ -1440,7 +1460,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/signoffs'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
 
         # === POST ===
         def createProject(
@@ -1553,7 +1573,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/projects'
 
-            return self.requester(method="POST", url=url, headers=headers, params=params, json=schema)
+            return self.parent.requester(method="POST", url=url, headers=headers, params=params, json=schema)
 
         def createProjectEntityLink(
                 self,
@@ -1599,7 +1619,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/projects/{project_id}/entities'
 
-            return self.requester(method="POST", url=url, headers=headers, json=schema)
+            return self.parent.requester(method="POST", url=url, headers=headers, json=schema)
         
         # === PATCH ===
         def updateProject(
@@ -1934,7 +1954,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/agents'
 
-            return self.requester(method="GET", url=url, headers=headers)
+            return self.parent.requester(method="GET", url=url, headers=headers)
     
         def getRobots(self) -> dict:
             """
@@ -1951,7 +1971,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots'
 
-            return self.requester(method="GET", url=url, headers=headers)
+            return self.parent.requester(method="GET", url=url, headers=headers)
                       
         def getRobotTasks(self, robot_id: str, environment: str) -> dict:
             """
@@ -1972,7 +1992,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_tasks'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
 
         def getValues(self, task_id: str) -> dict:
             """
@@ -1989,7 +2009,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_tasks/{task_id}/values'
 
-            return self.requester(method="GET", url=url, headers=headers)
+            return self.parent.requester(method="GET", url=url, headers=headers)
  
         def getSchedule(self, task_id: str) -> dict:
             """
@@ -2006,7 +2026,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_tasks/{task_id}/schedule'
 
-            return self.requester(method="GET", url=url, headers=headers)
+            return self.parent.requester(method="GET", url=url, headers=headers)
         
         def getRobotScriptVersion(self, robot_id: str, version_id: str, include: Literal[None, 'analytics'] = 'analytics'):
             """
@@ -2026,7 +2046,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/versions/{version_id}'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
 
         def getRobotFiles(self, robot_id: str, environment: str) -> dict:
             """
@@ -2049,7 +2069,7 @@ class Highbond_API:
             # TODO verify: ONLY ACL Robot Related Files
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_files'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
     
         def getRobotApp(self, robot_id: str, robot_app_id: str):
             """
@@ -2066,7 +2086,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_apps/{robot_app_id}'
 
-            return self.requester(method="GET", url=url, headers=headers)
+            return self.parent.requester(method="GET", url=url, headers=headers)
 
         def getRobotApps(self, robot_id):
             """
@@ -2084,7 +2104,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_apps'
 
-            return self.requester(method="GET", url=url, headers=headers)
+            return self.parent.requester(method="GET", url=url, headers=headers)
         
         def getRobotJobs(self,
                 robot_id: str,
@@ -2127,7 +2147,7 @@ class Highbond_API:
             }
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/jobs'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
 
         def downloadFile(self, file_id: str, out_file: str) -> bytes:
             """
@@ -2208,7 +2228,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots'
 
-            return self.requester(method="POST", url=url, headers=headers, params=params)
+            return self.parent.requester(method="POST", url=url, headers=headers, params=params)
     
         def createRobotTask(self,
                 robot_id,
@@ -2251,7 +2271,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_tasks'
 
-            return self.requester(method="POST", url=url, headers=headers, json=schema)
+            return self.parent.requester(method="POST", url=url, headers=headers, json=schema)
         
         def createRobotApp(self, robot_id: str, code_page: int, comment: str, is_unicode: bool, input_file: str) -> dict:
             """
@@ -2275,7 +2295,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/robot_apps'
 
-            return self.requester(method="POST", url=url, headers=headers, json=schema)
+            return self.parent.requester(method="POST", url=url, headers=headers, json=schema)
 
         def createRobotFile(self, inputFile: str, robot_id: str, environment: Literal['production', 'development']) -> dict:
             """
@@ -2308,7 +2328,7 @@ class Highbond_API:
                 print(f'A requisição não foi possível\n{e}')
                 return None
             else:
-                return self.requester(method="POST", url=url, headers=headers, params=params, files=schema)
+                return self.parent.requester(method="POST", url=url, headers=headers, params=params, files=schema)
     
         def createSchedule(self, task_id: str, frequency: Literal["once", "hourly", "daily", "weekly", "monthly"], 
                             interval: int = 1, starts_at: str = None, timezone: str = None, days: List[Union[int,str]]= None) -> dict:
@@ -2406,7 +2426,7 @@ class Highbond_API:
                 print(f'A requisição não foi possível:\n{e}')
                 return None
 
-            return self.requester(method="POST", url=url, headers=headers, json=schema)
+            return self.parent.requester(method="POST", url=url, headers=headers, json=schema)
  
         def runRobotTask(self, task_id: str, include: list = ['job_values','result_tables']) -> dict:
             """
@@ -2441,7 +2461,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_tasks/{task_id}/run_now'
 
-            return self.requester(method="POST", url=url, headers=headers, params=params)
+            return self.parent.requester(method="POST", url=url, headers=headers, params=params)
 
         # === PATCH ===
         def putRobot(self, robot_id, robot_new_name: str, robot_new_description: str, robot_new_category: Literal['acl', 'highbond', 'workflow']) -> dict:
@@ -2467,7 +2487,7 @@ class Highbond_API:
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}'
 
 
-            return self.requester(method="PATCH", url=url, headers=headers, params=params)
+            return self.parent.requester(method="PATCH", url=url, headers=headers, params=params)
 
         def putRobotTask(self, task_id, environment: Literal['production', 'development'], 
                             task_name, app_version: int = None, emails_enabled: bool = False, 
@@ -2503,7 +2523,7 @@ class Highbond_API:
             
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robot_tasks/{task_id}'
 
-            return self.requester(method="PATCH", url=url, headers=headers, schema=schema)
+            return self.parent.requester(method="PATCH", url=url, headers=headers, schema=schema)
 
         def putValues(self, task_id: str, multi_mode: bool, analytic_name: str = None, parameter_id: str = None, 
                         encrypted: bool = None, value: str = None, 
@@ -3032,7 +3052,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/strategy_risks'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
 
         def getStrategySegments(self, 
                                 page_size: int = 100, 
@@ -3057,7 +3077,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/strategy_segments'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
 
         def getStrategyRiskSegments(self, strategy_risk_id: str, page_size: int = 100, page: int = 1) -> dict:
             """
@@ -3080,7 +3100,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/strategy_risks/{strategy_risk_id}/strategy_segments'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
 
         def getStrategyRiskSegment(self, 
                                     strategy_risk_id: str, 
@@ -3114,7 +3134,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/strategy_risks/{strategy_risk_id}/strategy_segments/{segment_id}'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
 
         def getStrategyObjectives(self, page_size: int = 100, page_num: int = 1) -> dict:
             """
@@ -3137,7 +3157,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/strategy_objectives'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
         
         # === POST ===
         
@@ -3194,7 +3214,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/projects_todos/{id}'
             
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
         
         # === POST ===
         
@@ -3225,7 +3245,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/users/{uid}'
 
-            return self.requester(method="GET", url=url, headers=headers)
+            return self.parent.requester(method="GET", url=url, headers=headers)
         
         # === POST ===
             
@@ -3327,7 +3347,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/walkthroughs'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
     
         def getWalkthrough(self,
                             walkthrough_id: str,
@@ -3357,7 +3377,7 @@ class Highbond_API:
 
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/walkthroughs/{walkthrough_id}'
 
-            return self.requester(method="GET", url=url, headers=headers, params=params)
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
         
         # === POST ===
         
