@@ -1960,7 +1960,32 @@ class Highbond_API:
             url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/projects/{project_id}'
 
             return self.parent.requester(method="DELETE", url=url, headers=headers, params=params)
-           
+
+    class _ProjectTypes():
+        def __init__(self, parent):
+            self.parent = parent
+        
+        def getProjectType(
+                self,
+                id: str,
+                fields: str = ['name','description','workflow','project_terms','certification_terms','control_terms','finding_terms','finding_retest_terms','finding_remediation_terms','control_test_terms','narrative_terms','objective_terms','planning_terms','results_terms','risk_terms','risk_control_matrix_terms','test_plan_terms','process_walkthrough_terms','walkthrough_terms','testing_round_terms','assigned_users']
+            ) -> dict:
+            """
+            Retorna informações sobre um tipo de projeto.
+            """
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            params = {
+                'fields[project_types]': ",".join(fields)
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/project_types/{id}'
+
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
+
     class _Robots:
         def __init__(self, parent):
             self.parent = parent
