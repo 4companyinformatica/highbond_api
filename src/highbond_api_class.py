@@ -158,7 +158,7 @@ class Highbond_API:
         
         url = f"{self.protocol}://{self.server}/v1/orgs/{self.organization_id}/"
 
-        return self.parent.requester(method="GET", url=url, headers=headers)
+        return self.requester(method="GET", url=url, headers=headers)
 
 ######################################
 
