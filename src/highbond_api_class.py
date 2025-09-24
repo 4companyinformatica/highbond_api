@@ -2349,6 +2349,33 @@ class Highbond_API:
 
             return self.parent.requester(method="POST", url=url, headers=headers, json=schema)
 
+        def createRobotScriptVersion(
+                self,
+                robot_id: str,
+                comment: str,
+                name: str,
+                raw: dict,
+                include: Literal[ "analytics"] =  "analytics"
+            ) -> dict:
+            headers = {
+                'Accept': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            schema = {
+                'comment': comment,
+                'name': name,
+                'raw': raw
+            }
+
+            params = {
+                'include': include,
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/versions'
+
+            return self.parent.requester(method="POST", url=url, headers=headers, json=schema, params=params)
+            
         def createRobotFile(self, inputFile: str, robot_id: str, environment: Literal['production', 'development']) -> dict:
             """
             #### Descrição
