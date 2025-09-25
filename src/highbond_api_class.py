@@ -3295,6 +3295,29 @@ class Highbond_API:
             
             return self.parent.requester(method="GET", url=url, headers=headers, params=params)
         
+        def getTodoComments(
+                self,
+                project_id: str,
+                todo_id: str,
+                fields: List[Literal['text','user']] = ['text', 'user'],
+                include: Literal['user'] = None
+        ) -> dict:
+            headers = {
+                'Content-type': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+            
+            params = {
+                "fields[comments]": ",".join(fields),
+                "project_id": project_id,
+                "todo_id": todo_id,
+                "include": {",".join(include) if include else include}
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/projects_todos/{todo_id}/comments'
+
+            return self.parent.requester(method="GET", url=url, headers=headers, params=params)
+        
         # === POST ===
         
         # === PATCH ===
