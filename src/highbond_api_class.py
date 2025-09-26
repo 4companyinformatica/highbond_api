@@ -14,7 +14,6 @@ class Highbond_API:
             self,
             token: str,
             organization_id: str,
-            protocol: str = 'https',
             server: Literal['apis-us.highbond.com', 'apis-ca.highbond.com', 'apis-eu.highbond.com', 'apis-ap.highbond.com', 'apis-au.highbond.com', 'apis-af.highbond.com', 'apis-sa.highbond.com', 'apis.highbond-gov.com', 'apis.highbond-gov2.com'] = 'apis-us.highbond.com', 
             talkative: bool = True
         ):
@@ -45,7 +44,7 @@ class Highbond_API:
         # CONFIGURAÇÕES DA CLASSE
         self.token = token
         self.organization_id = organization_id
-        self.protocol = protocol
+        self.protocol = 'https'
         self.server = server
         self.talkative = talkative
 
