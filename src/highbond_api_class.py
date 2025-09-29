@@ -400,7 +400,7 @@ class Highbond_API:
                 'filter[query]': filter_query,
                 'filter[control_id]': filter_control_id,
                 'filter[id]': filter_id,
-                'include': ','.join(include),
+                'include': ','.join(include) if include else include,
                 'page[size]': str(page_size),
                 'page[number]': base64.b64encode(str(page_num).encode()).decode()
             }
