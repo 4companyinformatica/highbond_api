@@ -2514,24 +2514,25 @@ class Highbond_API:
             #### Referência 
             * https://docs-apis.highbond.com/#operation/createRobotWorkingFile
             """
-            if overwrite:
-                delete = self.deleteRobotWorkingFile(environment=environment, input_file=input_file, robot_id=robot_id)
+            # if overwrite:
+            #     delete = self.deleteRobotWorkingFile(environment=environment, input_file=input_file, robot_id=robot_id)
 
             headers = {
                 'Accept': 'application/vnd.api+json',
+                'Content-Type': 'application/vnd.api+json',
                 'Authorization': f'Bearer {self.parent.token}'
             }
 
             params = {
                 'env': environment,
-                'overwrite': 'True'
+                'overwrite': 'true' if overwrite else 'false'
             }
 
             schema = {
                 'data': {
                     'type': 'robot_files',
                     'attributes': {
-                        'filename': input_file
+                        'filename': input_file.split("/")[-1] if "/" in input_file else input_file
                     }
                 }
             }
