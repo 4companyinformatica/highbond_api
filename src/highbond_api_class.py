@@ -2505,6 +2505,58 @@ class Highbond_API:
                 return None
 
             return self.parent.requester(method="POST", url=url, headers=headers, json=schema)
+        
+        def createRobotWorkingFile(self, input_file: str, robot_id: str, environment: Literal['production', 'development'], overwrite : bool = False) -> dict:
+            """
+            #### Descrição
+            Faz o upload de arquivos para robôs Workflow ou Highbond.
+
+            #### Referência 
+            * https://docs-apis.highbond.com/#operation/createRobotWorkingFile
+            """
+            if overwrite:
+                delete = self.deleteRobotWorkingFile(environment=environment, input_file=input_file, robot_id=robot_id)
+
+            headers = {
+                'Accept': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            params = {
+                'env': environment,
+                'overwrite': 'True'
+            }
+
+            schema = {
+                'data': {
+                    'type': 'robot_files',
+                    'attributes': {
+                        'filename': input_file
+                    }
+                }
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/working_files'
+
+            resp = self.parent.requester(method="POST", url=url, headers=headers, params=params, json=schema)
+
+            # Se a requisição for um sucesso, retorna um url da AWS com as credenciais para carregar o arquivo
+            upload_url = resp.get('data', False).get('attributes', False).get('uploadUrl', False) if resp else False
+
+            if not upload_url:
+                return resp
+                        
+            files = {
+                'file': open(input_file, 'rb')
+            }
+
+            # Apesar da documentação oficial indicar o método POST, deve-se usar PUT
+            # O link da AWS gerado (`upload_url`) aceita somente o método PUT
+            response = rq.put(upload_url, files=files)
+            
+            print(response.status_code)
+            
+            return response
  
         def runRobotTask(self, task_id: str, include: list = ['job_values','result_tables']) -> dict:
             """
@@ -3027,7 +3079,29 @@ class Highbond_API:
 
             except Exception as e:
                 print(f'A requisição não foi possível:\n{e}')
-    
+
+        def deleteRobotWorkingFile(self, input_file: str, robot_id: str, environment: Literal['production', 'development']) -> dict:
+            """
+            #### Descrição
+            Faz o upload de arquivos para robôs Workflow ou Highbond.
+
+            #### Referência 
+            * https://docs-apis.highbond.com/#operation/createRobotWorkingFile
+            """
+            headers = {
+                'Accept': 'application/vnd.api+json',
+                'Authorization': f'Bearer {self.parent.token}'
+            }
+
+            params = {
+                'env': environment,
+                'filename': input_file
+            }
+
+            url = f'{self.parent.protocol}://{self.parent.server}/v1/orgs/{self.parent.organization_id}/robots/{robot_id}/working_files'
+
+            return self.parent.requester(method="DELETE", url=url, headers=headers, params=params)
+        
         def deleteRobot(self, robot_id: str) -> dict:
             """
             Deleta um robô e todas as tarefas associadas a ele
